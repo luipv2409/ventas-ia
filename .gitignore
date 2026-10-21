@@ -1,0 +1,36 @@
+# ============================================================
+# .gitignore — Ventas IA
+# ============================================================
+
+# Archivos de entorno y credenciales sensibles (NUNCA SUBIR A GIT)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Archivos temporales de reportes
+storage/reports/*.csv
+storage/reports/*.html
+!storage/reports/.gitkeep
+
+# Dependencias y logs
+node_modules/
+vendor/
+*.log
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configuraciones de IDE / Editor
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Archivos temporales y volcados de bases de datos de desarrollo
+*.tmp
+*.bak
+dump.sql

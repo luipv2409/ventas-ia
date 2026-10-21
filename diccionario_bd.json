@@ -1,0 +1,91 @@
+{
+    "alertas_stock": [
+        "id (int(10) unsigned) [PRI]",
+        "producto_id (int(10) unsigned) [MUL]",
+        "umbral (int(10) unsigned)",
+        "notificado (tinyint(1))"
+    ],
+    "categorias": [
+        "id (int(10) unsigned) [PRI]",
+        "nombre (varchar(100))",
+        "descripcion (text)",
+        "slug (varchar(120)) [UNI]",
+        "activa (tinyint(1))",
+        "creado_en (timestamp)"
+    ],
+    "chat_logs": [
+        "id (int(10) unsigned) [PRI]",
+        "session_id (varchar(100)) [MUL]",
+        "pregunta (text)",
+        "respuesta (text)",
+        "tokens_usados (int(10) unsigned)",
+        "creado_en (timestamp)"
+    ],
+    "clientes": [
+        "id (int(10) unsigned) [PRI]",
+        "nombre (varchar(150))",
+        "telefono (varchar(30))",
+        "email (varchar(200)) [MUL]",
+        "direccion (text)",
+        "creado_en (timestamp)"
+    ],
+    "configuracion": [
+        "clave (varchar(50)) [PRI]",
+        "valor (text)"
+    ],
+    "detalle_pedidos": [
+        "id (int(10) unsigned) [PRI]",
+        "pedido_id (int(10) unsigned) [MUL]",
+        "producto_id (int(10) unsigned) [MUL]",
+        "cantidad (int(10) unsigned)",
+        "precio_unitario (decimal(10,2))",
+        "subtotal (decimal(10,2))"
+    ],
+    "mensajes_proveedores": [
+        "id (int(10) unsigned) [PRI]",
+        "proveedor_id (int(10) unsigned) [MUL]",
+        "mensaje (text)",
+        "estado (enum('pendiente','enviado'))",
+        "creado_en (timestamp)"
+    ],
+    "pedidos": [
+        "id (int(10) unsigned) [PRI]",
+        "cliente_id (int(10) unsigned) [MUL]",
+        "total (decimal(10,2))",
+        "estado (enum('pendiente','confirmado','enviado','entregado','cancelado')) [MUL]",
+        "notas (text)",
+        "notificado_telegram (tinyint(1))",
+        "creado_en (timestamp)",
+        "actualizado_en (timestamp)"
+    ],
+    "productos": [
+        "id (int(10) unsigned) [PRI]",
+        "categoria_id (int(10) unsigned) [MUL]",
+        "proveedor_id (int(10) unsigned) [MUL]",
+        "nombre (varchar(200))",
+        "descripcion (text)",
+        "precio (decimal(10,2))",
+        "stock (int(10) unsigned)",
+        "imagen_url (varchar(500))",
+        "sku (varchar(80)) [UNI]",
+        "activo (tinyint(1)) [MUL]",
+        "creado_en (timestamp)",
+        "actualizado_en (timestamp)"
+    ],
+    "proveedores": [
+        "id (int(10) unsigned) [PRI]",
+        "nombre (varchar(150))",
+        "contacto (varchar(100))",
+        "telefono (varchar(30))",
+        "email (varchar(150))",
+        "direccion (text)",
+        "creado_en (timestamp)"
+    ],
+    "usuarios_admin": [
+        "id (int(10) unsigned) [PRI]",
+        "username (varchar(50)) [UNI]",
+        "password_hash (varchar(255))",
+        "nombre (varchar(100))",
+        "creado_en (timestamp)"
+    ]
+}

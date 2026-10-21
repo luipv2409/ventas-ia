@@ -1,0 +1,202 @@
+/* ============================================================
+   PANEL ADMINISTRATIVO TECH SAAS
+   Tipografía: Outfit & Inter
+   Paleta: Slate-900, Indigo, Cyan, Emerald
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+:root {
+    --admin-bg: #f8fafc;
+    --admin-sidebar: #0f172a;
+    --admin-card: #ffffff;
+    --admin-primary: #4f46e5;
+    --admin-text-main: #1e293b;
+    --admin-text-muted: #64748b;
+    --admin-border: #e2e8f0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--admin-bg);
+    color: var(--admin-text-main);
+}
+
+h1, h2, h3, h4, h5, h6, .brand-font {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.01em;
+}
+
+/* Iconos Vectoriales Fino Minimalista (Lucide) */
+[data-lucide],
+.lucide {
+    width: 1.15em;
+    height: 1.15em;
+    stroke-width: 1.75px !important;
+    vertical-align: -0.15em;
+    stroke: currentColor;
+    fill: none;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.sidebar .nav-link [data-lucide],
+.sidebar .nav-link .lucide {
+    width: 18px;
+    height: 18px;
+}
+.kpi-icon-box [data-lucide],
+.kpi-icon-box .lucide {
+    width: 24px;
+    height: 24px;
+    stroke-width: 1.75px;
+}
+
+/* Sidebar SaaS */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding-top: 1.5rem;
+    background: #0f172a !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 0 1.25rem 1.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 1.25rem;
+}
+
+.sidebar-brand-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+}
+
+.sidebar-section-title {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+    color: #475569;
+    padding: 0.75rem 1.25rem 0.25rem 1.25rem;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    margin: 2px 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.06);
+    transform: translateX(3px);
+}
+
+.sidebar .nav-link.active {
+    color: #ffffff;
+    background: linear-gradient(90deg, rgba(79, 70, 229, 0.85), rgba(79, 70, 229, 0.65));
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+/* Tarjetas KPI Ejecutivas */
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.kpi-icon-indigo { background: #e0e7ff; color: #4338ca; }
+.kpi-icon-emerald { background: #d1fae5; color: #047857; }
+.kpi-icon-amber   { background: #fef3c7; color: #b45309; }
+.kpi-icon-cyan    { background: #cffafe; color: #0e7490; }
+
+/* Tablas SaaS */
+.table-saas {
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.table-saas th {
+    background: #f8fafc;
+    color: #475569;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.table-saas td {
+    padding: 14px 18px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.92rem;
+}
+
+.table-saas tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* Badges de estado modernos */
+.badge-status {
+    padding: 5px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.badge-status-pendiente { background: #fef3c7; color: #92400e; }
+.badge-status-confirmado { background: #dbeafe; color: #1e40af; }
+.badge-status-enviado   { background: #e0e7ff; color: #3730a3; }
+.badge-status-entregado { background: #d1fae5; color: #065f46; }
+.badge-status-cancelado { background: #fee2e2; color: #991b1b; }
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+    }
+}
