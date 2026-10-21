@@ -8,6 +8,7 @@
 .env.*.local
 *.key
 *.pem
+GUIA_API_KEYS.md
 
 # Archivos temporales de reportes
 storage/reports/*.csv
