@@ -34,23 +34,44 @@ $ragResult = $ragService->retrieveContext($pregunta, 3, RagService::DEFAULT_MIN_
 $ragContext = $ragResult['found'] ? ("\n\n" . $ragResult['context']) : "";
 
 // 2. Datos de configuración de la tienda
-$stmtInfo = $pdo->query("SELECT clave, valor FROM configuracion WHERE clave IN ('nombre_tienda', 'contacto_telefono', 'contacto_email', 'nombre_dueño', 'nombre_asesor')");
+$stmtInfo = $pdo->query("SELECT clave, valor FROM configuracion WHERE clave IN ('nombre_tienda', 'contacto_telefono', 'contacto_email', 'nombre_dueño', 'nombre_asesor', 'moneda_simbolo', 'tasa_cambio_usd')");
 $infoNegocio = [];
 while ($row = $stmtInfo->fetch(PDO::FETCH_ASSOC)) {
     $infoNegocio[$row['clave']] = $row['valor'];
 }
-$nombreTienda = $infoNegocio['nombre_tienda'] ?? 'Nuestra Tienda';
-$telefono     = $infoNegocio['contacto_telefono'] ?? 'No disponible';
-$email        = $infoNegocio['contacto_email'] ?? 'No disponible';
-$dueno        = $infoNegocio['nombre_dueño'] ?? 'No definido';
-$nombreAsesor = HumanPersona::nombreAsesor($infoNegocio);
+$nombreTienda  = $infoNegocio['nombre_tienda'] ?? 'Nuestra Tienda';
+$telefono      = $infoNegocio['contacto_telefono'] ?? 'No disponible';
+$email         = $infoNegocio['contacto_email'] ?? 'No disponible';
+$dueno         = $infoNegocio['nombre_dueño'] ?? 'No definido';
+$nombreAsesor  = HumanPersona::nombreAsesor($infoNegocio);
+$simboloMoneda = $infoNegocio['moneda_simbolo'] ?? 'Bs';
+$tasaCambio    = (float)($infoNegocio['tasa_cambio_usd'] ?? 1.0);
+if ($tasaCambio <= 0) $tasaCambio = 1.0;
 
-// 3. Catálogo resumido de respaldo
-$productos = $pdo->query("
-    SELECT id, nombre, SUBSTRING(descripcion, 1, 80) AS descripcion_corta, precio, stock, imagen_url, categoria_id
-    FROM productos
-    WHERE activo = 1 AND stock > 0
+// 3. Catálogo completo con precios oficiales convertidos
+$rawProds = $pdo->query("
+    SELECT p.id, p.nombre, SUBSTRING(p.descripcion, 1, 80) AS descripcion_corta, p.precio, p.stock, p.imagen_url, p.categoria_id, c.nombre as categoria_nombre
+    FROM productos p
+    LEFT JOIN categorias c ON p.categoria_id = c.id
+    WHERE p.activo = 1 AND p.stock > 0
 ")->fetchAll(PDO::FETCH_ASSOC);
+
+$productos = [];
+$catalogoTexto = "";
+foreach ($rawProds as $p) {
+    $precioOficial = round(((float)$p['precio']) * $tasaCambio, 2);
+    $prodObj = [
+        'id'          => (int)$p['id'],
+        'nombre'      => $p['nombre'],
+        'precio'      => $precioOficial,
+        'stock'       => (int)$p['stock'],
+        'categoria'   => $p['categoria_nombre'] ?? 'General',
+        'descripcion' => $p['descripcion_corta'] ?? '',
+        'imagen'      => $p['imagen_url'] ?? '',
+    ];
+    $productos[] = $prodObj;
+    $catalogoTexto .= sprintf("  - [ID: %d] %s (%s) — %s %.2f | Stock: %d\n", $prodObj['id'], $prodObj['nombre'], $prodObj['categoria'], $simboloMoneda, $prodObj['precio'], $prodObj['stock']);
+}
 $catalogoJSON = json_encode($productos, JSON_UNESCAPED_UNICODE);
 
 // 4. Identificar último producto en la conversación
@@ -74,10 +95,11 @@ $systemPrompt = <<<PROMPT
 
 INFORMACIÓN DE LA TIENDA:
 - WhatsApp: {$telefono} | Email: {$email} | Tienda: {$nombreTienda}
+- Moneda oficial: {$simboloMoneda}
 {$ragContext}
 
-CATÁLOGO ACTUAL (precios en Bs):
-{$catalogoJSON}
+CATÁLOGO COMPLETO ACTUAL (precios oficiales en {$simboloMoneda}):
+{$catalogoTexto}
 Último producto conversado: "{$ultimoProducto}"
 
 REGLAS DE CONVERSACIÓN:

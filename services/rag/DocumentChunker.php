@@ -118,6 +118,101 @@ class DocumentChunker
     }
 
     /**
+     * Convierte texto plano de un documento PDF en fragmentos indexables mediante ventana deslizante con solapamiento real.
+     *
+     * @return array<int, array{doc_id: string, title: string, content: string, embed_text: string, metadata: array}>
+     */
+    public static function chunkPdf(string $rawText, string $filename, int $maxChars = 650, int $overlapChars = 90): array
+    {
+        $base = pathinfo($filename, PATHINFO_FILENAME);
+        $cleanTitle = ucwords(str_replace(['_', '-'], ' ', $base));
+
+        $slices = self::splitSlidingWindow($rawText, $maxChars, $overlapChars);
+        $chunks = [];
+
+        foreach ($slices as $idx => $slice) {
+            $slice = trim($slice);
+            if (mb_strlen($slice) < 30) {
+                continue;
+            }
+
+            $title = "{$cleanTitle} (Parte " . ($idx + 1) . ")";
+            $content = "[Documento: {$cleanTitle} | Archivo: {$filename}]\n" . $slice;
+
+            $chunks[] = [
+                'doc_id'     => "pdf_{$base}_p{$idx}",
+                'title'      => $title,
+                'content'    => $content,
+                'embed_text' => $cleanTitle . "\n" . $slice,
+                'metadata'   => [
+                    'tipo'        => 'documento_pdf',
+                    'archivo'     => $filename,
+                    'parte'       => $idx + 1,
+                    'total_partes'=> count($slices),
+                ],
+            ];
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * Divide un texto plano continuo en bloques de tamaño ~$maxChars con solapamiento real de ~$overlapChars,
+     * priorizando cortes naturales en puntos de oración (. ) o saltos de línea para no partir ideas.
+     * @return string[]
+     */
+    public static function splitSlidingWindow(string $text, int $maxChars = 650, int $overlapChars = 90): array
+    {
+        $text = trim($text);
+        $len = mb_strlen($text);
+        if ($len <= $maxChars) {
+            return [$text];
+        }
+
+        $chunks = [];
+        $cursor = 0;
+
+        while ($cursor < $len) {
+            $remaining = $len - $cursor;
+            if ($remaining <= $maxChars) {
+                $chunks[] = trim(mb_substr($text, $cursor));
+                break;
+            }
+
+            $targetEnd = $cursor + $maxChars;
+            $searchWindow = mb_substr($text, $targetEnd - 100, 150);
+
+            // Buscar corte ideal: punto seguido, interrogación, dos puntos o salto de línea
+            $cutOffset = null;
+            if (preg_match('/(\.|\?|!|:|\n)\s+/u', $searchWindow, $m, PREG_OFFSET_CAPTURE)) {
+                $cutOffset = $m[0][1] + mb_strlen($m[0][0]);
+            } elseif (preg_match('/\s+/u', $searchWindow, $m, PREG_OFFSET_CAPTURE)) {
+                $cutOffset = $m[0][1] + mb_strlen($m[0][0]);
+            }
+
+            if ($cutOffset !== null) {
+                $actualEnd = ($targetEnd - 100) + $cutOffset;
+            } else {
+                $actualEnd = $targetEnd;
+            }
+
+            $actualChunk = trim(mb_substr($text, $cursor, $actualEnd - $cursor));
+            if ($actualChunk !== '') {
+                $chunks[] = $actualChunk;
+            }
+
+            // Desplazar cursor retrocediendo overlapChars para mantener solapamiento
+            $nextCursor = $actualEnd - $overlapChars;
+            if ($nextCursor <= $cursor) {
+                $nextCursor = $actualEnd; // Evitar bucles infinitos si no hubo avance
+            }
+            $cursor = $nextCursor;
+        }
+
+        return $chunks;
+    }
+
+    /**
      * Parte un texto por líneas en bloques de ~$maxChars, repitiendo la última línea
      * del bloque anterior al inicio del siguiente (solapamiento).
      * @return string[]
@@ -150,3 +245,4 @@ class DocumentChunker
         return $parts;
     }
 }
+

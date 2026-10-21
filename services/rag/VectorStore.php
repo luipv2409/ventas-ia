@@ -6,7 +6,9 @@ namespace Services\Rag;
 use PDO;
 use Throwable;
 
-class VectorStore
+require_once __DIR__ . '/VectorStoreInterface.php';
+
+class VectorStore implements VectorStoreInterface
 {
     private PDO $pdo;
 
@@ -197,24 +199,56 @@ class VectorStore
             return [];
         }
 
-        $sql = "SELECT id, collection, doc_id, title, content, metadata_json, embedding FROM rag_documents";
-        if ($collection !== null) {
-            $sql .= " WHERE collection = :col";
-        }
-
         try {
-            $stmt = $this->pdo->prepare($sql);
+            // Verificar tamaño de la colección para poda de candidatos
+            $countSql = "SELECT COUNT(*) FROM rag_documents" . ($collection !== null ? " WHERE collection = :c" : "");
+            $cntStmt = $this->pdo->prepare($countSql);
             if ($collection !== null) {
-                $stmt->execute([':col' => $collection]);
+                $cntStmt->execute([':c' => $collection]);
             } else {
-                $stmt->execute();
+                $cntStmt->execute();
+            }
+            $totalCount = (int)$cntStmt->fetchColumn();
+
+            // Si hay más de 80 documentos, generar subconjunto de candidatos en SQL (Two-Stage Retrieval)
+            if ($totalCount > 80) {
+                $termKeys = array_keys(array_filter($queryEmbedding, fn($w) => is_numeric($w) && (float)$w > 0.05));
+                $termsText = implode(' ', array_slice($termKeys, 0, 8));
+
+                $sql = "
+                    (SELECT id, collection, doc_id, title, content, metadata_json, embedding 
+                     FROM rag_documents 
+                     WHERE MATCH(title, content) AGAINST(:terms IN NATURAL LANGUAGE MODE) "
+                     . ($collection !== null ? "AND collection = :col1 " : "") . "
+                     LIMIT 50)
+                    UNION
+                    (SELECT id, collection, doc_id, title, content, metadata_json, embedding 
+                     FROM rag_documents "
+                     . ($collection !== null ? "WHERE collection = :col2 " : "") . "
+                     ORDER BY updated_at DESC 
+                     LIMIT 30)
+                ";
+                $stmt = $this->pdo->prepare($sql);
+                $params = [':terms' => $termsText ?: 'tienda productos'];
+                if ($collection !== null) {
+                    $params[':col1'] = $collection;
+                    $params[':col2'] = $collection;
+                }
+                $stmt->execute($params);
+            } else {
+                $sql = "SELECT id, collection, doc_id, title, content, metadata_json, embedding FROM rag_documents";
+                if ($collection !== null) {
+                    $sql .= " WHERE collection = :col";
+                }
+                $stmt = $this->pdo->prepare($sql);
+                if ($collection !== null) {
+                    $stmt->execute([':col' => $collection]);
+                } else {
+                    $stmt->execute();
+                }
             }
 
-            $rows = [];
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $rows[] = $row;
-            }
-
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return self::rankRows($rows, $queryEmbedding, $topK, $minScore, $queryUnits);
         } catch (Throwable $e) {
             error_log('[VECTOR STORE ERROR] Fallo al buscar similitud: ' . $e->getMessage());

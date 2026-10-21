@@ -2,6 +2,10 @@
 declare(strict_types=1);
 
 $tests = [
+    'test_deepseek_client.php',
+    'test_pdf_extractor.php',
+    'test_rag_offline.php',
+    'test_chat_frontend_contract.php',
     'test_catalogo_departamentos.php',
     'test_segmentacion_v4.php',
     'test_auth_clientes.php',

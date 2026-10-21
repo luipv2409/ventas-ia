@@ -5,9 +5,11 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../services/admin/AnalyticsService.php';
 require_once __DIR__ . '/../services/rag/RagService.php';
+require_once __DIR__ . '/../services/chat/DeepSeekClient.php';
 
 use Services\Admin\AnalyticsService;
 use Services\Rag\RagService;
+use Services\Chat\DeepSeekClient;
 
 session_start();
 if (!isset($_SESSION['admin_id'])) {
@@ -216,42 +218,28 @@ Reglas estrictas de formato:
 PROMPT;
 
 function llamarIA(array $mensajes): array {
-    $payload = json_encode([
-        'model'       => DEEPSEEK_MODEL,
-        'messages'    => $mensajes,
+    $client = new DeepSeekClient(timeout: 25, maxRetries: 2);
+    $result = $client->chat($mensajes, [
         'temperature' => 0.25,
         'max_tokens'  => 600,
+        'json_mode'   => true,
     ]);
-    
-    $ch = curl_init(DEEPSEEK_API_URL);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $payload,
-        CURLOPT_HTTPHEADER     => [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . DEEPSEEK_API_KEY,
-        ],
-        CURLOPT_TIMEOUT        => 22,
-    ]);
-    
-    $response = curl_exec($ch);
-    $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    
-    if ($httpCode !== 200 || !$response) {
-        return ['accion' => 'responder', 'mensaje' => 'Error de conexión con la IA (código ' . $httpCode . ').'];
+
+    if (!$result['ok']) {
+        return ['accion' => 'responder', 'mensaje' => 'Error de conexión con la IA (' . ($result['error'] ?? 'desconocido') . ').'];
     }
-    
-    $data = json_decode($response, true);
-    $raw = $data['choices'][0]['message']['content'] ?? '';
-    
+
+    if (is_array($result['json']) && isset($result['json']['accion'])) {
+        return $result['json'];
+    }
+
+    $raw = $result['content'] ?? '';
     $cleaned = preg_replace('/^```(?:json)?\s*|\s*```$/m', '', trim($raw));
     $decoded = json_decode($cleaned, true);
     if (!$decoded && preg_match('/\{[\s\S]*"accion"[\s\S]*\}/', $raw, $m)) {
         $decoded = json_decode($m[0], true);
     }
-    
+
     if (!$decoded || !isset($decoded['accion'])) {
         return ['accion' => 'responder', 'mensaje' => $raw ?: 'No pude procesar la consulta.'];
     }

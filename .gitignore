@@ -9,6 +9,9 @@
 *.key
 *.pem
 GUIA_API_KEYS.md
+API KEYS.MD
+API KEYS*.md
+API KEYS*.MD
 
 # Archivos temporales de reportes
 storage/reports/*.csv

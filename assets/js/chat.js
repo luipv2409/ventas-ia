@@ -172,9 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ocultarTyping();
 
             if (data.ok) {
-                let respuestaFinal = data.respuesta;
+                let respuestaFinal = data.respuesta || '';
                 // Extraer JSON si la IA lo envolvió en markdown
-                const jsonMatch = respuestaFinal.match(/\{.*"respuesta".*\}/s);
+                const jsonMatch = respuestaFinal.match(/\{[\s\S]*"respuesta"[\s\S]*\}/);
                 if (jsonMatch) {
                     try {
                         const obj = JSON.parse(jsonMatch[0]);
@@ -185,7 +185,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }
                     } catch(e) {}
-                    respuestaFinal = respuestaFinal.replace(/\{.*\}/s, '').trim();
+                }
+
+                // Limpieza de cualquier bloque JSON remanente o malformado tipo {"acciones": [, ]}
+                respuestaFinal = respuestaFinal.replace(/\{[^{}]*"(?:tipo|accion|categoria_id|nombre|acciones|respuesta)"[^{}]*\}/gi, '');
+                respuestaFinal = respuestaFinal.replace(/\{"acciones"\s*:\s*\[[\s\S]*?\]\s*\}/gi, '');
+                respuestaFinal = respuestaFinal.replace(/\{"acciones"\s*:\s*\[[\s\S]*$/gi, '');
+                respuestaFinal = respuestaFinal.replace(/\{[^{}\r\n]*:[^{}\r\n]*\}/g, '');
+                respuestaFinal = respuestaFinal.replace(/```(?:json)?\s*[\s\S]*?```/gi, '');
+                respuestaFinal = respuestaFinal.trim();
+
+                if (!respuestaFinal) {
+                    respuestaFinal = '¡Aquí tienes los detalles que me pediste! 😊';
                 }
 
                 // Mostrar respuesta de Valeria
@@ -203,6 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             mostrarProductoEnChat(accion);
                         } else if (accion.tipo === 'agregar_carrito' && accion.nombre) {
                             agregarAlCarritoDesdeChat(accion);
+                        } else if (accion.tipo === 'contacto_soporte') {
+                            mostrarContactoDirectoSoporte(accion);
                         }
                     });
                 }
@@ -259,6 +272,31 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarTarjetaProducto(producto, true);
     }
 
+    function mostrarContactoDirectoSoporte(accion) {
+        const tel = (accion.telefono || '61234567').toString().replace(/\D/g, '');
+        const waUrl = `https://wa.me/591${tel}?text=${encodeURIComponent('Hola, necesito asistencia prioritaria con mi pedido en ICAL')}`;
+        const div = document.createElement('div');
+        div.className = 'message bot-message support-card-chat my-2';
+        div.innerHTML = `
+            <div class="card border-0 shadow-sm" style="border-radius:14px; background: #f0fdf4; border: 1px solid #86efac !important; padding: 12px; max-width: 260px;">
+                <div class="d-flex align-items-center gap-2 mb-1 text-success fw-bold" style="font-size:0.9rem;">
+                    <i data-lucide="shield-alert" style="width:16px;height:16px;"></i>
+                    <span>Atención de Soporte</span>
+                </div>
+                <p class="small text-muted mb-2" style="font-size:0.82rem; line-height: 1.3;">Un asesor humano revisará tu caso directamente con prioridad.</p>
+                <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm w-100 rounded-pill fw-bold py-1 d-flex align-items-center justify-content-center gap-2" style="font-size:0.85rem;">
+                    <i data-lucide="message-circle" style="width:15px;height:15px;"></i>
+                    <span>Abrir WhatsApp</span>
+                </a>
+            </div>
+        `;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    }
+
     function renderizarTarjetaProducto(producto, guardar = false) {
         const div = document.createElement('div');
         div.className = 'message bot-message product-card-chat';
@@ -309,7 +347,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. AGREGAR AL CARRITO DE COMPRAS DESDE EL CHAT
     // -------------------------------------------------------------
     function agregarAlCarritoDesdeChat(accion) {
-        const nombre = accion.nombre || 'Producto';
+        const nombreBase = accion.nombre || 'Producto';
+        const variante = accion.variante ? ` (${accion.variante})` : '';
+        const nombre = nombreBase + variante;
         const precio = parseFloat(accion.precio) || 0;
         const id = accion.id || ('prod-' + Math.floor(Math.random() * 10000));
         const stock = parseInt(accion.stock) || 50;

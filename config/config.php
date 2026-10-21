@@ -7,6 +7,30 @@
 // ============================================================
 
 // ------------------------------------------------------------
+// CARGA LIGERA DE VARIABLES DE ENTORNO (.env)
+// ------------------------------------------------------------
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $envLines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($envLines !== false) {
+        foreach ($envLines as $line) {
+            $line = trim($line);
+            if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
+                continue;
+            }
+            [$k, $v] = explode('=', $line, 2);
+            $k = trim($k);
+            $v = trim($v, " \t\n\r\0\x0B\"'");
+            if (getenv($k) === false) {
+                putenv("{$k}={$v}");
+                $_ENV[$k] = $v;
+                $_SERVER[$k] = $v;
+            }
+        }
+    }
+}
+
+// ------------------------------------------------------------
 // ENTORNO
 // Cambia a false cuando estés en producción (InfinityFree)
 // ------------------------------------------------------------
@@ -48,8 +72,14 @@ define('GEMINI_API_URL', getenv('GEMINI_API_URL') ?: 'https://generativelanguage
 define('DEEPSEEK_API_KEY', (!empty(getenv('DEEPSEEK_API_KEY')) ? getenv('DEEPSEEK_API_KEY') : 'TU_DEEPSEEK_API_KEY_AQUI'));
 define('DEEPSEEK_API_URL', (!empty(getenv('DEEPSEEK_API_URL')) ? getenv('DEEPSEEK_API_URL') : 'https://api.deepseek.com/v1/chat/completions'));
 define('DEEPSEEK_MODEL',   (!empty(getenv('DEEPSEEK_MODEL')) ? getenv('DEEPSEEK_MODEL') : 'deepseek-chat'));
+
 // ------------------------------------------------------------
-// TELEGRAM BOT
+// CONFIGURACIÓN VECTORIAL RAG — MySQL / Pinecone
+// ------------------------------------------------------------
+define('RAG_VECTOR_DRIVER', getenv('RAG_VECTOR_DRIVER') ?: 'mysql'); // 'mysql' o 'pinecone'
+define('PINECONE_API_KEY',   getenv('PINECONE_API_KEY') ?: '');
+define('PINECONE_INDEX_HOST', getenv('PINECONE_INDEX_HOST') ?: 'ventas-ia-rag-9jc19q6.svc.aped-4627-b74a.pinecone.io');
+
 // Guía: https://core.telegram.org/bots/tutorial
 //   1. Habla con @BotFather → /newbot → copia el token
 //   2. Habla con @userinfobot → copia tu chat_id

@@ -12,13 +12,15 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../services/rag/EmbeddingService.php';
 require_once __DIR__ . '/../services/rag/VectorStore.php';
 require_once __DIR__ . '/../services/rag/DocumentChunker.php';
+require_once __DIR__ . '/../services/rag/PdfExtractor.php';
 
 use Services\Rag\DocumentChunker;
 use Services\Rag\EmbeddingService;
+use Services\Rag\PdfExtractor;
 use Services\Rag\VectorStore;
 
 echo "====================================================\n";
-echo "🚀 INDEXADOR RAG v2 — Base de Conocimiento y Catálogo\n";
+echo "🚀 INDEXADOR RAG v3 — Base de Conocimiento (MD + PDF) y Catálogo\n";
 echo "====================================================\n\n";
 
 try {
@@ -65,11 +67,12 @@ try {
     }
 
     // ------------------------------------------------------------
-    // 2. Recolectar Documentos de Políticas y Preguntas Frecuentes
+    // 2. Recolectar Documentos de Políticas, FAQs y PDFs (knowledge/)
     // ------------------------------------------------------------
-    echo "📚 [2/4] Leyendo documentos de knowledge/ (Políticas y FAQs)...\n";
+    echo "📚 [2/4] Leyendo documentos de knowledge/ (Markdown y PDFs)...\n";
     $knowledgeDir = __DIR__ . '/../knowledge';
     if (is_dir($knowledgeDir)) {
+        // A. Archivos Markdown (.md)
         foreach (glob($knowledgeDir . '/*.md') as $filePath) {
             $filename = basename($filePath);
             $rawContent = file_get_contents($filePath);
@@ -87,6 +90,28 @@ try {
                         'archivo' => $filename,
                         'seccion' => $chunk['section'],
                     ],
+                ];
+            }
+        }
+
+        // B. Archivos PDF (.pdf) con extracción de texto plano
+        foreach (glob($knowledgeDir . '/*.pdf') as $filePath) {
+            $filename = basename($filePath);
+            echo "   📄 Procesando PDF: {$filename}...\n";
+            $extractedText = PdfExtractor::extractText($filePath);
+            if (mb_strlen(trim($extractedText)) < 30) {
+                echo "   ⚠ PDF vacío o sin texto legible: {$filename}\n";
+                continue;
+            }
+
+            foreach (DocumentChunker::chunkPdf($extractedText, $filename) as $chunk) {
+                $docs[] = [
+                    'collection' => 'documentos',
+                    'doc_id'     => $chunk['doc_id'],
+                    'title'      => $chunk['title'],
+                    'content'    => $chunk['content'],
+                    'embed_text' => $chunk['embed_text'],
+                    'metadata'   => $chunk['metadata'],
                 ];
             }
         }
@@ -114,8 +139,8 @@ try {
     // 4. Vectorizar y guardar
     // ------------------------------------------------------------
     echo "\n💾 [4/4] Generando vectores y guardando...\n";
-    $indexados = ['catalogo' => 0, 'politicas' => 0];
-    $vigentes = ['catalogo' => [], 'politicas' => []];
+    $indexados = ['catalogo' => 0, 'politicas' => 0, 'documentos' => 0];
+    $vigentes = ['catalogo' => [], 'politicas' => [], 'documentos' => []];
 
     foreach ($docs as $doc) {
         $vector = $embeddingService->getEmbedding($doc['embed_text']);

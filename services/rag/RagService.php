@@ -7,7 +7,9 @@ use PDO;
 use Throwable;
 
 require_once __DIR__ . '/EmbeddingService.php';
+require_once __DIR__ . '/VectorStoreInterface.php';
 require_once __DIR__ . '/VectorStore.php';
+require_once __DIR__ . '/PineconeVectorStore.php';
 require_once __DIR__ . '/QueryExpander.php';
 
 class RagService
@@ -22,17 +24,30 @@ class RagService
     public const RELATIVE_CUTOFF = 0.45;
 
     private EmbeddingService $embeddingService;
-    private VectorStore $vectorStore;
+    private VectorStoreInterface $vectorStore;
+    private VectorStore $localVectorStore;
     private ?QueryExpander $queryExpander;
 
-    public function __construct(PDO $pdo, ?EmbeddingService $embeddingService = null, ?QueryExpander $queryExpander = null)
+    public function __construct(PDO $pdo, ?EmbeddingService $embeddingService = null, ?QueryExpander $queryExpander = null, ?VectorStoreInterface $vectorStore = null)
     {
         $this->embeddingService = $embeddingService ?? new EmbeddingService();
-        $this->vectorStore = new VectorStore($pdo);
+        $this->localVectorStore = new VectorStore($pdo);
+
+        if ($vectorStore !== null) {
+            $this->vectorStore = $vectorStore;
+        } else {
+            $driver = defined('RAG_VECTOR_DRIVER') ? (string)RAG_VECTOR_DRIVER : 'mysql';
+            if ($driver === 'pinecone') {
+                $pinecone = new PineconeVectorStore($pdo);
+                $this->vectorStore = $pinecone->isAvailable() ? $pinecone : $this->localVectorStore;
+            } else {
+                $this->vectorStore = $this->localVectorStore;
+            }
+        }
 
         // Cargar la tabla IDF generada por scripts/index_rag.php (si existe)
         if ($this->embeddingService->isLocalMode() && !$this->embeddingService->hasIdf()) {
-            $meta = $this->vectorStore->loadMeta('idf');
+            $meta = $this->localVectorStore->loadMeta('idf');
             if (!empty($meta['idf']) && is_array($meta['idf'])) {
                 $this->embeddingService->setIdf($meta['idf']);
             }
@@ -117,7 +132,7 @@ class RagService
             return [];
         }
 
-        $lexical = $this->vectorStore->fulltextScores($query, 20);
+        $lexical = $this->localVectorStore->fulltextScores($query, 20);
         if (!empty($lexical)) {
             $maxLex = max($lexical);
             foreach ($candidates as &$c) {
