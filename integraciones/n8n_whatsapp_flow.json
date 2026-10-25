@@ -1,0 +1,202 @@
+{
+  "name": "ICAL WhatsApp Cloud API con Chatbot IA (DeepSeek + RAG)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-post",
+      "name": "Webhook WhatsApp POST",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"EVENT_RECEIVED\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "node-ack-meta",
+      "name": "Respuesta Inmediata 200 OK (Anti-Timeout Meta)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer de forma segura el remitente, mensaje y phone_number_id del webhook de WhatsApp\nconst entry = $input.first().json.body?.entry?.[0];\nconst change = entry?.changes?.[0]?.value;\nconst message = change?.messages?.[0];\n\nif (!message || message.type !== 'text') {\n  return []; // Ignorar eventos que no sean mensajes de texto entrantes (ej. estados de entrega 'read/sent')\n}\n\nreturn [{\n  json: {\n    remitente: message.from,\n    mensaje: message.text.body,\n    phoneNumberId: change.metadata?.phone_number_id || '',\n    nombreCliente: change.contacts?.[0]?.profile?.name || 'Cliente'\n  }\n}];"
+      },
+      "id": "node-filter-extract",
+      "name": "Filtrar y Extraer Datos de Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CHAT_API_URL || 'http://localhost/api/chat_externo.php' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-Key",
+              "value": "={{ $env.CHAT_EXTERNAL_API_KEY || 'ical_chat_sec_2026' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"canal\": \"whatsapp\",\n  \"remitente\": \"{{ $json.remitente }}\",\n  \"mensaje\": \"{{ $json.mensaje }}\",\n  \"use_rag\": true\n}",
+        "options": {
+          "timeout": 25000
+        }
+      },
+      "id": "node-http-chat-api",
+      "name": "Llamar Motor IA (ChatEngine PHP)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $('Filtrar y Extraer Datos de Mensaje').item.json.phoneNumberId }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.WHATSAPP_CLOUD_API_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Filtrar y Extraer Datos de Mensaje').item.json.remitente }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"preview_url\": false,\n    \"body\": {{ JSON.stringify($json.whatsapp_texto || $json.respuesta) }}\n  }\n}",
+        "options": {}
+      },
+      "id": "node-send-whatsapp",
+      "name": "Enviar Respuesta por WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-get",
+      "name": "Webhook WhatsApp GET (Verificación Meta)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        540
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] || $json.query.hub_challenge }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "node-respond-challenge",
+      "name": "Responder Desafío Meta (hub.challenge)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        540
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook WhatsApp POST": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Inmediata 200 OK (Anti-Timeout Meta)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filtrar y Extraer Datos de Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar y Extraer Datos de Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Llamar Motor IA (ChatEngine PHP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Llamar Motor IA (ChatEngine PHP)": {
+      "main": [
+        [
+          {
+            "node": "Enviar Respuesta por WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook WhatsApp GET (Verificación Meta)": {
+      "main": [
+        [
+          {
+            "node": "Responder Desafío Meta (hub.challenge)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

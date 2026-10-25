@@ -14,7 +14,12 @@ $tests = [
     'test_nueva_categoria.php',
     'test_admin_lucide.php',
     'test_header_consistencia.php',
-    'test_datatables_cors.php'
+    'test_datatables_cors.php',
+    'test_deep_jailbreaks.php',
+    'test_chat_externo.php',
+    'test_hardening_unit.php',
+    'test_chat_engine_stub.php',
+    'test_chat_concurrency_live.php'
 ];
 
 echo "======================================================\n";

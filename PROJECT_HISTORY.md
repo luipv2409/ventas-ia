@@ -532,4 +532,78 @@ El flujo RAG implementado sigue el estándar de la industria en 5 pasos:
   7. `test_admin_lucide.php`: **15/15 PASÓ**
   8. `test_header_consistencia.php`: **25/25 PASÓ**
 
+---
+
+## Hito: Desacoplamiento Multicanal (WhatsApp/n8n/Messenger), QA Exhaustivo y Optimización de Naturalidad
+
+### A. Mejoras de Personalidad, Anti-Repetición y Seguridad (Jailbreak)
+1. **Eliminación de Muletillas Repetitivas en Valeria:**
+   - En [HumanPersona.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/HumanPersona.php), se prohibió el arranque sistemático con `"Jaja,"`, `"Jaja, me mezclaste dos cosas"` o frases calcadas, y se erradicó el abuso del emoji `😅`.
+   - Se elevó la temperatura a `0.65` en el cliente DeepSeek para mayor fluidez léxica y espontaneidad orgánica.
+   - Blindaje cálido contra Jailbreaks (DAN, fuga de System Prompt, manipulación de precios) manteniendo el rol comercial humano.
+2. **Corrección de Falso Positivo en Carrito:**
+   - En [api/chat_frontend.php](file:///c:/xampp/htdocs/ventas-ia-main/api/chat_frontend.php), se restringió la detección de intención de compra para ignorar frases como *"quiero que me respondas..."*, *"quiero saber si tienen..."*, *"quiero ver..."*, evitando adiciones no deseadas a la bolsa de compras.
+
+### B. Arquitectura Desacoplada para Integración Empresarial Externa
+1. **Motor Centralizado ([services/chat/ChatEngine.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/ChatEngine.php)):**
+   - Encapsula de forma agnóstica la consulta del catálogo, conversión oficial a Bs, guardarraíles, RAG y formateo nativo para WhatsApp (negritas, viñetas y payloads listos para Meta Graph API).
+2. **Endpoint Multicanal Seguro ([api/chat_externo.php](file:///c:/xampp/htdocs/ventas-ia-main/api/chat_externo.php)):**
+   - Protegido por `X-API-Key` (`CHAT_EXTERNAL_API_KEY`).
+   - Soporta validación de webhooks de Meta vía `hub.challenge` (GET) y procesamiento de mensajes (POST).
+   - Gestión automática de memoria conversacional por número de teléfono (`remitente`) persistida en MySQL.
+3. **Migración V8 ([database/migrate_v8_chat_externo.php](file:///c:/xampp/htdocs/ventas-ia-main/database/migrate_v8_chat_externo.php)):**
+   - Crea la tabla `chat_externo_sesiones` indexada por `(canal, remitente, creado_en)`.
+4. **Flujo de Integración n8n ([integraciones/n8n_whatsapp_flow.json](file:///c:/xampp/htdocs/ventas-ia-main/integraciones/n8n_whatsapp_flow.json)):**
+   - Diseñado con respuesta inmediata `HTTP 200 OK` para neutralizar el timeout de 5 segundos de Meta, extracción limpia de datos y reenvío a WhatsApp Cloud API.
+5. **Documentación Técnica:**
+   - [MANUAL_INTEGRACION_WHATSAPP_N8N.md](file:///c:/xampp/htdocs/ventas-ia-main/MANUAL_INTEGRACION_WHATSAPP_N8N.md).
+
+### C. Resultados de Pruebas y QA
+- Suite completa `tests/run_all_tests.php` (**15/15 pruebas PASARON al 100%**):
+  1. `test_deepseek_client.php`: **100% PASÓ**
+  2. `test_pdf_extractor.php`: **100% PASÓ**
+  3. `test_rag_offline.php`: **100% PASÓ**
+  4. `test_chat_frontend_contract.php`: **100% PASÓ**
+  5. `test_catalogo_departamentos.php`: **100% PASÓ**
+  6. `test_segmentacion_v4.php`: **100% PASÓ**
+  7. `test_auth_clientes.php`: **100% PASÓ**
+  8. `test_chat_agregar_carrito.php`: **100% PASÓ**
+  9. `test_bi_and_comparator.php`: **100% PASÓ**
+  10. `test_nueva_categoria.php`: **100% PASÓ**
+  11. `test_admin_lucide.php`: **100% PASÓ**
+  12. `test_header_consistencia.php`: **100% PASÓ**
+  13. `test_datatables_cors.php`: **100% PASÓ**
+  14. `test_deep_jailbreaks.php`: **6/6 PASÓ** (prevención falso positivo, compra legítima, fuga prompt, DAN, autoridad, RAG).
+  15. `test_chat_externo.php`: **5/5 PASÓ** (healthcheck, Meta challenge, seguridad 401, multi-turno por teléfono, payload WhatsApp).
+
+---
+
+## 14. Fase 10: Endurecimiento Operativo y Refactorización Enterprise (Auditoría PhD en Software y QA)
+
+**Fecha:** 25 de Octubre de 2026  
+**Documento Detallado de Handoff:** [informe_sistema.md](file:///c:/xampp/htdocs/ventas-ia-main/informe_sistema.md) (Parte II: Historial de Mejoras, Endurecimiento y Guía de Handoff).
+
+### Principales Logros Técnicos:
+1. **Unificación del Motor y Desacople:**
+   - Centralización en [services/chat/ChatEngine.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/ChatEngine.php).
+   - Externalización del dominio en [config/domain_profile.json](file:///c:/xampp/htdocs/ventas-ia-main/config/domain_profile.json) y cargador [services/chat/DomainProfile.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/DomainProfile.php).
+   - [api/chat_frontend.php](file:///c:/xampp/htdocs/ventas-ia-main/api/chat_frontend.php) refactorizado de 864 a 147 líneas como wrapper delgado retrocompatible con SSE y `session_write_close`.
+2. **Seguridad y Resiliencia en Ingestion:**
+   - [services/chat/InputSanitizer.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/InputSanitizer.php) (Unicode smuggling, zero-width, NFC, acotado a 2000 chars, payload limit 32KB).
+   - [services/chat/ContextWindow.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/ContextWindow.php) (Ventana deslizante con presupuesto de tokens).
+3. **Concurrencia y Control de Abuso (Zero Redis Dependency):**
+   - [services/chat/RateLimiter.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/RateLimiter.php) (Rate limiting atómico en MariaDB/MySQL).
+   - [services/chat/SessionLock.php](file:///c:/xampp/htdocs/ventas-ia-main/services/chat/SessionLock.php) (Exclusión mutua con `GET_LOCK` para eliminar carreras en WhatsApp).
+4. **Optimización RAG:**
+   - Nueva tabla `rag_query_cache` en [database/migrate_v9_hardening.php](file:///c:/xampp/htdocs/ventas-ia-main/database/migrate_v9_hardening.php).
+   - Reducción de latencia RAG P50 de 1,413 ms a 44.14 ms (97% más rápido).
+   - Detección de embeddings densos antes de conmutar a Pinecone en [services/rag/RagService.php](file:///c:/xampp/htdocs/ventas-ia-main/services/rag/RagService.php).
+5. **Higiene de Datos y Privacidad:**
+   - Script de retención configurable: [scripts/purge_chat_data.php](file:///c:/xampp/htdocs/ventas-ia-main/scripts/purge_chat_data.php).
+6. **Calidad y Testing (18/18 Suites Pasaron al 100%):**
+   - Suite maestra [tests/run_all_tests.php](file:///c:/xampp/htdocs/ventas-ia-main/tests/run_all_tests.php) con 18 suites ejecutadas exitosamente.
+   - 10/10 mutantes eliminados en Mutation Testing.
+   - Pruebas de concurrencia real paralela (`curl_multi`) verificadas en [tests/test_chat_concurrency_live.php](file:///c:/xampp/htdocs/ventas-ia-main/tests/test_chat_concurrency_live.php).
+
+
 

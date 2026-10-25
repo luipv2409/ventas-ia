@@ -73,6 +73,17 @@ define('DEEPSEEK_API_KEY', (!empty(getenv('DEEPSEEK_API_KEY')) ? getenv('DEEPSEE
 define('DEEPSEEK_API_URL', (!empty(getenv('DEEPSEEK_API_URL')) ? getenv('DEEPSEEK_API_URL') : 'https://api.deepseek.com/v1/chat/completions'));
 define('DEEPSEEK_MODEL',   (!empty(getenv('DEEPSEEK_MODEL')) ? getenv('DEEPSEEK_MODEL') : 'deepseek-chat'));
 
+// Clave API de acceso para el endpoint multicanal (WhatsApp / n8n / Messenger)
+// En producción, DEBE configurarse CHAT_EXTERNAL_API_KEY en .env. Sin fallback inseguro.
+define('CHAT_EXTERNAL_API_KEY', (string)(getenv('CHAT_EXTERNAL_API_KEY') ?: ''));
+define('WHATSAPP_VERIFY_TOKEN', (string)(getenv('WHATSAPP_VERIFY_TOKEN') ?: CHAT_EXTERNAL_API_KEY));
+define('STORE_PUBLIC_URL',      (string)(getenv('STORE_PUBLIC_URL') ?: ''));
+define('CHAT_CATALOG_MAX_ITEMS', (int)(getenv('CHAT_CATALOG_MAX_ITEMS') ?: 60));
+define('CHAT_RATE_LIMIT_PER_MIN', (int)(getenv('CHAT_RATE_LIMIT_PER_MIN') ?: 12));
+define('CHAT_RATE_LIMIT_IP_PER_MIN', (int)(getenv('CHAT_RATE_LIMIT_IP_PER_MIN') ?: 600));
+define('CHAT_RATE_LIMIT_FRONTEND_PER_MIN', (int)(getenv('CHAT_RATE_LIMIT_FRONTEND_PER_MIN') ?: 60));
+define('CHAT_RETENTION_DAYS',    (int)(getenv('CHAT_RETENTION_DAYS') ?: 90));
+
 // ------------------------------------------------------------
 // CONFIGURACIÓN VECTORIAL RAG — MySQL / Pinecone
 // ------------------------------------------------------------

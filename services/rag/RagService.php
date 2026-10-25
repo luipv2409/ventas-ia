@@ -23,6 +23,7 @@ class RagService
     /** Se descartan fragmentos con menos de este % del mejor score (evita "relleno" débil) */
     public const RELATIVE_CUTOFF = 0.45;
 
+    private PDO $pdo;
     private EmbeddingService $embeddingService;
     private VectorStoreInterface $vectorStore;
     private VectorStore $localVectorStore;
@@ -30,6 +31,7 @@ class RagService
 
     public function __construct(PDO $pdo, ?EmbeddingService $embeddingService = null, ?QueryExpander $queryExpander = null, ?VectorStoreInterface $vectorStore = null)
     {
+        $this->pdo = $pdo;
         $this->embeddingService = $embeddingService ?? new EmbeddingService();
         $this->localVectorStore = new VectorStore($pdo);
 
@@ -38,8 +40,13 @@ class RagService
         } else {
             $driver = defined('RAG_VECTOR_DRIVER') ? (string)RAG_VECTOR_DRIVER : 'mysql';
             if ($driver === 'pinecone') {
-                $pinecone = new PineconeVectorStore($pdo);
-                $this->vectorStore = $pinecone->isAvailable() ? $pinecone : $this->localVectorStore;
+                if ($this->embeddingService->isLocalMode()) {
+                    error_log('[RagService] RAG_VECTOR_DRIVER está configurado en "pinecone", pero el servicio de embeddings está en modo local TF-IDF. Pinecone requiere embeddings densos (OPENAI_API_KEY). Usando VectorStore local en MariaDB.');
+                    $this->vectorStore = $this->localVectorStore;
+                } else {
+                    $pinecone = new PineconeVectorStore($pdo);
+                    $this->vectorStore = $pinecone->isAvailable() ? $pinecone : $this->localVectorStore;
+                }
             } else {
                 $this->vectorStore = $this->localVectorStore;
             }
@@ -62,26 +69,51 @@ class RagService
     }
 
     /**
-     * Recupera fragmentos de conocimiento relevantes con fallback seguro.
+     * Recupera fragmentos de conocimiento relevantes con fallback seguro y caché.
      *
      * @param string $query Pregunta o mensaje del usuario
      * @param int $topK Número máximo de fragmentos relevantes a retornar
      * @param float $minScore Umbral mínimo de similitud para considerar relevante
      * @param array $history Historial reciente [{role, content}] para entender preguntas de seguimiento
-     * @return array{found: bool, context: string, chunks: array, expanded_query: ?string}
+     * @return array{found: bool, context: string, chunks: array, expanded_query: ?string, timings: array}
      */
     public function retrieveContext(string $query, int $topK = 3, float $minScore = self::DEFAULT_MIN_SCORE, array $history = []): array
     {
-        $empty = ['found' => false, 'context' => '', 'chunks' => [], 'expanded_query' => null];
+        $t0 = microtime(true);
+        $expansionMs = 0.0;
+        $empty = [
+            'found'          => false,
+            'context'        => '',
+            'chunks'         => [],
+            'expanded_query' => null,
+            'timings'        => ['total_ms' => 0.0, 'expansion_ms' => 0.0, 'cache_hit' => false],
+        ];
 
         try {
+            $isStandalone = empty($history);
+            $queryHash = $isStandalone ? hash('sha256', mb_strtolower(trim($query)) . "|k:{$topK}|m:{$minScore}") : null;
+
+            if ($queryHash !== null) {
+                $cached = $this->obtenerDeCache($queryHash);
+                if ($cached !== null) {
+                    $cached['timings'] = [
+                        'total_ms'     => round((microtime(true) - $t0) * 1000, 2),
+                        'expansion_ms' => 0.0,
+                        'cache_hit'    => true,
+                    ];
+                    return $cached;
+                }
+            }
+
             $matches = $this->search($query, $topK, $minScore);
             $expandedWith = null;
 
             // Expansión con DeepSeek solo si la búsqueda local fue débil
             $topScore = $matches[0]['score'] ?? 0.0;
             if ($this->queryExpander !== null && $topScore < self::STRONG_SCORE && $this->worthExpanding($query, $history)) {
+                $expT0 = microtime(true);
                 $extra = $this->queryExpander->expand($query, $history);
+                $expansionMs = round((microtime(true) - $expT0) * 1000, 2);
                 if ($extra !== null) {
                     $expandedWith = $extra;
                     $more = $this->search($query . ' ' . $extra, $topK, $minScore);
@@ -89,8 +121,24 @@ class RagService
                 }
             }
 
+            $totalMs = round((microtime(true) - $t0) * 1000, 2);
+
             if (empty($matches)) {
-                return array_merge($empty, ['expanded_query' => $expandedWith]);
+                $resEmpty = [
+                    'found'          => false,
+                    'context'        => '',
+                    'chunks'         => [],
+                    'expanded_query' => $expandedWith,
+                    'timings'        => [
+                        'total_ms'     => $totalMs,
+                        'expansion_ms' => $expansionMs,
+                        'cache_hit'    => false,
+                    ],
+                ];
+                if ($queryHash !== null) {
+                    $this->guardarEnCache($queryHash, $query, $resEmpty, 3600); // 1h para negativos
+                }
+                return $resEmpty;
             }
 
             // Bloque de contexto para el prompt. Sin porcentajes ni jerga técnica, para que el
@@ -102,16 +150,87 @@ class RagService
                 $contextText .= sprintf("[%s]\n%s\n\n", $m['title'], trim($m['content']));
             }
 
-            return [
+            $res = [
                 'found'          => true,
                 'context'        => trim($contextText),
                 'chunks'         => $matches,
                 'expanded_query' => $expandedWith,
+                'timings'        => [
+                    'total_ms'     => $totalMs,
+                    'expansion_ms' => $expansionMs,
+                    'cache_hit'    => false,
+                ],
             ];
+
+            if ($queryHash !== null) {
+                $this->guardarEnCache($queryHash, $query, $res, 604800); // 7 días para positivos
+            }
+
+            return $res;
         } catch (Throwable $e) {
             // Fallback seguro: loguear y continuar sin romper la llamada a la IA
             error_log('[RAG SAFE FALLBACK] Excepción capturada en retrieveContext: ' . $e->getMessage());
+            $empty['timings']['total_ms'] = round((microtime(true) - $t0) * 1000, 2);
             return $empty;
+        }
+    }
+
+    /**
+     * Recupera de la tabla rag_query_cache si la entrada no ha expirado.
+     */
+    private function obtenerDeCache(string $queryHash): ?array
+    {
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT rag_context, rag_chunks, score_max
+                FROM rag_query_cache
+                WHERE query_hash = :hash AND expira_en > NOW()
+                LIMIT 1
+            ");
+            $stmt->execute([':hash' => $queryHash]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                return null;
+            }
+            $context = (string)($row['rag_context'] ?? '');
+            $chunks = json_decode((string)($row['rag_chunks'] ?? '[]'), true) ?: [];
+            return [
+                'found'          => !empty($chunks) || $context !== '',
+                'context'        => $context,
+                'chunks'         => $chunks,
+                'expanded_query' => null,
+            ];
+        } catch (Throwable $e) {
+            return null; // En caso de tabla inexistente o error en BD, no falla
+        }
+    }
+
+    /**
+     * Guarda el resultado en la tabla rag_query_cache con un tiempo de vida (TTL).
+     */
+    private function guardarEnCache(string $queryHash, string $queryRaw, array $res, int $ttlSeconds = 604800): void
+    {
+        try {
+            $scoreMax = isset($res['chunks'][0]['score']) ? (float)$res['chunks'][0]['score'] : null;
+            $stmt = $this->pdo->prepare("
+                INSERT INTO rag_query_cache (query_hash, query_raw, rag_context, rag_chunks, score_max, expira_en)
+                VALUES (:hash, :raw, :context, :chunks, :score, DATE_ADD(NOW(), INTERVAL :ttl SECOND))
+                ON DUPLICATE KEY UPDATE
+                    rag_context = VALUES(rag_context),
+                    rag_chunks  = VALUES(rag_chunks),
+                    score_max   = VALUES(score_max),
+                    expira_en   = VALUES(expira_en)
+            ");
+            $stmt->execute([
+                ':hash'    => $queryHash,
+                ':raw'     => mb_substr($queryRaw, 0, 255),
+                ':context' => (string)($res['context'] ?? ''),
+                ':chunks'  => json_encode($res['chunks'] ?? [], JSON_UNESCAPED_UNICODE),
+                ':score'   => $scoreMax,
+                ':ttl'     => $ttlSeconds,
+            ]);
+        } catch (Throwable $e) {
+            // Silencioso para no interrumpir el flujo principal si la tabla no está disponible
         }
     }
 

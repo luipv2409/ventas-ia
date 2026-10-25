@@ -1,0 +1,98 @@
+{
+  "_comentario": "Perfil de dominio del chatbot. Para adaptar el bot a otro negocio (clinica, inmobiliaria, concesionaria) se edita este archivo; ChatEngine y HumanPersona no contienen reglas de un rubro concreto. Se puede apuntar a otro perfil con la variable DOMAIN_PROFILE_PATH.",
+
+  "sinonimos": {
+    "celus": "smartphone",
+    "celulares": "smartphone",
+    "celular": "smartphone",
+    "móvil": "smartphone",
+    "movil": "smartphone",
+    "telefonos": "smartphone",
+    "audifonos": "auriculares",
+    "audífonos": "auriculares",
+    "zapatos": "zapatillas",
+    "tenis": "zapatillas",
+    "ipads": "tablet",
+    "ipad": "tablet"
+  },
+
+  "prefijos_nombre_ignorables": ["Smartphone", "Zapatillas", "Camiseta", "Plumón Edredón", "Juego de", "Apple", "Samsung"],
+
+  "aliases_modelos": {
+    "17 pro max": "iPhone 17 Pro Max",
+    "17 pro": "iPhone 17 Pro Max",
+    "iphone 17": "iPhone 17 Pro Max",
+    "a19 pro": "iPhone 17 Pro Max",
+    "galaxy a55": "Smartphone Galaxy A55",
+    "a55": "Smartphone Galaxy A55",
+    "redmi note 13": "Xiaomi Redmi Note 13 Pro+ 5G",
+    "note 13": "Xiaomi Redmi Note 13 Pro+ 5G",
+    "edge 50": "Motorola Edge 50 Pro",
+    "edge 50 pro": "Motorola Edge 50 Pro",
+    "tablet pro": "Tablet Pro 10\"",
+    "ipad air": "iPad Air 11\" Chip M2",
+    "tab s9": "Samsung Galaxy Tab S9 FE",
+    "s9 fe": "Samsung Galaxy Tab S9 FE",
+    "bluetooth x3": "Auriculares Bluetooth X3",
+    "x3": "Auriculares Bluetooth X3",
+    "wh-1000xm5": "Sony WH-1000XM5 Hi-Res",
+    "sony xm5": "Sony WH-1000XM5 Hi-Res",
+    "1000xm5": "Sony WH-1000XM5 Hi-Res",
+    "airpods pro": "Apple AirPods Pro 2da Gen (USB-C)",
+    "airpods": "Apple AirPods Pro 2da Gen (USB-C)",
+    "pegasus 40": "Nike Air Zoom Pegasus 40",
+    "pegasus": "Nike Air Zoom Pegasus 40",
+    "ultraboost": "Adidas Ultraboost Light",
+    "runner pro": "Zapatillas Runner Pro",
+    "polo classic": "Camiseta Polo Classic",
+    "tech dry-fit": "Polera Tech Dry-Fit Training",
+    "dry-fit": "Polera Tech Dry-Fit Training",
+    "oversized": "Polera Oversized Urban Streetwear",
+    "licuadora 600w": "Licuadora 600W",
+    "freidora": "Freidora de Aire Digital 5.5L",
+    "sábanas queen": "Juego de Sábanas Queen",
+    "sabanas queen": "Juego de Sábanas Queen",
+    "plumón edredón": "Plumón Edredón Nórdico Reversible Queen",
+    "plumon edredon": "Plumón Edredón Nórdico Reversible Queen",
+    "café molido": "Café Molido Premium 500g",
+    "cafe molido": "Café Molido Premium 500g",
+    "café en grano": "Café en Grano Yungas Especial 500g",
+    "cafe en grano": "Café en Grano Yungas Especial 500g",
+    "yungas": "Café en Grano Yungas Especial 500g"
+  },
+
+  "terminos_categoria": {
+    "_comentario": "Clave = id de categoria en la BD. Ademas de estos terminos, ChatEngine deriva automaticamente terminos desde el NOMBRE de cada categoria.",
+    "1": ["celular", "celulares", "smartphone", "smartphones", "telefono", "telefonos", "teléfono", "teléfonos", "iphone", "galaxy", "xiaomi", "motorola", "movil", "móvil"],
+    "2": ["tablet", "tablets", "ipad", "ipads", "tab"],
+    "3": ["audio", "auricular", "auriculares", "audifono", "audifonos", "audífono", "audífonos", "airpods", "sony", "bluetooth"],
+    "4": ["zapatilla", "zapatillas", "calzado", "tenis", "sneakers", "pegasus", "ultraboost", "runner", "nike", "adidas"],
+    "5": ["polera", "poleras", "camiseta", "camisetas", "polo", "polos", "ropa", "prendas"],
+    "6": ["cocina", "licuadora", "licuadoras", "freidora", "freidoras", "electrodomestico", "electrodoméstico"],
+    "7": ["hogar", "cama", "sabana", "sabanas", "sábanas", "edredon", "edredón", "plumon", "plumón"],
+    "8": ["cafe", "café", "alimentos", "comida", "gourmet", "yungas"]
+  },
+
+  "variantes": [
+    { "regex": "\\b(?:talla|n[uú]mero|medida)?\\s*(3[5-9]|4[0-6])\\b", "prefijo": "Talla ", "mayusculas": false },
+    { "regex": "\\b(?:talla|medida)\\s*(XS|S|M|L|XL|XXL)\\b", "prefijo": "Talla ", "mayusculas": true }
+  ],
+
+  "prompt_bloques": {
+    "variantes": [
+      "VARIANTES Y TALLAS OBLIGATORIAS (SLOT-FILLING):",
+      "- Zapatillas (Runner Pro, Nike Pegasus, Adidas Ultraboost): Disponibles en tallas del 36 al 44.",
+      "- Poleras y Camisetas (Polo Classic, Tech Dry-Fit, Oversized Urban): Disponibles en tallas S, M, L y XL.",
+      "- Si el cliente pide agregar calzado o poleras al carrito y NO ha indicado su talla, NO lo agregues a ciegas: pregúntale primero qué talla necesita con calidez (ej: \"¡Dale! ¿En qué talla las necesitas? Tenemos del 36 al 44\").",
+      "- Si el cliente ya especificó la talla (ej. \"en 41\" o \"talla L\"), confirma la talla y emite la acción."
+    ],
+    "venta_cruzada": [
+      "VENTA CRUZADA AMABLE Y SUTIL (CROSS-SELLING):",
+      "- Solo cuando el cliente ya haya confirmado la compra o agregado un producto al carrito, puedes hacer una sugerencia complementaria breve (máximo 1 artículo):",
+      "  * Celulares o Tablets: sugerir auriculares (Bluetooth X3, AirPods o Sony).",
+      "  * Zapatillas: sugerir polera deportiva Tech Dry-Fit.",
+      "  * Electrodomésticos de cocina: sugerir café gourmet Yungas.",
+      "- Hazlo siempre como un comentario breve al final, jamás invasivo ni repetitivo."
+    ]
+  }
+}
