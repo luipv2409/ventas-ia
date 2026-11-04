@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias de la Salud
 **Grado Académico:** Técnico Superior
-**Duración:** 3 años (6 semestres)
+**Duración Oficial:** 2 años y medio (5 semestres)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Oficial ULAT
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -55,4 +57,46 @@ Formar Profesionales en área de Prótesis Dental que puedan competir con eficie
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (2 años y medio (5 semestres))
+
+### 1º Semestre
+- Anatomía Dental I
+- Escultura Dental I
+- Materiales Dentales
+- Práctica de Anatomía Dental I
+- Práctica de Escultura Dental I
+- Práctica de Materiales Dentales
+
+### 2º Semestre
+- Anatomía Dental II
+- Escultura Dental II
+- Prótesis Parcial Removible I
+- Práctica de Anatomía Dental II
+- Práctica de Escultura Dental II
+- Anatomía Humana
+
+### 3º Semestre
+- Prótesis Fija I
+- Prótesis Parcial Removible II
+- Prótesis Total I
+- Práctica de Prótesis Fija I
+- Práctica de Prótesis Parcial Removible II
+- Práctica de Prótesis Total I
+
+### 4º Semestre
+- Prótesis Fija II
+- Ortodoncia Preventiva
+- Prótesis Total II
+- Práctica de Prótesis Fija II
+- Práctica de Ortodoncia Preventiva
+- Práctica de Prótesis Total II
+- Organización de Laboratorio
+
+### 5º Semestre
+- Cromo Cobalto
+- Ortodoncia
+- Práctica de Cromo Cobalto
+- Práctica de Ortodoncia
+- Práctica Isofit
+- Proyecto de Grado
+

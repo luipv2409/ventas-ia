@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias y Tecnología
 **Grado Académico:** Licenciatura en Ingeniería
-**Duración:** 5 años (10 semestres)
+**Duración Oficial:** 5 años (10 semestres)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Oficial ULAT
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -47,4 +49,76 @@ Tomando como la definición de la Geodesia la necesidad de establecer dimencione
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (5 años (10 semestres))
+
+### 1º Semestre
+- Dibujo Técnico
+- Física I
+- Álgebra I
+- Cálculo I
+- Geometría Analítica Plana y del Espacio
+- Trigonometría Plana
+
+### 2º Semestre
+- Geología General
+- Física II
+- Trigonometría Esférica
+- Cálculo II
+- Dibujo Topográfico
+- Cartografía
+
+### 3º Semestre
+- Geometría Descriptiva
+- Estadística
+- Topografía I
+- Topografía de Campo I
+- Tecnología Instrumental
+- Dibujo Computarizado
+
+### 4º Semestre
+- Topografía II
+- Topografía de Campo II
+- Mecánica de Suelos
+- Teoría de Errores
+- Hidrometría e Hidráulica
+- Ingeniería Legal
+
+### 5º Semestre
+- Probabilidad y Estadística
+- Hidráulica I
+- Geodesia y Fotogrametría
+- Geografía y Defensa de Recursos Naturales
+- Resistencia de Materiales
+
+### 6º Semestre
+- Topografía Aplicada
+- Planificación y Costos Topográficos
+- Geodesia Geométrica I
+- Catastro y Avalúo
+- Percepción Remota
+- Mensuras Subterráneas
+
+### 7º Semestre
+- Ingeniería Sanitaria I
+- Estructuras Hiperestáticas
+- Estructuras de Madera
+- Tecnología del Hormigón
+- Seguridad Industrial
+
+### 8º Semestre
+- Geodesia Vertical
+- Geodesia Física
+- Geodesia Astronómica
+- Rectificación y Restitución Fotogramétrica
+- Geografía y Recursos Naturales
+
+### 9º Semestre
+- Sistemas de Información Geográfica (SIG)
+- Saneamiento Ambiental
+- Geodesia Satelital
+- Administración y Organización de Empresas
+
+### 10º Semestre
+- Metodología de la Investigación
+- Modalidad de Graduación
+

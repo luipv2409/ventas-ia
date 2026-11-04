@@ -1,67 +1,87 @@
 <?php
 declare(strict_types=1);
-$pageTitle = 'Universidad Latinoamericana (ULAT) | Formación Profesional de Excelencia en Cochabamba';
+$pageTitle = 'Universidad Latinoamericana (ULAT) | Educación Superior en Cochabamba';
 $activeNav = 'inicio';
 require_once __DIR__ . '/header.php';
 ?>
 
 <!-- HERO BANNER PRINCIPAL -->
 <section class="ulat-hero">
-    <div class="container py-4">
-        <div class="row align-items-center">
+    <div class="container py-3">
+        <div class="row align-items-center g-5">
             <div class="col-lg-7">
-                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3">
-                    <i class="fa-solid fa-bell me-1"></i> INSCRIPCIONES ABIERTAS II-2026
-                </span>
-                <h1 class="display-4 fw-bold mb-3 text-white">
-                    El lugar perfecto para tu educación superior
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded" style="background-color: rgba(212, 154, 53, 0.18); border: 1px solid rgba(212, 154, 53, 0.45); color: #f8d386; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em;">
+                    <span>ADMISIONES GESTIÓN II-2026 · INICIO DE CLASES 3 DE AGOSTO</span>
+                </div>
+                <h1 class="display-5 fw-bold mb-3 text-white" style="line-height: 1.15;">
+                    Formación profesional con rigor científico y compromiso humano
                 </h1>
-                <p class="lead mb-4 text-light text-opacity-90">
-                    Formando líderes y profesionales idóneos con sólida preparación científica, técnica y valores éticos desde 1995 en Cochabamba, Bolivia.
+                <p class="lead mb-4 text-white-50" style="font-size: 1.06rem; line-height: 1.65;">
+                    Desde 1995 en el corazón de Cochabamba. Quince carreras a nivel Licenciatura y Técnico Superior con títulos en Provisión Nacional, laboratorios propios y convenios institucionales.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="carreras.php" class="btn btn-ulat-gold btn-lg">
-                        <i class="fa-solid fa-book-open me-2"></i> Ver las 15 Carreras
+                    <a href="carreras.php" class="btn btn-ulat-gold px-4 py-2 d-inline-flex align-items-center gap-2">
+                        <span>Explorar las 15 Carreras</span>
+                        <i data-lucide="arrow-right" class="lucide-sm"></i>
                     </a>
-                    <a href="admisiones.php" class="btn btn-outline-light btn-lg rounded-pill px-4">
-                        <i class="fa-solid fa-file-signature me-2"></i> Requisitos de Admisión
+                    <a href="admisiones.php" class="btn btn-outline-light px-4 py-2" style="border-radius: 6px; font-size: 0.875rem; font-weight: 600;">
+                        Requisitos de Admisión
                     </a>
-                    <button type="button" class="btn btn-light btn-lg rounded-pill px-4 text-primary fw-bold" onclick="window.preguntarAlChat('carreras y becas disponibles')">
-                        <i class="fa-solid fa-comments me-2 text-warning"></i> Chatear con Guía ULAT
+                    <button type="button" class="btn btn-light px-4 py-2 d-inline-flex align-items-center gap-2" style="border-radius: 6px; font-size: 0.875rem; font-weight: 600; color: var(--ulat-blue-dark);" onclick="window.preguntarAlChat('Hola, quisiera orientación sobre las carreras y becas disponibles')">
+                        <i data-lucide="message-square" class="lucide-sm" style="color: var(--ulat-gold-dark);"></i>
+                        <span>Hablar con Guía ULAT</span>
                     </button>
                 </div>
+
+                <!-- Indicadores Institucionales Sobrios -->
+                <div class="row g-3 mt-4 pt-4 border-top border-light border-opacity-10">
+                    <div class="col-4">
+                        <div class="h4 fw-bold text-white mb-0">1995</div>
+                        <div class="small text-white-50">Año de Fundación</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="h4 fw-bold text-white mb-0">15 Carreras</div>
+                        <div class="small text-white-50">3 Facultades Oficiales</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="h4 fw-bold text-white mb-0">2 Campus</div>
+                        <div class="small text-white-50">Sede Central y Norte</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-5 mt-4 mt-lg-0 text-center">
-                <div class="card bg-white text-dark p-4 rounded-4 shadow-lg text-start">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="bg-primary text-white rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                            <i class="fa-solid fa-graduation-cap fs-4"></i>
-                        </div>
+
+            <div class="col-lg-5">
+                <div class="card card-ulat p-4 p-md-4 bg-white text-dark shadow-lg" style="border-top: 3px solid var(--ulat-gold);">
+                    <div class="d-flex justify-content-between align-items-start mb-3 pb-2 border-bottom">
                         <div>
-                            <h5 class="mb-0 text-primary">Preinscripción Rápida</h5>
-                            <small class="text-muted">Asegura tu cupo para esta gestión</small>
+                            <span class="ulat-eyebrow mb-0">Solicitud de Información</span>
+                            <h5 class="fw-bold mb-0">Preinscripción en Línea</h5>
+                        </div>
+                        <div class="icon-frame-gold">
+                            <i data-lucide="book-open" class="lucide"></i>
                         </div>
                     </div>
                     <form id="form-lead-hero" action="api_lead.php" method="POST">
                         <div class="mb-2">
-                            <label class="form-label small fw-bold text-secondary">Nombre Completo</label>
-                            <input type="text" name="nombre" class="form-control form-control-sm" placeholder="Ej: María Gonzales" required>
+                            <label class="form-label small fw-semibold text-secondary mb-1">Nombre Completo</label>
+                            <input type="text" name="nombre" class="form-control form-control-sm" style="border-radius: 5px;" placeholder="Ej. María Fernanda Rojas" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small fw-bold text-secondary">Teléfono o WhatsApp</label>
-                            <input type="tel" name="telefono" class="form-control form-control-sm" placeholder="Ej: 71234567" required>
+                            <label class="form-label small fw-semibold text-secondary mb-1">Teléfono o WhatsApp</label>
+                            <input type="tel" name="telefono" class="form-control form-control-sm" style="border-radius: 5px;" placeholder="Ej. 79795778" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-secondary">Carrera de tu Interés</label>
-                            <select name="carrera" class="form-select form-select-sm" required>
+                            <label class="form-label small fw-semibold text-secondary mb-1">Carrera de Interés</label>
+                            <select name="carrera" class="form-select form-select-sm" style="border-radius: 5px;" required>
                                 <option value="">Selecciona una carrera...</option>
                                 <?php foreach ($carrerasCatalog as $slug => $c): ?>
-                                    <option value="<?= htmlspecialchars($c['nombre']) ?>"><?= htmlspecialchars($c['nombre']) ?> (<?= $c['grado'] ?>)</option>
+                                    <option value="<?= htmlspecialchars($c['nombre']) ?>"><?= htmlspecialchars($c['nombre']) ?> (<?= $c['duracion'] ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-ulat-gold w-100 btn-sm py-2">
-                            <i class="fa-solid fa-paper-plane me-1"></i> Solicitar Información y Descuentos
+                        <button type="submit" class="btn btn-ulat-primary w-100 py-2 d-inline-flex align-items-center justify-content-center gap-2">
+                            <span>Solicitar Aranceles y Plan de Estudios</span>
+                            <i data-lucide="arrow-up-right" class="lucide-sm"></i>
                         </button>
                         <div id="lead-hero-status" class="small mt-2 text-center d-none"></div>
                     </form>
@@ -71,98 +91,94 @@ require_once __DIR__ . '/header.php';
     </div>
 </section>
 
-<!-- SECCIÓN: LAS 3 FACULTADES -->
-<section class="py-5 bg-white">
+<!-- SECCIÓN: LAS 3 FACULTADES (DISEÑO EDITORIAL ARQUITECTÓNICO) -->
+<section class="py-5 bg-white border-bottom">
     <div class="container py-4">
-        <div class="text-center mb-5">
-            <span class="text-primary fw-bold text-uppercase small tracking-wide">Estructura Académica</span>
-            <h2 class="display-6 fw-bold">Nuestras 3 Facultades</h2>
-            <p class="text-muted max-w-700 mx-auto">
-                Programas curriculares modernos avalados por el Ministerio de Educación, con laboratorios equipados y docentes de amplia trayectoria.
-            </p>
+        <div class="row align-items-end mb-5">
+            <div class="col-lg-7">
+                <span class="ulat-eyebrow">Estructura Académica</span>
+                <h2 class="display-6 fw-bold mb-0">Tres Facultades, Quince Programas de Pregrado</h2>
+            </div>
+            <div class="col-lg-5 text-lg-end mt-3 mt-lg-0">
+                <a href="carreras.php" class="btn btn-ulat-outline d-inline-flex align-items-center gap-2">
+                    <span>Ver Catálogo Completo de Carreras</span>
+                    <i data-lucide="arrow-right" class="lucide-sm"></i>
+                </a>
+            </div>
         </div>
 
         <div class="row g-4">
-            <!-- Facultad Salud -->
+            <!-- Facultad I: Salud -->
             <div class="col-lg-4 col-md-6">
-                <div class="card card-ulat h-100 border-top border-4 border-danger p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3 fs-3">
-                            <i class="fa-solid fa-heart-pulse"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 text-dark">Ciencias de la Salud</h4>
-                            <span class="badge bg-danger">6 Carreras</span>
-                        </div>
+                <div class="card card-ulat h-100 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span class="academic-index">FACULTAD I</span>
+                        <span class="small fw-semibold text-muted">6 Carreras</span>
                     </div>
-                    <p class="text-muted small mb-3">
-                        Formación con alto sentido ético y humanístico en medicina, odontología y ciencias biomédicas con prácticas clínicas tempranas.
+                    <h3 class="h4 fw-bold mb-2">Ciencias de la Salud</h3>
+                    <p class="text-secondary small mb-3" style="line-height: 1.6;">
+                        Formación clínica y biomédica con laboratorios especializados, anfiteatro anatómico y convenios hospitalarios para prácticas e internado rotatorio.
                     </p>
-                    <ul class="list-unstyled small mb-4 flex-grow-1">
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-danger me-2"></i> Licenciatura en Medicina</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-danger me-2"></i> Licenciatura en Odontología</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-danger me-2"></i> Licenciatura en Enfermería</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-danger me-2"></i> Licenciatura en Bioquímica y Farmacia</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-danger me-2"></i> Licenciatura en Óptica y Optometría</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-danger me-2"></i> Técnico Superior en Prótesis Dental</li>
+                    <ul class="semester-list mb-4 flex-grow-1 px-0">
+                        <li><a href="carrera.php?id=medicina" class="text-decoration-none text-dark fw-medium">Licenciatura en Medicina (12 sem.)</a></li>
+                        <li><a href="carrera.php?id=odontologia" class="text-decoration-none text-dark fw-medium">Licenciatura en Odontología (10 sem.)</a></li>
+                        <li><a href="carrera.php?id=enfermeria" class="text-decoration-none text-dark fw-medium">Licenciatura en Enfermería (10 sem.)</a></li>
+                        <li><a href="carrera.php?id=bioquimica-farmacia" class="text-decoration-none text-dark fw-medium">Bioquímica y Farmacia (9 sem.)</a></li>
+                        <li><a href="carrera.php?id=optica-optometria" class="text-decoration-none text-dark fw-medium">Óptica y Optometría (9 sem.)</a></li>
+                        <li><a href="carrera.php?id=protesis-dental" class="text-decoration-none text-dark fw-medium">T.S. en Prótesis Dental (5 sem.)</a></li>
                     </ul>
-                    <a href="facultades.php#salud" class="btn btn-outline-danger btn-sm rounded-pill w-100">
-                        Ver Detalles de la Facultad <i class="fa-solid fa-arrow-right ms-1"></i>
+                    <a href="facultades.php#salud" class="btn btn-ulat-outline btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                        <span>Explorar Facultad de Salud</span>
+                        <i data-lucide="arrow-right" class="lucide-sm"></i>
                     </a>
                 </div>
             </div>
 
-            <!-- Facultad Tecnología -->
+            <!-- Facultad II: Tecnología -->
             <div class="col-lg-4 col-md-6">
-                <div class="card card-ulat h-100 border-top border-4 border-info p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 fs-3">
-                            <i class="fa-solid fa-microchip"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 text-dark">Ciencia y Tecnología</h4>
-                            <span class="badge bg-info text-dark">5 Carreras</span>
-                        </div>
+                <div class="card card-ulat h-100 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span class="academic-index">FACULTAD II</span>
+                        <span class="small fw-semibold text-muted">5 Ingenierías</span>
                     </div>
-                    <p class="text-muted small mb-3">
-                        Ingenierías aplicadas al desarrollo de infraestructura, sistemas de software, automotriz, topografía y transformación digital.
+                    <h3 class="h4 fw-bold mb-2">Ciencia y Tecnología</h3>
+                    <p class="text-secondary small mb-3" style="line-height: 1.6;">
+                        Ingenierías orientadas al desarrollo de software e inteligencia artificial, infraestructura civil, geodesia satelital, autotrónica y comercio digital.
                     </p>
-                    <ul class="list-unstyled small mb-4 flex-grow-1">
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-info me-2"></i> Ingeniería de Sistemas</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-info me-2"></i> Ingeniería Civil</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-info me-2"></i> Ingeniería en Geodesia y Topografía</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-info me-2"></i> Ing. Mecánica Automotriz y Electrónica</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-info me-2"></i> Ing. Comercio, Marketing y Diseño Digital</li>
+                    <ul class="semester-list mb-4 flex-grow-1 px-0">
+                        <li><a href="carrera.php?id=ingenieria-de-sistemas" class="text-decoration-none text-dark fw-medium">Ingeniería de Sistemas (9 sem.)</a></li>
+                        <li><a href="carrera.php?id=ingenieria-civil" class="text-decoration-none text-dark fw-medium">Ingeniería Civil · 5 Menciones (10 sem.)</a></li>
+                        <li><a href="carrera.php?id=ingenieria-geodesia-topografia" class="text-decoration-none text-dark fw-medium">Ing. en Geodesia y Topografía (10 sem.)</a></li>
+                        <li><a href="carrera.php?id=ingenieria-mecanica-automotriz" class="text-decoration-none text-dark fw-medium">Ing. Mecánica Automotriz y Electrónica (8 sem.)</a></li>
+                        <li><a href="carrera.php?id=ingenieria-comercio-marketing" class="text-decoration-none text-dark fw-medium">Ing. en Comercio, Marketing y Diseño Digital (9 sem.)</a></li>
                     </ul>
-                    <a href="facultades.php#tecnologia" class="btn btn-outline-info btn-sm rounded-pill w-100 text-dark">
-                        Ver Detalles de la Facultad <i class="fa-solid fa-arrow-right ms-1"></i>
+                    <a href="facultades.php#tecnologia" class="btn btn-ulat-outline btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                        <span>Explorar Facultad de Tecnología</span>
+                        <i data-lucide="arrow-right" class="lucide-sm"></i>
                     </a>
                 </div>
             </div>
 
-            <!-- Facultad Económicas -->
+            <!-- Facultad III: Económicas y Jurídicas -->
             <div class="col-lg-4 col-md-6">
-                <div class="card card-ulat h-100 border-top border-4 border-warning p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-3">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 text-dark">Económicas y Jurídicas</h4>
-                            <span class="badge bg-warning text-dark">4 Carreras</span>
-                        </div>
+                <div class="card card-ulat h-100 p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <span class="academic-index">FACULTAD III</span>
+                        <span class="small fw-semibold text-muted">4 Carreras</span>
                     </div>
-                    <p class="text-muted small mb-3">
-                        Formación de profesionales éticos, críticos e innovadores en derecho, auditoría contable y ciencias de la educación.
+                    <h3 class="h4 fw-bold mb-2">Ciencias Económicas y Jurídicas</h3>
+                    <p class="text-secondary small mb-3" style="line-height: 1.6;">
+                        Preparación rigurosa en ciencias jurídicas, práctica forense, auditoría financiera y tributaria, contaduría general y gestión educativa.
                     </p>
-                    <ul class="list-unstyled small mb-4 flex-grow-1">
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-warning me-2"></i> Licenciatura en Derecho</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-warning me-2"></i> Licenciatura en Auditoría (CPA)</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-warning me-2"></i> Licenciatura en Ciencias de la Educación</li>
-                        <li class="py-1"><i class="fa-solid fa-circle-check text-warning me-2"></i> Técnico Superior Contador General</li>
+                    <ul class="semester-list mb-4 flex-grow-1 px-0">
+                        <li><a href="carrera.php?id=derecho" class="text-decoration-none text-dark fw-medium">Licenciatura en Derecho (9 sem.)</a></li>
+                        <li><a href="carrera.php?id=auditoria" class="text-decoration-none text-dark fw-medium">Licenciatura en Auditoría / CPA (9 sem.)</a></li>
+                        <li><a href="carrera.php?id=ciencias-de-la-educacion" class="text-decoration-none text-dark fw-medium">Licenciatura en Ciencias de la Educación (9 sem.)</a></li>
+                        <li><a href="carrera.php?id=contador-general" class="text-decoration-none text-dark fw-medium">T.S. Contador General (6 sem.)</a></li>
                     </ul>
-                    <a href="facultades.php#economicas" class="btn btn-outline-warning btn-sm rounded-pill w-100 text-dark">
-                        Ver Detalles de la Facultad <i class="fa-solid fa-arrow-right ms-1"></i>
+                    <a href="facultades.php#economicas" class="btn btn-ulat-outline btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                        <span>Explorar Ciencias Económicas</span>
+                        <i data-lucide="arrow-right" class="lucide-sm"></i>
                     </a>
                 </div>
             </div>
@@ -170,94 +186,99 @@ require_once __DIR__ . '/header.php';
     </div>
 </section>
 
-<!-- SECCIÓN: BENEFICIOS Y PLAN UNO A UNO -->
-<section class="py-5 bg-light">
+<!-- SECCIÓN: BENEFICIOS ECONÓMICOS Y VIDA PRÁCTICA -->
+<section class="py-5">
     <div class="container py-4">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
-                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold mb-3">
-                    <i class="fa-solid fa-hand-holding-dollar me-1"></i> Beneficio Exclusivo ULAT
-                </span>
-                <h2 class="display-6 fw-bold text-dark mb-4">
-                    Plan Uno a Uno: ¡Paga la mitad de tu cuota!
+                <span class="ulat-eyebrow">Apoyo Económico al Estudiante</span>
+                <h2 class="display-6 fw-bold mb-3">
+                    Plan Uno a Uno y Becas de Excelencia
                 </h2>
-                <p class="lead text-secondary mb-4">
-                    La Universidad Latinoamericana y el ILAT crearon el <strong>Plan Uno a Uno</strong> para apoyar la economía de nuestros estudiantes regulares.
+                <p class="text-secondary mb-4" style="line-height: 1.65;">
+                    La Universidad Latinoamericana y el ILAT impulsan programas de incentivo directo para respaldar la continuidad académica de sus estudiantes regulares y nuevos postulantes.
                 </p>
-                <div class="card p-3 border-0 bg-white shadow-sm mb-3">
+
+                <div class="card card-ulat p-4 mb-3">
                     <div class="d-flex align-items-start gap-3">
-                        <div class="bg-primary text-white p-2 rounded-circle">
-                            <i class="fa-solid fa-percent fs-5"></i>
+                        <div class="icon-frame-gold">
+                            <i data-lucide="users" class="lucide"></i>
                         </div>
                         <div>
-                            <h6 class="fw-bold mb-1">50% de Descuento por Alumno Recomendado</h6>
-                            <p class="text-muted small mb-0">
-                                Por cada estudiante nuevo que traigas y se matricule en cualquiera de nuestras carreras (Licenciatura, Técnico Superior o Diplomados), cancelas únicamente el 50% de tu cuota mensual.
+                            <h5 class="h6 fw-bold mb-1">Plan Uno a Uno (50% de Descuento en tu Cuota)</h5>
+                            <p class="text-secondary small mb-0" style="line-height: 1.6;">
+                                Por cada estudiante nuevo que recomiendes y se matricule en cualquiera de nuestras carreras o diplomados, cancelas únicamente el 50% de tu cuota mensual.
                             </p>
                         </div>
                     </div>
                 </div>
-                <div class="card p-3 border-0 bg-white shadow-sm mb-4">
+
+                <div class="card card-ulat p-4 mb-4">
                     <div class="d-flex align-items-start gap-3">
-                        <div class="bg-warning text-dark p-2 rounded-circle">
-                            <i class="fa-solid fa-medal fs-5"></i>
+                        <div class="icon-frame">
+                            <i data-lucide="award" class="lucide"></i>
                         </div>
                         <div>
-                            <h6 class="fw-bold mb-1">Beca por Excelencia Académica (100%)</h6>
-                            <p class="text-muted small mb-0">
-                                Los estudiantes con promedio general superior al 95% quedan completamente liberados del pago de matrícula y cuotas semestrales.
+                            <h5 class="h6 fw-bold mb-1">Beca por Excelencia Académica (Cobertura del 100%)</h5>
+                            <p class="text-secondary small mb-0" style="line-height: 1.6;">
+                                Estudiantes con promedio general igual o superior al 95% acceden a la liberación total de matrícula y cuotas semestrales conforme al Reglamento de Becas.
                             </p>
                         </div>
                     </div>
                 </div>
-                <a href="becas.php" class="btn btn-ulat-primary">
-                    <i class="fa-solid fa-award me-2"></i> Conocer Todo el Programa de Becas
-                </a>
-            </div>
-            <div class="col-lg-6">
-                <div class="card card-ulat p-4 p-md-5 bg-white border-0 shadow">
-                    <h4 class="fw-bold text-primary mb-3"><i class="fa-solid fa-clipboard-list me-2"></i> Requisitos de Admisión</h4>
-                    <p class="text-muted small mb-4">
-                        Presenta los siguientes documentos oficiales en la oficina de Admisiones de la ULAT (folder tamaño oficio color amarillo):
-                    </p>
-                    <ul class="list-group list-group-flush small mb-4">
-                        <li class="list-group-item px-0 d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-check text-success"></i>
-                            <span>Certificado de Nacimiento Original.</span>
-                        </li>
-                        <li class="list-group-item px-0 d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-check text-success"></i>
-                            <span>Fotocopia de Cédula de Identidad vigente.</span>
-                        </li>
-                        <li class="list-group-item px-0 d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-check text-success"></i>
-                            <span>Fotocopia Legalizada del Diploma de Bachiller.</span>
-                        </li>
-                        <li class="list-group-item px-0 d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-check text-success"></i>
-                            <span>4 Fotografías tamaño 3×4 a color con fondo azul (traje formal).</span>
-                        </li>
-                    </ul>
-                    <a href="admisiones.php" class="btn btn-outline-primary btn-sm rounded-pill w-100">
-                        Más detalles sobre convalidaciones y postulantes extranjeros
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="becas.php" class="btn btn-ulat-primary d-inline-flex align-items-center gap-2">
+                        <span>Ver Modalidades de Beca</span>
+                        <i data-lucide="arrow-right" class="lucide-sm"></i>
                     </a>
+                    <a href="admisiones.php" class="btn btn-ulat-outline">
+                        Requisitos de Inscripción
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card card-ulat overflow-hidden">
+                    <div class="row g-0 align-items-stretch">
+                        <div class="col-md-5">
+                            <img src="../assets/ulat/banner_6_768x1155.jpg" alt="Prácticas de campo ULAT" class="w-100 h-100" style="object-fit: cover; min-height: 280px;">
+                        </div>
+                        <div class="col-md-7 p-4 d-flex flex-column justify-content-between">
+                            <div>
+                                <span class="ulat-eyebrow">Documentación de Ingreso</span>
+                                <h4 class="h5 fw-bold mb-3">Requisitos de Admisión</h4>
+                                <p class="text-secondary small mb-3">
+                                    Presentar en Secretaría General en un <strong>folder tamaño oficio color amarillo</strong>:
+                                </p>
+                                <ul class="semester-list px-0 mb-3">
+                                    <li>Certificado de Nacimiento Original</li>
+                                    <li>Fotocopia de Cédula de Identidad vigente</li>
+                                    <li>Fotocopia Legalizada del Diploma de Bachiller</li>
+                                    <li>4 fotografías 3×4 fondo azul (traje formal)</li>
+                                </ul>
+                            </div>
+                            <a href="admisiones.php" class="btn btn-ulat-outline btn-sm w-100">
+                                Ver Convalidaciones y Postulantes Extranjeros
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- SECCIÓN: TESTIMONIO DEL RECTOR Y TRADICIÓN -->
-<section class="py-5 bg-white">
-    <div class="container py-4 text-center">
-        <div class="max-w-700 mx-auto">
-            <i class="fa-solid fa-quote-left text-warning fs-1 mb-3"></i>
-            <h3 class="fw-bold mb-3">Mensaje del Rectorado</h3>
-            <p class="text-muted fs-5 fst-italic mb-4">
-                "Nuestra misión fundamental es la formación profesional de excelencia en las distintas áreas del conocimiento científico y tecnológico, preparando mujeres y hombres comprometidos con el desarrollo integral de Bolivia y Latinoamérica."
-            </p>
-            <div class="fw-bold text-dark">Rectorado de la Universidad Latinoamericana</div>
-            <small class="text-muted">Fundada el 27 de enero de 1995 • Cochabamba, Bolivia</small>
+<!-- SECCIÓN: MENSAJE DEL RECTORADO (ESTILO EDITORIAL SERIF) -->
+<section class="py-5 bg-white border-top">
+    <div class="container py-3 text-center">
+        <div class="mx-auto" style="max-width: 740px;">
+            <span class="ulat-eyebrow">Filosofía Institucional</span>
+            <blockquote class="font-editorial fs-4 text-dark my-3" style="line-height: 1.55; font-style: italic;">
+                “Nuestra misión fundamental es la formación profesional de excelencia en las distintas áreas del conocimiento científico y tecnológico, preparando mujeres y hombres comprometidos con el desarrollo integral de Bolivia y Latinoamérica.”
+            </blockquote>
+            <div class="fw-bold text-dark small text-uppercase mt-3" style="letter-spacing: 0.06em;">Rectorado · Universidad Latinoamericana</div>
+            <div class="small text-muted">Fundada el 27 de enero de 1995 · Cochabamba, Bolivia</div>
         </div>
     </div>
 </section>
@@ -270,14 +291,14 @@ document.getElementById('form-lead-hero')?.addEventListener('submit', async func
     const data = new FormData(form);
 
     status.classList.remove('d-none', 'alert-danger', 'alert-success');
-    status.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> Registrando preinscripción...';
+    status.innerHTML = 'Registrando solicitud...';
 
     try {
         const resp = await fetch('api_lead.php', { method: 'POST', body: data });
         const res = await resp.json();
         if (res.ok) {
             status.className = 'small mt-2 alert alert-success p-2 text-center';
-            status.innerHTML = '✔ ¡Preinscripción registrada! Un asesor de admisiones te contactará por WhatsApp.';
+            status.innerHTML = 'Solicitud registrada. Nuestro equipo de admisiones se comunicará contigo por WhatsApp.';
             form.reset();
         } else {
             status.className = 'small mt-2 alert alert-danger p-2 text-center';
@@ -291,4 +312,3 @@ document.getElementById('form-lead-hero')?.addEventListener('submit', async func
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
-

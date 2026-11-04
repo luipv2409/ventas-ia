@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias de la Salud
 **Grado Académico:** Licenciatura
-**Duración:** 5 años (10 semestres)
+**Duración Oficial:** 5 años (10 semestres)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Oficial ULAT
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -33,4 +35,79 @@ Coordinar la actividad académica dentro la Universidad Latinoamericana, para lu
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (5 años (10 semestres))
+
+### 1º Semestre
+- Anatomía Humana I
+- Embriología y Genética I
+- Histología I
+- Anatomía Dentaria I
+- Salud Pública
+
+### 2º Semestre
+- Anatomía Humana II
+- Embriología y Genética II
+- Histología II
+- Anatomía Dentaria II
+- Bioquímica
+
+### 3º Semestre
+- Fisiología General
+- Patología I
+- Semiología General I
+- Microbiología
+- Materiales Dentales I
+- Técnicas de Laboratorio I
+
+### 4º Semestre
+- Fisiología Estomatológica y de la Oclusión
+- Patología II
+- Semiología General II
+- Materiales Dentales II
+- Técnicas de Laboratorio II
+
+### 5º Semestre
+- Cirugía I
+- Farmacología y Terapéutica
+- Operatoria I
+- Patología Estomatológica
+- Semiología Estomatológica
+- Radiología e Imagenología
+
+### 6º Semestre
+- Cirugía II
+- Periodoncia I
+- Operatoria II
+- Endodoncia I
+- Prostodoncia Fija I
+- Prostodoncia Removible I
+- Radiología e Imagenología Clínica
+
+### 7º Semestre
+- Cirugía III
+- Periodoncia II
+- Odontopediatría I
+- Ortodoncia I
+- Prostodoncia Fija III
+- Metodología de la Investigación
+- Endodoncia II
+- Prostodoncia Removible II
+
+### 8º Semestre
+- Cirugía IV
+- Periodoncia III
+- Odontopediatría II
+- Ortodoncia II
+- Gestión y Administración Clínica
+
+### 9º Semestre
+- Ortodoncia Clínica
+- Deontología Odontológica
+- Medicina Interna en Odontología
+- Odontología Legal y Forense
+- Psicología
+
+### 10º Semestre
+- Clínica Integral del Niño
+- Clínica Integral del Adulto
+

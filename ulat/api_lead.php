@@ -40,7 +40,7 @@ try {
     echo json_encode([
         'ok' => true,
         'mensaje' => 'Solicitud registrada correctamente. Un asesor de admisiones te contactará en breve.',
-        'whatsapp_directo' => 'https://wa.me/5914509488?text=' . urlencode("Hola ULAT, me llamo {$nombre} y solicito información sobre la carrera de {$carrera}")
+        'whatsapp_directo' => 'https://wa.me/59179795778?text=' . urlencode("Hola ULAT, me llamo {$nombre} y solicito información sobre la carrera de {$carrera}")
     ]);
 } catch (\Throwable $e) {
     error_log('[api_lead] Error: ' . $e->getMessage());

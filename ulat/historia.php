@@ -5,12 +5,12 @@ $activeNav = 'historia';
 require_once __DIR__ . '/header.php';
 ?>
 
-<div class="bg-primary text-white py-5" style="background: linear-gradient(135deg, var(--ulat-blue-dark) 0%, var(--ulat-blue-primary) 100%);">
-    <div class="container text-center py-3">
-        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-2">Identidad Institucional</span>
-        <h1 class="display-5 fw-bold text-white mb-2">Nuestra Historia y Filosofía</h1>
-        <p class="lead text-light text-opacity-75 max-w-700 mx-auto">
-            Más de tres décadas dedicadas a la formación académica superior de calidad en el corazón de Bolivia.
+<div class="ulat-page-header">
+    <div class="container py-2">
+        <span class="ulat-eyebrow-light">Identidad y Trayectoria</span>
+        <h1 class="display-6 fw-bold text-white mb-2">Historia, Misión y Visión Institucional</h1>
+        <p class="mb-0 text-white-50" style="max-width: 680px; font-size: 0.98rem;">
+            Más de tres décadas formando profesionales íntegros al servicio del desarrollo científico, tecnológico y social de Bolivia.
         </p>
     </div>
 </div>
@@ -19,104 +19,84 @@ require_once __DIR__ . '/header.php';
     <div class="row g-5">
         <div class="col-lg-8">
             <!-- Historia -->
-            <div class="card card-ulat p-4 p-md-5 mb-5">
-                <h3 class="fw-bold text-primary mb-3">
-                    <i class="fa-solid fa-landmark text-warning me-2"></i> Origen y Fundación
-                </h3>
-                <p class="text-secondary lh-lg">
-                    La Universidad Latinoamericana "ULAT" es una Institución privada de Educación Superior, cuya misión fundamental es la formación profesional en las distintas áreas del conocimiento científico y tecnológico.
+            <div class="card card-ulat p-4 p-md-5 mb-4">
+                <span class="ulat-eyebrow mb-1">Reseña Histórica</span>
+                <h3 class="h4 fw-bold mb-3 pb-3 border-bottom">Origen y Fundación Legal</h3>
+                <p class="text-secondary small" style="line-height: 1.75;">
+                    La Universidad Latinoamericana (ULAT) es una institución privada de Educación Superior cuya misión primordial es la formación académica e investigativa en las diversas ramas del saber científico, tecnológico y humanístico.
                 </p>
-                <p class="text-secondary lh-lg">
-                    Fue fundada el <strong>27 de enero de 1995</strong> al amparo del Art. 188 de la Constitución Política del Estado, enmarcada en la Ley de la Reforma Educativa. Es una institución legalmente establecida y amparada por las Resoluciones Ministeriales <strong>Nº 241/02 – 597/07 – 157/07</strong> y su Personería Jurídica <strong>191/97 – 214/97</strong>.
+                <p class="text-secondary small mb-4" style="line-height: 1.75;">
+                    Fue fundada el <strong>27 de enero de 1995</strong> al amparo del Artículo 188 de la Constitución Política del Estado. Su funcionamiento institucional y académico está plenamente respaldado por las Resoluciones Ministeriales <strong>Nº 241/02, 590/07, 597/07, 157/07 y 0140/25</strong>, contando con Personería Jurídica reconocida mediante resoluciones <strong>191/97 y 214/97</strong>.
                 </p>
-                <div class="p-3 bg-light rounded-3 border mt-4">
-                    <div class="d-flex align-items-center gap-3">
-                        <i class="fa-solid fa-stamp text-primary fs-3"></i>
-                        <div class="small">
-                            <strong>Acreditación Nacional:</strong> Todos los títulos emitidos por la Universidad Latinoamericana son otorgados en Provisión Nacional por el Ministerio de Educación del Estado Plurinacional de Bolivia.
-                        </div>
-                    </div>
+                <div class="p-3 rounded small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <strong>Títulos en Provisión Nacional:</strong> Todos los diplomas académicos emitidos por la ULAT habilitan la tramitación del Título en Provisión Nacional ante el Ministerio de Educación del Estado Plurinacional de Bolivia.
                 </div>
             </div>
 
             <!-- Misión y Visión -->
-            <div class="row g-4 mb-5">
+            <div class="row g-4 mb-4">
                 <div class="col-md-6">
-                    <div class="card card-ulat p-4 h-100 border-top border-4 border-primary">
-                        <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3 d-inline-block mb-3">
-                            <i class="fa-solid fa-bullseye"></i>
+                    <div class="card card-ulat p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <span class="academic-index">MISIÓN</span>
+                            <i data-lucide="compass" class="lucide text-secondary"></i>
                         </div>
-                        <h4 class="fw-bold text-dark mb-2">Nuestra Misión</h4>
-                        <p class="text-secondary small lh-lg mb-0">
+                        <h4 class="h5 fw-bold mb-2">Misión Institucional</h4>
+                        <p class="text-secondary small mb-0" style="line-height: 1.7;">
                             Formar profesionales idóneos, con sólida preparación científica, técnica y valores éticos, capaces de responder creativamente a los desafíos del desarrollo regional y nacional, contribuyendo a la transformación productiva con equidad y justicia social.
                         </p>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card card-ulat p-4 h-100 border-top border-4 border-warning">
-                        <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-3 d-inline-block mb-3">
-                            <i class="fa-solid fa-eye"></i>
+                    <div class="card card-ulat p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                            <span class="academic-index">VISIÓN</span>
+                            <i data-lucide="eye" class="lucide text-secondary"></i>
                         </div>
-                        <h4 class="fw-bold text-dark mb-2">Nuestra Visión</h4>
-                        <p class="text-secondary small lh-lg mb-0">
+                        <h4 class="h5 fw-bold mb-2">Visión Institucional</h4>
+                        <p class="text-secondary small mb-0" style="line-height: 1.7;">
                             Ser una institución de educación superior líder, reconocida por su excelencia académica, investigación aplicada, vinculación con el entorno socioeconómico y por la calidad humana de sus graduados a nivel nacional e internacional.
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Valores -->
+            <!-- Principios y Valores -->
             <div class="card card-ulat p-4 p-md-5">
-                <h4 class="fw-bold text-primary mb-3"><i class="fa-solid fa-gem text-warning me-2"></i> Valores Institucionales</h4>
-                <div class="row g-3 text-secondary small">
+                <span class="ulat-eyebrow mb-1">Pilares Éticos</span>
+                <h4 class="h5 fw-bold mb-3 pb-2 border-bottom">Valores Universitarios</h4>
+                <div class="row g-3 small text-secondary">
                     <div class="col-md-6">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-success"></i>
-                            <span><strong>Ética y Responsabilidad Social</strong></span>
+                        <div class="p-3 rounded border h-100" style="background-color: #f8fafc;">
+                            <div class="fw-bold text-dark mb-1">Excelencia Académica y Científica</div>
+                            <div>Compromiso permanente con la actualización curricular y la práctica en laboratorio.</div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-success"></i>
-                            <span><strong>Excelencia Académica y Científica</strong></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-success"></i>
-                            <span><strong>Compromiso con el Desarrollo de Bolivia</strong></span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-circle-check text-success"></i>
-                            <span><strong>Innovación, Pluralismo e Inclusión</strong></span>
+                        <div class="p-3 rounded border h-100" style="background-color: #f8fafc;">
+                            <div class="fw-bold text-dark mb-1">Ética y Responsabilidad Social</div>
+                            <div>Formación de ciudadanos íntegros al servicio de la comunidad boliviana.</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar Informativo -->
+        <!-- Sidebar -->
         <div class="col-lg-4">
-            <div class="sticky-top" style="top: 100px;">
-                <div class="card card-ulat p-4 bg-light border-0 mb-4 text-center">
-                    <div class="display-4 fw-bold text-primary mb-1">1995</div>
-                    <div class="fw-bold text-dark">Año de Fundación</div>
-                    <small class="text-muted">Más de 29 años formando profesionales</small>
-                </div>
-
-                <div class="card card-ulat p-4 bg-white border-0 shadow-sm text-center">
-                    <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-circle d-inline-block mx-auto mb-3" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fa-solid fa-comments fs-3"></i>
+            <div class="sticky-top" style="top: 90px;">
+                <div class="card card-ulat overflow-hidden mb-4">
+                    <img src="../assets/ulat/banner_2_2560x1707.jpg" alt="Graduación ULAT" class="w-100" style="height: 200px; object-fit: cover;">
+                    <div class="p-4">
+                        <span class="ulat-eyebrow mb-1">Desde 1995</span>
+                        <h5 class="fw-bold mb-2">Trayectoria Acreditada</h5>
+                        <p class="small text-secondary mb-3">
+                            Más de 30 años formando médicos, ingenieros, abogados, auditores y educadores en Cochabamba.
+                        </p>
+                        <button type="button" class="btn btn-ulat-primary btn-sm w-100" onclick="window.preguntarAlChat('Cuéntame sobre la historia, sedes y resoluciones ministeriales de la ULAT')">
+                            Consultar a Guía ULAT
+                        </button>
                     </div>
-                    <h5 class="fw-bold text-dark">¿Preguntas sobre la ULAT?</h5>
-                    <p class="text-muted small mb-3">
-                        Nuestro asesor virtual Guía ULAT te orienta en vivo sobre sedes, carreras y acreditaciones.
-                    </p>
-                    <button type="button" class="btn btn-ulat-gold w-100 rounded-pill btn-sm py-2" onclick="window.preguntarAlChat('Cuéntame la historia y resoluciones ministeriales de la ULAT')">
-                        Preguntar ahora
-                    </button>
                 </div>
             </div>
         </div>
@@ -124,4 +104,3 @@ require_once __DIR__ . '/header.php';
 </div>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
-

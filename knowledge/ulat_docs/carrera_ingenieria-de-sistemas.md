@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias y Tecnología
 **Grado Académico:** Licenciatura en Ingeniería
-**Duración:** 5 años (10 semestres)
+**Duración Oficial:** 4 años y medio (9 semestres)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Oficial ULAT
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -31,4 +33,66 @@ Ofrecer al estudiante una formación integral que le permita como miembro de la 
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (4 años y medio (9 semestres))
+
+### 1º Semestre
+- Cálculo I
+- Introducción a la Programación
+- Álgebra I
+- Inglés I
+- Teoría de la Informática
+
+### 2º Semestre
+- Cálculo II
+- Programación Orientada a Objetos (POO) y Estructura de Datos
+- Álgebra II
+- Inglés II
+- Física II
+
+### 3º Semestre
+- Matemáticas Diferenciales
+- Taller de Programación
+- Electrónica Digital
+- Estadística I
+- Contabilidad Básica
+
+### 4º Semestre
+- Sistemas de Información I
+- Bases de Datos I
+- Arquitectura de Computadoras
+- Estadística II
+- Costo para Toma de Decisiones
+
+### 5º Semestre
+- Sistemas de Información II
+- Bases de Datos II
+- Sistemas Operativos
+- Programación en Internet I
+- Ingeniería Económica
+
+### 6º Semestre
+- Investigación Operativa I
+- Taller de Base de Datos
+- Programación en Internet II
+- Mercadotecnia
+
+### 7º Semestre
+- Investigación Operativa II
+- Ingeniería de Software
+- Taller de Programación en Internet
+- Preparación y Evaluación de Proyectos
+
+### 8º Semestre
+- Simulación y Modelaje
+- Taller de Ingeniería de Software
+- Telecomunicaciones I
+- E-Business (Comercio Electrónico)
+- Inteligencia Artificial
+
+### 9º Semestre
+- Metodología de la Investigación
+- Evaluación y Auditoría de Sistemas
+- Telecomunicaciones II
+- Desarrollo de E-Learning
+- Sistemas Expertos
+

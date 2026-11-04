@@ -4,9 +4,100 @@
         "nombre": "Licenciatura en Medicina",
         "facultad": "Facultad de Ciencias de la Salud",
         "grado": "Licenciatura",
-        "duracion": "5 años + 1 año de Internado Rotatorio",
+        "duracion": "6 años (10 semestres académicos + 2 semestres de Internado Rotatorio)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Nº 590\/07",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_medicina.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Anatomía Humana I",
+                "Histología I",
+                "Embriología y Genética I",
+                "Salud Pública I",
+                "Idiomas I (Quechua-Castellano)",
+                "Soporte Básico de Vida"
+            ],
+            "2º Semestre": [
+                "Anatomía Humana II",
+                "Histología II",
+                "Embriología y Genética II",
+                "Salud Pública II",
+                "Idiomas II (Quechua-Castellano)"
+            ],
+            "3º Semestre": [
+                "Fisiología I",
+                "Microbiología I",
+                "Parasitología I",
+                "Bioquímica I",
+                "Ética Médica"
+            ],
+            "4º Semestre": [
+                "Fisiología II",
+                "Microbiología II",
+                "Parasitología II",
+                "Bioquímica II",
+                "Psicología Médica"
+            ],
+            "5º Semestre": [
+                "Farmacología y Terapéutica I",
+                "Semiología I",
+                "Fisiopatología I",
+                "Técnica Quirúrgica I",
+                "Patología General",
+                "Imagenología"
+            ],
+            "6º Semestre": [
+                "Farmacología y Terapéutica II",
+                "Semiología II",
+                "Fisiopatología II",
+                "Técnica Quirúrgica II",
+                "Patología Especial",
+                "Nutrición"
+            ],
+            "7º Semestre": [
+                "Cirugía I",
+                "Medicina Interna I (Inmunología)",
+                "Epidemiología",
+                "Urología",
+                "Medicina Interna I (Nefrología)",
+                "Traumatología y Ortopedia"
+            ],
+            "8º Semestre": [
+                "Cirugía II",
+                "Medicina Interna II (Cardiología)",
+                "Medicina Interna II (Neumología)",
+                "Medicina Interna II (Reumatología)",
+                "Psiquiatría",
+                "Medicina Legal"
+            ],
+            "9º Semestre": [
+                "Pediatría I",
+                "Ginecología",
+                "Medicina Interna III (Gastroenterología)",
+                "Neurología y Neurocirugía",
+                "Medicina Interna III (Endocrinología)",
+                "Medicina Interna III (Hematología)"
+            ],
+            "10º Semestre": [
+                "Pediatría II",
+                "Obstetricia",
+                "Medicina Interna IV (Dermatología)",
+                "Medicina Interna IV (Infectología)",
+                "Otorrinolaringología",
+                "Oftalmología",
+                "Administración Hospitalaria"
+            ],
+            "11º Semestre (Internado Rotatorio)": [
+                "Medicina Interna",
+                "Cirugía",
+                "Pediatría"
+            ],
+            "12º Semestre (Internado Rotatorio)": [
+                "Ginecología y Obstetricia",
+                "Medicina Social y Familiar (Servicio Social Rural Obligatorio)"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Licenciado en Medicina tiene conocimientos, habilidades y destrezas para realizar un cuidado de salud, integral, científico, humanitario y ético. Atiende a la persona en el contexto de su familia y de la comunidad de la que forma parte.\n\nEs competente clínicamente para proporcionar la mayor parte del cuidado requerido por la persona, en forma continuada y con un enfoque no solo biológico, sino también social y ambiental. Tiene asimismo la capacidad de conducir, administrar y tomar decisiones con relación al desempeño de los servicios de salud.\n\n## Objetivos\n\nFormar profesionales en MEDICINA con conocimientos científico – técnicos capaces de desarrollar actividades en los campos de la producción, investigación y servicios, con mentalidad creativa y conciencia critica, que posea un sentido realista, practico y solidario, acorde con las necesidades de desarrollo y transformación del país.\n\nContacto"
     },
     "odontologia": {
@@ -16,7 +107,85 @@
         "grado": "Licenciatura",
         "duracion": "5 años (10 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_odontologia.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Anatomía Humana I",
+                "Embriología y Genética I",
+                "Histología I",
+                "Anatomía Dentaria I",
+                "Salud Pública"
+            ],
+            "2º Semestre": [
+                "Anatomía Humana II",
+                "Embriología y Genética II",
+                "Histología II",
+                "Anatomía Dentaria II",
+                "Bioquímica"
+            ],
+            "3º Semestre": [
+                "Fisiología General",
+                "Patología I",
+                "Semiología General I",
+                "Microbiología",
+                "Materiales Dentales I",
+                "Técnicas de Laboratorio I"
+            ],
+            "4º Semestre": [
+                "Fisiología Estomatológica y de la Oclusión",
+                "Patología II",
+                "Semiología General II",
+                "Materiales Dentales II",
+                "Técnicas de Laboratorio II"
+            ],
+            "5º Semestre": [
+                "Cirugía I",
+                "Farmacología y Terapéutica",
+                "Operatoria I",
+                "Patología Estomatológica",
+                "Semiología Estomatológica",
+                "Radiología e Imagenología"
+            ],
+            "6º Semestre": [
+                "Cirugía II",
+                "Periodoncia I",
+                "Operatoria II",
+                "Endodoncia I",
+                "Prostodoncia Fija I",
+                "Prostodoncia Removible I",
+                "Radiología e Imagenología Clínica"
+            ],
+            "7º Semestre": [
+                "Cirugía III",
+                "Periodoncia II",
+                "Odontopediatría I",
+                "Ortodoncia I",
+                "Prostodoncia Fija III",
+                "Metodología de la Investigación",
+                "Endodoncia II",
+                "Prostodoncia Removible II"
+            ],
+            "8º Semestre": [
+                "Cirugía IV",
+                "Periodoncia III",
+                "Odontopediatría II",
+                "Ortodoncia II",
+                "Gestión y Administración Clínica"
+            ],
+            "9º Semestre": [
+                "Ortodoncia Clínica",
+                "Deontología Odontológica",
+                "Medicina Interna en Odontología",
+                "Odontología Legal y Forense",
+                "Psicología"
+            ],
+            "10º Semestre": [
+                "Clínica Integral del Niño",
+                "Clínica Integral del Adulto"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Cirujano Dentista formado por la Universidad Latinoamericana, tiene una sólida formación ética, comprometido con la problemática del país y en permanente actualización con la ciencia y la tecnología, es un profesional universitario con sólida formación en ciencias básicas, médicas, biológicas y sociales que integra un Equipo de salud, especializado en el estudio y solución de la problemática de la salud bucal en concordancia con la salud integral del individuo.\n\nEstá capacitado para solucionar con mentalidad preventiva los problemas más comunes que afectan a la boca y anexos como: caries dental, trastornos máxilo faciales, cáncer bucal, enfermedades sistemáticas e infectocontagiosas y necesidades de rehabilitación bucal.\n\nLa formación Odontológica le permite participar en el desarrollo de programas básicos de la comunidad, en equipo con otros profesionales de la salud.\n\n## Objetivos\n\nFormar al futuro profesional de Odontología científicamente, capaz de integrarse al seno del mismo pueblo para coadyuvar en la solución de sus problemas de salud  oral.\n\nBajar el índice de las tasas de mortalidad buco-dentaria a través de la prevención, promoción, educación, investigación, diagnostico, tratamiento y rehabilitación tanto del individuo, la familia dentro la comunidad.\n\nPromover el intercambio en sus niveles: provincial, departamental, nacional e internacional que  permita la constante actualización de sus planes y programas de estudio.\n\nFomentar la investigación y extensión científica como único medio de proporcionar alternativas y respuestas a la problemática de salud oral  en las comunidades, urbanas y rural de las provincias, departamentales y nacionales.\n\nCoordinar la actividad académica dentro la Universidad Latinoamericana, para luego elaborar planes y programas integrales de la especialidad expansivas al resto del sistema.\n\nContacto"
     },
     "enfermeria": {
@@ -24,9 +193,77 @@
         "nombre": "Licenciatura en Enfermería",
         "facultad": "Facultad de Ciencias de la Salud",
         "grado": "Licenciatura",
-        "duracion": "4 años y medio (9 semestres)",
+        "duracion": "5 años (10 semestres incluye Internado Rotatorio)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Nº 590\/07",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_enfermeria.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Anatomía y Fisiología I",
+                "Fundamentos de Enfermería I",
+                "Bioquímica",
+                "Salud Comunitaria I",
+                "Soporte Básico de Vida",
+                "Idiomas I"
+            ],
+            "2º Semestre": [
+                "Anatomía y Fisiología II",
+                "Fundamentos de Enfermería II",
+                "Nutrición y Dietología",
+                "Salud Comunitaria II",
+                "Psicología General",
+                "Idiomas II"
+            ],
+            "3º Semestre": [
+                "Semiología",
+                "Técnica Quirúrgica",
+                "Médico Quirúrgico I",
+                "Salud Comunitaria III",
+                "Farmacología I"
+            ],
+            "4º Semestre": [
+                "Parasitología",
+                "Microbiología",
+                "Médico Quirúrgico II",
+                "Salud Comunitaria IV",
+                "Farmacología II"
+            ],
+            "5º Semestre": [
+                "Bioestadística y Demografía",
+                "Gineco Obstetricia I",
+                "Pediatría I",
+                "Salud Comunitaria V",
+                "Psicología Clínica"
+            ],
+            "6º Semestre": [
+                "Epidemiología",
+                "Gineco Obstetricia II",
+                "Pediatría II",
+                "Salud Comunitaria VI",
+                "Enfermería Geriátrica"
+            ],
+            "7º Semestre": [
+                "Terapia Intensiva I",
+                "Urgencias Médicas I",
+                "Ética y Legislación",
+                "Salud Comunitaria VII",
+                "Psiquiatría"
+            ],
+            "8º Semestre": [
+                "Terapia Intensiva II",
+                "Urgencias Médicas II",
+                "Pruebas Diagnósticas",
+                "Administración Hospitalaria",
+                "Metodología de la Investigación"
+            ],
+            "9º y 10º Semestre (Internado Rotatorio)": [
+                "Médico Quirúrgico",
+                "Salud Comunitaria",
+                "Gineco Obstetricia",
+                "Pediatría"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl profesional de enfermería estará preparado para planificar, organizar, ejecutar y evaluar los problemas de mejoramiento de salud en las diferentes áreas contribuyendo de esta manera a los programas del Ministerio de Salud.\n\nTendrá la capacidad de brindar todo el apoyo que requieran las diferentes unidades de salud tanto en las clínicas, los hospitales las postas sanitarias, y los trabajos de apoyo de campo en las diferentes campañas de salud.\n\nPrestará todo tipo de atención a los pacientes de las diferentes unidades hospitalarias con un trabajo responsable y altamente cualificado\n\nEstará capacitado en el manejo de los equipos de laboratorio y equipos de prestación de salud de acuerdo con los requerimientos de nivel nacional e  internacional.\n\n## Objetivos\n\nFormar profesionales que estén altamente preparados para proporcionar atención de apoyo médico de calidad, con alto concepto de valores humanos, principios científicos y tecnológicos, que les permitan enfrentar con éxito y excelencia los retos, de prevención, tratamiento y rehabilitación de la salud individual y colectiva de la comunidad.\n\nContacto"
     },
     "bioquimica-farmacia": {
@@ -34,9 +271,81 @@
         "nombre": "Licenciatura en Bioquímica y Farmacia",
         "facultad": "Facultad de Ciencias de la Salud",
         "grado": "Licenciatura",
-        "duracion": "5 años (10 semestres)",
+        "duracion": "4 años y medio (9 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_bioquimica-farmacia.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Biología Molecular y Celular",
+                "Química General e Inorgánica",
+                "Matemáticas Aplicadas",
+                "Introducción a la Bioquímica y Farmacia",
+                "Física Aplicada",
+                "Comunicación y Redacción Científica"
+            ],
+            "2º Semestre": [
+                "Anatomía y Fisiología Humana",
+                "Química Orgánica I",
+                "Bioestadística",
+                "Microbiología General",
+                "Bioética y Legislación",
+                "Idiomas"
+            ],
+            "3º Semestre": [
+                "Química Orgánica II",
+                "Bioquímica I",
+                "Genética Humana",
+                "Fisiopatología General",
+                "Farmacología I",
+                "Parasitología Clínica"
+            ],
+            "4º Semestre": [
+                "Bioquímica II",
+                "Química Analítica y Técnicas Instrumentales",
+                "Inmunología",
+                "Farmacología II",
+                "Química Farmacéutica I",
+                "Biología Molecular Avanzada"
+            ],
+            "5º Semestre": [
+                "Toxicología",
+                "Farmacognosia",
+                "Bioquímica Clínica I",
+                "Farmacotecnia I",
+                "Tecnología Farmacéutica",
+                "Epidemiología y Salud Pública"
+            ],
+            "6º Semestre": [
+                "Química Farmacéutica II",
+                "Farmacotecnia II",
+                "Bioquímica Clínica II",
+                "Gestión y Administración Farmacéutica",
+                "Investigación Clínica"
+            ],
+            "7º Semestre": [
+                "Farmacia Hospitalaria y Comunitaria",
+                "Biofarmacia",
+                "Química Clínica",
+                "Bromatología",
+                "Legislación y Administración Farmacéutica \/ Control de Calidad",
+                "Biotecnología Aplicada"
+            ],
+            "8º Semestre": [
+                "Industria Farmacéutica y Tecnología de Medicamentos",
+                "Oncología Farmacéutica",
+                "Farmacia Verde",
+                "Farmacoeconomía",
+                "Seminarios Avanzados en Bioquímica y Farmacia",
+                "Control de Calidad de Medicamentos"
+            ],
+            "9º Semestre (Prácticas Profesionales)": [
+                "Prácticas en Laboratorio Clínico",
+                "Prácticas en Farmacia",
+                "Prácticas en Industria Farmacéutica"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl profesional en Bioquímica y Farmacia desempeña un rol crucial en el ámbito de la salud y el bienestar en Bolivia, gracias a su formación integral que combina conocimientos científicos, técnicos y habilidades interpersonales. Este perfil está diseñado para responder a las necesidades del sector farmacéutico y contribuir a la mejora de la atención médica y la salud pública.\n\n## Objetivos\n\nLa Universidad Latinoamericana dentro de su Plan Académico, tiene como objetivo general, el de formar profesionales integrales, capaces de combinar conocimientos científicos, habilidades técnicas y valores éticos para contribuir al bienestar de la sociedad. Estos objetivos se estructuran en torno a tres dimensiones fundamentales:\n\n \n\nContacto"
     },
     "optica-optometria": {
@@ -44,9 +353,75 @@
         "nombre": "Licenciatura en Óptica y Optometría",
         "facultad": "Facultad de Ciencias de la Salud",
         "grado": "Licenciatura",
-        "duracion": "4 años (8 semestres)",
+        "duracion": "4 años y medio (9 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_optica-optometria.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Matemáticas",
+                "Física",
+                "Química",
+                "Anatomía y Fisiología I",
+                "Quechua I"
+            ],
+            "2º Semestre": [
+                "Óptica Física",
+                "Óptica Geométrica",
+                "Materiales Ópticos y Lentes de Contacto",
+                "Anatomía y Fisiología II",
+                "Quechua II"
+            ],
+            "3º Semestre": [
+                "Óptica Oftálmica I",
+                "Práctica de Óptica Oftálmica I",
+                "Instrumentos Ópticos Optométricos",
+                "Anatomía y Fisiología Ocular",
+                "Inglés I Básico"
+            ],
+            "4º Semestre": [
+                "Óptica Oftálmica II",
+                "Práctica de Óptica Oftálmica II",
+                "Gestión y Administración de Empresas",
+                "Ética y Legislación",
+                "Inglés II Intermedio"
+            ],
+            "5º Semestre": [
+                "Óptica Oftálmica Avanzada",
+                "Óptica Fisiológica",
+                "Psicología Aplicada",
+                "Neurofisiología",
+                "Inglés III Avanzado"
+            ],
+            "6º Semestre": [
+                "Contactología I",
+                "Neurofisiología de la Visión",
+                "Psicobiología de la Visión",
+                "Salud Comunitaria I"
+            ],
+            "7º Semestre": [
+                "Optometría I",
+                "Contactología II",
+                "Semiología Ocular",
+                "Campo Visual",
+                "Salud Comunitaria II"
+            ],
+            "8º Semestre": [
+                "Optometría II",
+                "Patología y Farmacología Ocular",
+                "Visión Binocular",
+                "Prótesis Ocular",
+                "Baja Visión"
+            ],
+            "9º Semestre": [
+                "Optometría y Contactología Clínica",
+                "Optometría Pediátrica y Geriátrica",
+                "Terapia y Rehabilitación Visual",
+                "Optometría en Cirugía Oftálmica",
+                "Metodología de la Investigación"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Licenciado en Óptica y Optometria egresado de la Universidad Latinoamericana tendrá la capacidad de: Realizar diagnostico y tratamiento individuales. Poseer motivación y capacidad teórica-practica. Mostrar conocimientos sólidos y dominio en el uso de los instrumentos tecnológicos de laboratorio.\n\n## Objetivos\n\nLa carrera Optometría, está dirigido a la formación de profesionales con conocimientos suficientes y competencias técnicas para la atención de las necesidades que emergen del nuevo modelo educativo de la Ley 070 “Avelino Siñani – Elizardo Pérez”; por esta razón, uno de los pilares fundamentales de esta carrera es la prevención visual primaria, ya que la salud visual hoy en día es primordial para la vida por tanto es importante formar recursos humanos.\n\nContacto"
     },
     "protesis-dental": {
@@ -54,9 +429,54 @@
         "nombre": "Técnico Superior en Prótesis Dental",
         "facultad": "Facultad de Ciencias de la Salud",
         "grado": "Técnico Superior",
-        "duracion": "3 años (6 semestres)",
+        "duracion": "2 años y medio (5 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_protesis-dental.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Anatomía Dental I",
+                "Escultura Dental I",
+                "Materiales Dentales",
+                "Práctica de Anatomía Dental I",
+                "Práctica de Escultura Dental I",
+                "Práctica de Materiales Dentales"
+            ],
+            "2º Semestre": [
+                "Anatomía Dental II",
+                "Escultura Dental II",
+                "Prótesis Parcial Removible I",
+                "Práctica de Anatomía Dental II",
+                "Práctica de Escultura Dental II",
+                "Anatomía Humana"
+            ],
+            "3º Semestre": [
+                "Prótesis Fija I",
+                "Prótesis Parcial Removible II",
+                "Prótesis Total I",
+                "Práctica de Prótesis Fija I",
+                "Práctica de Prótesis Parcial Removible II",
+                "Práctica de Prótesis Total I"
+            ],
+            "4º Semestre": [
+                "Prótesis Fija II",
+                "Ortodoncia Preventiva",
+                "Prótesis Total II",
+                "Práctica de Prótesis Fija II",
+                "Práctica de Ortodoncia Preventiva",
+                "Práctica de Prótesis Total II",
+                "Organización de Laboratorio"
+            ],
+            "5º Semestre": [
+                "Cromo Cobalto",
+                "Ortodoncia",
+                "Práctica de Cromo Cobalto",
+                "Práctica de Ortodoncia",
+                "Práctica Isofit",
+                "Proyecto de Grado"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nLa Universidad, con la excelencia, eficiencia y eficacia de los servicios que oferta, el currículum, el equipo de docentes, la infraestructura y la metodología (práctica-teórica-práctica de aplicación, experimentación y de investigación), se propone que el protesista dental:\n\n* El Protesista Dental culminará con conocimientos teóricos y prácticos dentro del campo académico para poder entender y conocer con profundidad la rama a la cual prestará servicio.\n\n* Deberá salir con la destreza y habilidad con profundo conocimiento de su profesión para que pueda prestar servicios al odontólogo o a las personas que soliciten.\n\n* El Protesista Dental, una vez capacitado y formado con basta experiencia podrá continuar Licenciatura en Odontología sea en Universidades privadas o estatales para someterse a la competitividad sea en el país o en el extranjero.\n\n* Está altamente capacitado para utilizar modelos montados en articulador para recoger de ellos la información que le puede dar el Odontólogo.\n\n* El Protesista Dental podrá elaborar distintos tipos de prótesis con toda certeza y seguridad.\n\n* Deberá contar con ética profesional para poder ejercer su profesión.\n\n## Objetivos\n\nFormar Profesionales en área de Prótesis Dental que puedan competir con eficiencia y capacidad, para establecer diagnósticos de la Prótesis Total, Parcial, Removible y Fija.\n\n## Objetivos específicos\n\n* Diferenciar diferentes grupos dentarios.\n\n* Fortalecer conocimientos sobre diferentes elementos arquitectónicos de los dientes.\n\n* Aplicar las fórmulas y registros dentarios.\n\n* Realizar dibujos de las diferentes caras del diente.\n\n* Comprender la importancia de las convergencias.\n\n* Identificar las diferentes clases de oclusión.\n\n* El Protesista es capaz de planificar estrategias y elaborar un plan de tratamiento lógico.\n\n* Identificar en un macro modelo los detalles anatómicos dentarios.\n\n* Podrá diferenciar el color y el tamaño de las denticiones.\n\n* Utilizar los modelos montados en el articulador para recoger de ellos la información que le ayude llegar a un diagnóstico del caso.\n\nContacto"
     },
     "ingenieria-de-sistemas": {
@@ -64,9 +484,74 @@
         "nombre": "Ingeniería de Sistemas",
         "facultad": "Facultad de Ciencias y Tecnología",
         "grado": "Licenciatura en Ingeniería",
-        "duracion": "5 años (10 semestres)",
+        "duracion": "4 años y medio (9 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_ingenieria-de-sistemas.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Cálculo I",
+                "Introducción a la Programación",
+                "Álgebra I",
+                "Inglés I",
+                "Teoría de la Informática"
+            ],
+            "2º Semestre": [
+                "Cálculo II",
+                "Programación Orientada a Objetos (POO) y Estructura de Datos",
+                "Álgebra II",
+                "Inglés II",
+                "Física II"
+            ],
+            "3º Semestre": [
+                "Matemáticas Diferenciales",
+                "Taller de Programación",
+                "Electrónica Digital",
+                "Estadística I",
+                "Contabilidad Básica"
+            ],
+            "4º Semestre": [
+                "Sistemas de Información I",
+                "Bases de Datos I",
+                "Arquitectura de Computadoras",
+                "Estadística II",
+                "Costo para Toma de Decisiones"
+            ],
+            "5º Semestre": [
+                "Sistemas de Información II",
+                "Bases de Datos II",
+                "Sistemas Operativos",
+                "Programación en Internet I",
+                "Ingeniería Económica"
+            ],
+            "6º Semestre": [
+                "Investigación Operativa I",
+                "Taller de Base de Datos",
+                "Programación en Internet II",
+                "Mercadotecnia"
+            ],
+            "7º Semestre": [
+                "Investigación Operativa II",
+                "Ingeniería de Software",
+                "Taller de Programación en Internet",
+                "Preparación y Evaluación de Proyectos"
+            ],
+            "8º Semestre": [
+                "Simulación y Modelaje",
+                "Taller de Ingeniería de Software",
+                "Telecomunicaciones I",
+                "E-Business (Comercio Electrónico)",
+                "Inteligencia Artificial"
+            ],
+            "9º Semestre": [
+                "Metodología de la Investigación",
+                "Evaluación y Auditoría de Sistemas",
+                "Telecomunicaciones II",
+                "Desarrollo de E-Learning",
+                "Sistemas Expertos"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Ingeniero de Sistemas de la Universidad Latinoamericana será:\n\nUn ser humano con sentido de la ética, de la autoridad moral y del compromiso, como forma para alcanzar un pleno crecimiento humano y aportar a la sociedad, las intencionalidades formativas de la comunidad; creativo, analítico, critico, capaz de innovar y alcanzar la apropiación y desarrollo de la tecnología.\n\nUn líder, proactivo y con actitud para el trabajo en equipo, con conocimientos y capacidades tecnológicas, actitud científica e investigativa de análisis en torno al manejo de la información, orientada a la definición y logro de objetivos estratégicos en su que hacer profesional, dando respuesta efectiva a la problemática de su entorno ante la velocidad del cambio tecnológico.\n\nUn profesional capaz de proponer alternativas de soluciones informáticas a partir de un trabajo interdisciplinario, manteniendo como parámetro el cumplimiento de los estándares internacionales de calidad, ajustándose a las necesidades del entorno.\n\n## Objetivos\n\nLa Universidad Latinoamericana dentro de su Plan Académico, tiene como objetivo general, el de formar profesionales integrales en Ingeniería de Sistemas con actitudes investigativas y alto sentido humanístico, capaces de proponer alternativas de solución a problemas de carácter informático y con habilidades para el trabajo interdisciplinario.\n\nPor otra parte, incentivar en el estudiante su desarrollo integral como persona, en función de la realización de sus capacidades humanas, teniendo siempre presentes la ética y la moral.\n\nOfrecer al estudiante una formación integral que le permita como miembro de la sociedad, contribuir al desarrollo sostenible de su entorno. Nuestra sociedad necesita de líderes con actitudes para crear, modificar e innovar procesos informáticos. Estimular en el estudiante el análisis crítico a partir del estudio de casos. Aplicar diferentes estrategias pedagógicas para que el estudiante desarrolle habilidades que le permitan planificar, diseñar, implementar y administrar sistemas informáticos, teniendo en cuenta los estándares internacionales de calidad. Brindar al estudiante las herramientas necesarias que le permitan evaluar, negociar y seleccionar las soluciones informáticas adecuadas en el desarrollo de actividades como asesoría, interventora, consultoría y auditoria.\n\nContacto"
     },
     "ingenieria-civil": {
@@ -76,7 +561,88 @@
         "grado": "Licenciatura en Ingeniería",
         "duracion": "5 años (10 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_ingenieria-civil.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Química General",
+                "Física I",
+                "Álgebra I",
+                "Cálculo I",
+                "Geometría Analítica Plana y del Espacio"
+            ],
+            "2º Semestre": [
+                "Dibujo Técnico Computarizado",
+                "Física II",
+                "Álgebra II",
+                "Cálculo II",
+                "Geometría Descriptiva"
+            ],
+            "3º Semestre": [
+                "Computación para Ingeniería",
+                "Electrotecnia",
+                "Análisis Vectorial y Tensorial",
+                "Cálculo III",
+                "Geología General"
+            ],
+            "4º Semestre": [
+                "Estructuras Isostáticas",
+                "Materiales de Construcción",
+                "Métodos Geodésicos",
+                "Economía Política",
+                "Análisis Numérico",
+                "Idiomas"
+            ],
+            "5º Semestre": [
+                "Probabilidad y Estadística",
+                "Hidráulica I",
+                "Geodesia y Fotogrametría",
+                "Geografía y Defensa de Recursos Naturales",
+                "Resistencia de Materiales I",
+                "Sistemas de Ingeniería"
+            ],
+            "6º Semestre": [
+                "Hidrología",
+                "Hidráulica II",
+                "Geomática",
+                "Transportes y Comunicaciones",
+                "Resistencia de Materiales II",
+                "Mecánica de Suelos I"
+            ],
+            "7º Semestre": [
+                "Ingeniería Sanitaria I",
+                "Estructuras Hiperestáticas",
+                "Estructuras de Madera",
+                "Hormigón Armado I",
+                "Ingeniería Económica",
+                "Mecánica de Suelos II"
+            ],
+            "8º Semestre": [
+                "Ingeniería Sanitaria II",
+                "Estructuras Metálicas",
+                "Maquinaria y Equipo de Construcción",
+                "Hormigón Armado II",
+                "Carreteras I",
+                "Mecánica de Suelos Aplicada"
+            ],
+            "9º Semestre": [
+                "Obras Hidráulicas I",
+                "Construcción de Edificios",
+                "Ingeniería Ambiental",
+                "Dirección de Obras y Valuaciones",
+                "Fundaciones I",
+                "Mecánica del Medio Continuo"
+            ],
+            "10º Semestre (Menciones)": [
+                "Metodología de la Investigación",
+                "Mención Estructuras (Diseño de Estructuras Especiales, Puentes, Hormigón Preesforzado)",
+                "Mención Hidráulica (Obras Hidráulicas II, Centrales Hidroeléctricas)",
+                "Mención Sanitaria (Plantas de Tratamiento de Agua Potable y Residual)",
+                "Mención Vialidad (Carreteras II, Aeropuertos, Ferrocarriles)",
+                "Mención Geotecnia (Fundaciones II, Mecánica de Rocas, Túneles)"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nFormar profesionales de alta capacidad científica, tecnológica y metodológica operativa, con una visión social del país en los diferentes campos de intervención de la Ingeniería Civil, en el marco de las necesidades y demandas que requiere el desarrollo nacional.\n\n## Objetivos\n\nLas características particulares de la Ingeniería Civil harán que su perfil ocupacional sea único y con casi absoluta certeza, se puede decir que en la actualidad no hay un solo profesional de esta área sin vinculación laboral ya que se tiene gran acogida en diversas instituciones y entidades del sector público y privado.\n\nSe puede mencionar: catastros municipales, oficinas de planeación y valorización, planificación Urbana y Rural, Etc.\n\nEl profesional con el grado de Ingeniero en Civil  egresado de  la  Universidad Latinoamericana,  podrá desempeñarse, entre otros, en los siguientes  puestos:\n\n* Consultas Privadas, Ingeniero de empresa\n\n* Ingeniero de Consulta institucional\n\n* Director de Servicios de Ingeniería (laboratorios privados)\n\n* Ingeniero Docente en Laboratorios Universitarios\n\n* Director de área Catastral, Apertura de Caminos\n\n* Levantamientos Topográficos, Construcción de diques\n\n* Mensuras Viables, subterráneas y puentes.\n\nContacto"
     },
     "ingenieria-geodesia-topografia": {
@@ -86,7 +652,82 @@
         "grado": "Licenciatura en Ingeniería",
         "duracion": "5 años (10 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_ingenieria-geodesia-topografia.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Dibujo Técnico",
+                "Física I",
+                "Álgebra I",
+                "Cálculo I",
+                "Geometría Analítica Plana y del Espacio",
+                "Trigonometría Plana"
+            ],
+            "2º Semestre": [
+                "Geología General",
+                "Física II",
+                "Trigonometría Esférica",
+                "Cálculo II",
+                "Dibujo Topográfico",
+                "Cartografía"
+            ],
+            "3º Semestre": [
+                "Geometría Descriptiva",
+                "Estadística",
+                "Topografía I",
+                "Topografía de Campo I",
+                "Tecnología Instrumental",
+                "Dibujo Computarizado"
+            ],
+            "4º Semestre": [
+                "Topografía II",
+                "Topografía de Campo II",
+                "Mecánica de Suelos",
+                "Teoría de Errores",
+                "Hidrometría e Hidráulica",
+                "Ingeniería Legal"
+            ],
+            "5º Semestre": [
+                "Probabilidad y Estadística",
+                "Hidráulica I",
+                "Geodesia y Fotogrametría",
+                "Geografía y Defensa de Recursos Naturales",
+                "Resistencia de Materiales"
+            ],
+            "6º Semestre": [
+                "Topografía Aplicada",
+                "Planificación y Costos Topográficos",
+                "Geodesia Geométrica I",
+                "Catastro y Avalúo",
+                "Percepción Remota",
+                "Mensuras Subterráneas"
+            ],
+            "7º Semestre": [
+                "Ingeniería Sanitaria I",
+                "Estructuras Hiperestáticas",
+                "Estructuras de Madera",
+                "Tecnología del Hormigón",
+                "Seguridad Industrial"
+            ],
+            "8º Semestre": [
+                "Geodesia Vertical",
+                "Geodesia Física",
+                "Geodesia Astronómica",
+                "Rectificación y Restitución Fotogramétrica",
+                "Geografía y Recursos Naturales"
+            ],
+            "9º Semestre": [
+                "Sistemas de Información Geográfica (SIG)",
+                "Saneamiento Ambiental",
+                "Geodesia Satelital",
+                "Administración y Organización de Empresas"
+            ],
+            "10º Semestre": [
+                "Metodología de la Investigación",
+                "Modalidad de Graduación"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nLas características particulares de la Ingeniería Civil harán que este profesional sea único y con casi absoluta certeza, se puede decir que en la actualidad no hay un solo profesional de esta área sin vinculación laboral ya que se tiene gran acogida en diversas instituciones y entidades del sector público y privado.\n\nEste profesional podrá desempeñarse en los siguientes puestos:\n\n* Consultas Privadas, Ingeniero de empresa\n\n* Ingeniero de Consulta institucional\n\n* Director de Servicios de Ingeniería (laboratorios privados) \n\n* Ingeniero Docente en Laboratorios Universitarios\n\n* Director de área Catastral, Apertura de Caminos\n\n* Levantamientos Topográficos, Construcción de diques\n\n* Mensuras Viables, subterráneas y puentes.\n\nSe puede mencionar: catastros municipales, oficinas de planeación y valorización, planificación Urbana y Rural, etc., además, del manejo y enseñanza de equipos como: Niveles, Taquímetros, Teodolitos, Estación Total, GPS, Navegadores de diferentes marcas e industrias con alta tecnología.\n\n## Objetivos\n\nContribuir a la formación de excelentes seres humanos e ingenieros calificados que, dentro del contexto que les sea factible o posible desarrollarse, ofrezcan su valioso concurso a la solución de diversos problemas pertenecientes a los saberes descritos.\n\nDesarrollar espacios eminentemente prácticos para la investigación científica y tecnológica integrados a procesos de producción y conocimientos, su dominio, experimentación, aplicación en proyectos y acciones de problemas del entorno socia, en función del avance de los contenidos curriculares de cada caso.\n\nFormar profesionales con actitudes y capacidades reflexivas, críticas y creativas que, a través de las prácticas investigativas de campo y de equipos, respondan casual explicativamente a los diferentes hechos y fenómenos del campo del Ingeniero Geodesta Topografo.\n\nCrear, actualizar y desarrollar cuadros profesionales de calidad en las áreas de la Ciencia Geodésica, capaces en el análisis y solución de problemas nacionales que coadyuven en el desarrollo técnico y científico.\n\nTomando como la definición de la Geodesia la necesidad de establecer dimenciones y figura en el estudio del campo gravitacional externo de la tierra, el geodesta establece mediciones astronómicas, gravimétricas y fotogramétricas, conllevando además, al estudio geodinámico global, lo cual impacta en el desarrollo económico y científico.\n\nContacto"
     },
     "ingenieria-mecanica-automotriz": {
@@ -94,9 +735,74 @@
         "nombre": "Ingeniería Mecánica Automotriz y Electrónica",
         "facultad": "Facultad de Ciencias y Tecnología",
         "grado": "Licenciatura en Ingeniería",
-        "duracion": "5 años (10 semestres)",
-        "modalidad": "Presencial",
+        "duracion": "4 años (8 semestres)",
+        "modalidad": "Presencial (Horarios Diurno y Nocturno)",
+        "resolucion": "R.M. Nº 0140\/25",
+        "sede": "Campus Norte (Av. Uyuni Nº 1889 casi Av. Circunvalación) y Sede Central",
         "malla_imagen": "assets\/ulat\/mallas\/malla_ingenieria-mecanica-automotriz.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Motores a Gasolina I",
+                "Electricidad Automotriz I",
+                "Matemática Automotriz",
+                "Metrología Automotriz",
+                "Dibujo Técnico Automotriz I",
+                "Química Automotriz (Combustibles y Lubricantes)"
+            ],
+            "2º Semestre": [
+                "Motores a Gasolina II",
+                "Electricidad Automotriz II",
+                "Higiene, Seguridad Industrial y Medio Ambiente",
+                "Física",
+                "Dibujo Técnico Automotriz II",
+                "Inglés Técnico I"
+            ],
+            "3º Semestre": [
+                "Motores a Gasolina III",
+                "Electricidad Automotriz III",
+                "Motores Diésel I",
+                "Electrónica Automotriz I",
+                "Termodinámica",
+                "Transmisiones I"
+            ],
+            "4º Semestre": [
+                "Motores a Gasolina IV",
+                "Inyección a Gasolina I",
+                "Motores Diésel II",
+                "Electrónica Automotriz II",
+                "Neumática",
+                "Transmisiones II"
+            ],
+            "5º Semestre": [
+                "Inyección Electrónica Diésel I",
+                "Inyección a Gasolina II",
+                "Laboratorio Diésel I",
+                "Electrónica Automotriz III",
+                "Hidráulica",
+                "Transmisiones III"
+            ],
+            "6º Semestre": [
+                "Inyección Electrónica Diésel II",
+                "Inyección a Gasolina III",
+                "Laboratorio Diésel II",
+                "Energías Alternativas",
+                "Transmisiones IV"
+            ],
+            "7º Semestre": [
+                "Tecnología de Materiales Vehiculares",
+                "Mecánica de Fluidos",
+                "Mantenimiento de Equipos",
+                "Administración de Producción",
+                "Control de Calidad",
+                "Metodología de la Investigación"
+            ],
+            "8º Semestre (4 Menciones Especializadas)": [
+                "Mención Autotrónica",
+                "Mención Maquinaria Pesada",
+                "Mención en Cajas Automáticas y Mecánicas",
+                "Mención en Programación con Llaves con Chip y Módulos Computarizados"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Ingeniero Mecánico Automotriz desempeña un rol fundamental en el desarrollo industrial de Bolivia, gracias a su amplia formación y habilidades que le permiten diseñar, construir, analizar y optimizar sistemas mecánicos, electrónicos y automotrices. La demanda de estos profesionales es alta en diversos sectores, como la industria automotriz, metalmecánica, petrolera, manufacturera y aeroespacial.\n\n## Objetivos\n\nFormar Ingenieros mecánicos automotrices integrales, éticos, solidarios, con profunda vocación de servicio; con habilidades y conocimientos para desempeñarse eficientemente en: diseño, calculo, construcción, montaje, desarrollo, apropiación, implementación, selección, mantenimiento y explotación de sistemas y equipos de funcionamiento mecánico.\n\nContacto"
     },
     "ingenieria-comercio-marketing": {
@@ -104,9 +810,78 @@
         "nombre": "Ingeniería en Comercio, Marketing y Diseño Digital",
         "facultad": "Facultad de Ciencias y Tecnología",
         "grado": "Licenciatura en Ingeniería",
-        "duracion": "5 años (10 semestres)",
+        "duracion": "4 años y medio (9 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_ingenieria-comercio-marketing.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Fundamentos del Comercio Digital",
+                "Introducción al Marketing Digital",
+                "Fundamentos del Diseño Gráfico",
+                "Comunicación y Redacción para Medios Digitales",
+                "Taller de Creatividad e Innovación Digital",
+                "Idiomas I"
+            ],
+            "2º Semestre": [
+                "Economía Digital y Modelos de Negocio",
+                "Estrategias de Marketing de Contenidos",
+                "Diseño de Interfaces (UI)",
+                "Principios de Diseño Web HTML\/CSS",
+                "Seminario de Investigación I",
+                "Idiomas II"
+            ],
+            "3º Semestre": [
+                "Comercio Electrónico y Marketplaces",
+                "Publicidad Digital y SEM",
+                "Diseño de Experiencia de Usuario (UX)",
+                "Programación Front-End y JavaScript",
+                "Taller de Emprendimiento Digital"
+            ],
+            "4º Semestre": [
+                "Marketing en Redes Sociales",
+                "Producción Audiovisual para Medios Digitales",
+                "Gestión de Proyectos Digitales",
+                "Diseño y Desarrollo de Proyectos Web",
+                "Seminario de Investigación II"
+            ],
+            "5º Semestre": [
+                "Analítica Digital y Data Science",
+                "Optimización para Motores de Búsqueda (SEO)",
+                "Gestión de Marca Digital y Branding",
+                "Diseño y Desarrollo de Aplicaciones Móviles",
+                "Materia Integradora I"
+            ],
+            "6º Semestre": [
+                "Estrategias de Comercio Internacional",
+                "Inteligencia Artificial Aplicada al Marketing y Diseño",
+                "Realidad Aumentada y Virtual en Entornos Digitales",
+                "Gestión de la Reputación Online",
+                "Taller de Innovación en Comercio y Marketing Digital"
+            ],
+            "7º Semestre": [
+                "Automatización de Marketing y CRM",
+                "Diseño de Videojuegos y Gamificación",
+                "Modelado y Animación 3D",
+                "Legislación y Protección de Datos en Entornos Digitales",
+                "Taller de Diseño de Experiencias Digitales Inmersivas"
+            ],
+            "8º Semestre": [
+                "Estrategias Avanzadas de Publicidad Programática",
+                "Gestión Financiera para Proyectos Digitales",
+                "Técnicas de Narrativa Digital y Storytelling",
+                "Seguridad y Ciberseguridad en Plataformas Digitales",
+                "Materia Integradora II (Proyecto Final I)"
+            ],
+            "9º Semestre": [
+                "Transformación Digital y Futuro del Comercio",
+                "Tendencias Tecnológicas en Marketing y Diseño Digital",
+                "Taller de Innovación y Disrupción Tecnológica",
+                "Práctica Profesional",
+                "Materia Integradora III (Proyecto Final II)"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de carrera\n\nEl Ingeniero en Comercio, Marketing y Diseño Digital es un profesional integral, con una sólida base técnica y habilidades blandas, capaz de liderar la transformación digital de las organizaciones y contribuir al desarrollo sostenible de la economía boliviana en la era digital. Su perfil versátil le permite desempeñarse en diversos sectores, adaptándose a las necesidades cambiantes del mercado laboral y generando soluciones innovadoras que impulsen el crecimiento y la competitividad de las empresas en el entorno digital.\n\n## Objetivos\n\nEl objeto fundamental de la Carrera de Ingeniería en Comercio, Marketing y Diseño Digital es formar profesionales altamente capacitados para liderar la transformación digital de las organizaciones y contribuir al desarrollo sostenible de la economía boliviana.\n\n \n\nContacto"
     },
     "derecho": {
@@ -114,9 +889,80 @@
         "nombre": "Licenciatura en Derecho",
         "facultad": "Facultad de Ciencias Económicas, Sociales y Jurídicas",
         "grado": "Licenciatura",
-        "duracion": "5 años (10 semestres)",
+        "duracion": "4 años y medio (9 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_derecho.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Introducción al Derecho",
+                "Psicología Jurídica",
+                "Derecho Romano",
+                "Sociología General",
+                "Economía Política",
+                "Comunicación Escrita y Oratoria Forense"
+            ],
+            "2º Semestre": [
+                "Derecho Civil I (Personas)",
+                "Criminología",
+                "Teorías del Estado",
+                "Sociología Jurídica",
+                "Derecho Procesal y Organización Judicial"
+            ],
+            "3º Semestre": [
+                "Derecho Civil II (Reales)",
+                "Derecho Penal I (Parte General)",
+                "Derecho Constitucional I",
+                "Ciencia Política",
+                "Derecho Administrativo"
+            ],
+            "4º Semestre": [
+                "Derecho Civil III (Contratos)",
+                "Derecho Penal II (Parte General)",
+                "Derecho Constitucional II",
+                "Derecho Financiero y Tributario",
+                "Medicina Legal"
+            ],
+            "5º Semestre": [
+                "Derecho Civil IV (Obligaciones)",
+                "Derecho Penal III (Parte Especial)",
+                "Derecho del Trabajo",
+                "Derecho Comercial I",
+                "Derecho Minero y Petrolero",
+                "Derechos Humanos"
+            ],
+            "6º Semestre": [
+                "Derecho Civil V (Sucesiones)",
+                "Derecho Penal IV (Parte Especial)",
+                "Seguridad Social",
+                "Derecho Comercial II",
+                "Derecho Notarial y Registro Civil",
+                "Filosofía Jurídica"
+            ],
+            "7º Semestre": [
+                "Derecho Procesal Civil I y Práctica Forense Civil I",
+                "Derecho Procesal Penal I y Práctica Forense Penal I",
+                "Derecho Internacional Público",
+                "Arbitraje y Conciliación",
+                "Derecho Aduanero",
+                "Derecho de Familia y del Menor I"
+            ],
+            "8º Semestre": [
+                "Derecho Procesal Civil II y Práctica Forense Civil II",
+                "Derecho Procesal Penal II y Práctica Forense Penal II",
+                "Derecho Internacional Privado",
+                "Derecho Agrario",
+                "Derecho de Familia y del Menor II"
+            ],
+            "9º Semestre": [
+                "Procedimientos Especiales",
+                "Derecho de Integración",
+                "Derecho Municipal",
+                "Derecho Ambiental y sus Procedimientos",
+                "Metodología en la Investigación"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Abogado a ser formado en la Universidad Latinoamericana será capaz de participar profesionalmente en cualquier área del derecho, como defensor de los derechos de las personas, en los distintos conflictos que requieren de un tratamiento jurídico, que se presentan en la sociedad que en su mayor parte son resultados de una lucha de intereses de personas individuales o colectivas, estas situaciones problemáticas tienen que ser resueltas dentro del marco de la justicia, ética y moral, para este propósito, el abogado tendrá que proporcionar la información jurídica legal para la ejercicio de sus derechos y obligaciones y en otros casos asistirles ante los tribunales de justicia.\n\nEl abogado, realizara redacción y análisis críticos de documentos, representara a personas individuales o colectivas en asuntos jurídicos, proseguirá y agilizará causas penales, civiles, laborales, comerciales tributarias, financieras, coactivas, policiales municipales, aduaneras, electorales, administrativas, agrarias, estudiara y aplicara códigos, cuerpos de ley, la jurisprudencia consiguiente y su reglamentación, etc. Ejercerá su profesión dentro de los marcos de la ética profesional y bajo los principios de la honestidad, idoneidad y corrección. Así, mismo ofrecerá asesoramiento y orientación a entidades de gobierno, no gubernamentales, organismos internacionales, empresas públicas y privadas, sociedades civiles o mercantiles, organismos descentralizados, organizaciones de trabajadores o empleadores. El profesional abogado será también capaz de administrar justicia como Juez o miembro de un tribunal de Justicia, así mismo será capaz de utilizar los adelantos tecnológicos en el campo de la computación, como un instrumento de apoyo que facilite sus labores.\n\n## Objetivos\n\nA la conclusión de su formación académica, el Licenciado en Derecho de la Universidad Latinoamericana, será capaz y estará habilitado para desempeñar sus funciones como abogados y administradores de justicia que les permita resolver múltiples problemas jurídicos, políticos y sociales, con actualidad, idoneidad, eficiencia y altamente competitivos. Estos profesionales tendrán una formación con alta sensibilidad social, con valores éticos y morales, que les permita constituirse en un aporte positivo, en la búsqueda de mejores condiciones de vida de los habitantes del país.\n\nContacto"
     },
     "ciencias-de-la-educacion": {
@@ -124,9 +970,80 @@
         "nombre": "Licenciatura en Ciencias de la Educación",
         "facultad": "Facultad de Ciencias Económicas, Sociales y Jurídicas",
         "grado": "Licenciatura",
-        "duracion": "5 años (10 semestres)",
+        "duracion": "4 años y medio (9 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Oficial ULAT",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_ciencias-de-la-educacion.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Pedagogía General I",
+                "Fundamentos Biológicos de la Educación",
+                "Fundamentos Psicológicos de la Educación",
+                "Sociología General",
+                "Fundamentos de la Filosofía",
+                "Lenguaje"
+            ],
+            "2º Semestre": [
+                "Pedagogía General II",
+                "Psicología Evolutiva I",
+                "Estadística Educativa I",
+                "Sociología de la Educación",
+                "Filosofía de la Educación I",
+                "Quechua I"
+            ],
+            "3º Semestre": [
+                "Pedagogía Comparada",
+                "Psicología Evolutiva II",
+                "Estadística Educativa II",
+                "Sociología de la Educación II",
+                "Filosofía de la Educación II",
+                "Quechua II"
+            ],
+            "4º Semestre": [
+                "Políticas Educativas",
+                "Psicología de la Educación I",
+                "Gestión y Administración Educativa I",
+                "Historia General de la Educación",
+                "Investigación Educativa I"
+            ],
+            "5º Semestre": [
+                "Investigación Educativa II",
+                "Psicología de la Educación II",
+                "Gestión y Administración Educativa II",
+                "Realidad Boliviana",
+                "Historia de la Educación Boliviana",
+                "Antropología"
+            ],
+            "6º Semestre": [
+                "Investigación Educativa III",
+                "Didáctica General",
+                "Legislación Educativa",
+                "Epistemología",
+                "Proyectos Sociales y Educativos"
+            ],
+            "7º Semestre": [
+                "Diseño Curricular",
+                "Psicopedagogía y Educación Especial",
+                "Educación Alternativa",
+                "Orientación Educativa",
+                "Evaluación Institucional y Educativa"
+            ],
+            "8º Semestre": [
+                "Taller de Diseño y Evaluación Curricular",
+                "Taller de Psicopedagogía y Educación Especial",
+                "Taller de Educación Alternativa",
+                "Taller de Orientación Educativa",
+                "Programas Educativos Computarizados"
+            ],
+            "9º Semestre (Menciones)": [
+                "Práctica Pedagógica",
+                "Metodologías de la Investigación",
+                "Mención en Diseño y Evaluación Curricular",
+                "Mención en Psicopedagogía y Educación Especial",
+                "Mención en Educación Alternativa"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl profesional de Ciencias de la Educación será capaz de:\n\nIdentificar e interpretar las características fundamentales del sistema educativo Boliviano.\n\nDistinguir los elementos biológicos y psicológicos que intervienen en el proceso educativo.\n\nConocer los factores socio-político-económicos que condicionan la educación.\n\nElaborar programas educativos que incorporen los métodos y medios más idóneos para favorecer la consecución de los objetivos de la Educación.\n\nDesarrollar y analizar investigaciones educativas.\n\nDiseñar, coordinar y evaluar proyectos educativos en función de los planteamientos pedagógicos actuales y de la realidad concreta en los centros educativos.\n\nDesarrollar programas de orientación dirigidos a individuos y grupos, dentro de los distintos ámbitos de actuación educativa (personal, escolar, profesional).\n\n## Objetivos\n\nFormar profesionales de la Educación con una sólida formación pedagógica y conceptos claros de los aspectos involucrados en el proceso de enseñanza y aprendizaje.\n\nTener una amplia visión de los distintos puntos de vista de los enfoques de la Educación.\n\nManifestar sensibilidad a las necesidades educacionales del país y ser conscientes de la responsabilidad del país\n\nInterpretar nuestra realidad cultural y proponer una educación integral.\n\nFormar profesionales con una conciencia profunda acerca de las necesidades de defender, preservar, manejar y mejorar los recursos naturales renovables\n\nContacto"
     },
     "auditoria": {
@@ -134,9 +1051,83 @@
         "nombre": "Licenciatura en Auditoría (Contaduría Pública)",
         "facultad": "Facultad de Ciencias Económicas, Sociales y Jurídicas",
         "grado": "Licenciatura",
-        "duracion": "5 años (10 semestres)",
+        "duracion": "4 años y medio (9 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Nº 241\/02",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_auditoria.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Contabilidad Básica",
+                "Administración General",
+                "Economía General",
+                "Álgebra",
+                "Comunicación Escrita",
+                "Derecho Comercial"
+            ],
+            "2º Semestre": [
+                "Contabilidad Intermedia",
+                "Sistemas Administrativos",
+                "Microeconomía",
+                "Cálculo",
+                "Matemática Financiera",
+                "Derecho del Trabajo"
+            ],
+            "3º Semestre": [
+                "Contabilidad Bancaria",
+                "Contabilidad de Sociedades",
+                "Macroeconomía",
+                "Estadística I",
+                "Administración de Personal",
+                "Derecho Tributario"
+            ],
+            "4º Semestre": [
+                "Contabilidad de Costos I",
+                "Contabilidad de Servicios",
+                "Informática I",
+                "Estadística II",
+                "Matemática Actuarial",
+                "Organización y Métodos"
+            ],
+            "5º Semestre": [
+                "Contabilidad de Costos II",
+                "Contabilidad Petrolera y Minera",
+                "Informática II",
+                "Contabilidad Agropecuaria",
+                "Contabilidad Fiscal"
+            ],
+            "6º Semestre": [
+                "Taller de Costos",
+                "Gabinete de Contabilidad",
+                "Análisis e Interpretación de Estados Financieros",
+                "Economía Fiscal",
+                "Comercio Internacional",
+                "Metodología de la Investigación"
+            ],
+            "7º Semestre": [
+                "Auditoría I",
+                "Auditoría Tributaria I",
+                "Administración Financiera",
+                "Presupuestos Fiscales",
+                "Preparación y Evaluación de Proyectos",
+                "Presupuestos Empresariales"
+            ],
+            "8º Semestre": [
+                "Auditoría II",
+                "Auditoría Tributaria II",
+                "Seminario Superior",
+                "Auditoría Operativa",
+                "Auditoría Forense"
+            ],
+            "9º Semestre (Menciones)": [
+                "Gestión Administrativa Tributaria",
+                "Fiscalización y Medios de Impugnación Tributaria",
+                "Gestión de Riesgo y Mora Tributaria",
+                "Gabinete de Tributación",
+                "Gabinete de Auditoría",
+                "Menciones: Gestión Tributaria, Consultoría Contable, Control Gubernamental, Auditoría Financiera"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Auditor a ser formado en la Universidad Latinoamericana será capaz de realizar análisis críticos, que den fe y veracidad y confiabilidad a los estados financieros de las gestiones empresariales, de las distintas organizaciones sean estas públicas, privadas y mixtas. Ejercerá su profesión dentro de los marcos de la ética profesional y bajo los principios de la honestidad, idoneidad y corrección.\n\nAsí mismo, será capaz de incluir una amplia actividad del que hacer contable, administrativo, económico y financiero, será conocedor para organizar y dirigir los sistemas de organización contable y financiero a nivel ejecutivo, así mismo prestara labores de asesoramiento administrativo – financiero. El profesional Auditor será también capaz de utilizar los adelantos tecnológicos en el campo de la computación, como un instrumento de apoyo que facilite sus labores, su formación debe estar complementada con estudios en las áreas de las ciencias cuantitativas, económicas y sociales, para que pueda ubicarse con conocimiento de su entorno en la sociedad. Finalmente, su compromiso profesional con la sociedad manifiesta un humanismo vivencial y operante.\n\n## Objetivos\n\nA la conclusión de su formación académica, el Licenciado en Auditoria de la Universidad Latinoamericana, será capaz y estará habilitado para desempeñar sus funciones en el área Económica – Financiera, en las gestiones empresariales: privada, pública y mixtas, con actualidad, idoneidad, eficiencia y altamente competitivos. Tendrán una actitud critica necesaria que le permita estar consientes del entorno en que se desenvuelven, quedando abiertos al desarrollo tecnológico y a los cambios macroeconómicos.\n\nEstos profesionales tendrán una formación con alta sensibilidad social, con valores éticos y morales, que les permita constituirse en un aporte positivo, en la búsqueda de mejores condiciones de vida de los habitantes del país.\n\nLos Licenciados en Auditoria a la conclusión de su formación académica, poseerán un conjunto de conocimientos especializados, adquiridos durante el proceso de enseñanza – aprendizaje, que les permitirá tener las bases sólidas en el campo teórico y habilidades practicas para resolver problemas complejos y la toma de decisiones. Así mismo, serán capaces de llevar adelante investigaciones científicas tendientes a encontrar soluciones y respuestas a los problemas actuales que se presentan en la profesión, de esta manera sus trabajos se constituyan en aportes serios y mesurados en su área de especialización.\n\nContacto"
     },
     "contador-general": {
@@ -146,7 +1137,58 @@
         "grado": "Técnico Superior",
         "duracion": "3 años (6 semestres)",
         "modalidad": "Presencial",
+        "resolucion": "R.M. Nº 241\/02",
+        "sede": "Campus Central (Calle Uruguay #E-836)",
         "malla_imagen": "assets\/ulat\/mallas\/malla_contador-general.jpg",
+        "semestres": {
+            "1º Semestre": [
+                "Contabilidad Básica",
+                "Administración General",
+                "Economía General",
+                "Álgebra",
+                "Comunicación Escrita",
+                "Derecho Comercial"
+            ],
+            "2º Semestre": [
+                "Contabilidad Intermedia",
+                "Sistemas Administrativos",
+                "Microeconomía",
+                "Cálculo",
+                "Matemática Financiera",
+                "Derecho del Trabajo"
+            ],
+            "3º Semestre": [
+                "Contabilidad Bancaria",
+                "Contabilidad de Sociedades",
+                "Macroeconomía",
+                "Estadística I",
+                "Administración de Personal",
+                "Derecho Tributario"
+            ],
+            "4º Semestre": [
+                "Contabilidad de Costos I",
+                "Contabilidad de Servicios",
+                "Informática I",
+                "Estadística II",
+                "Matemática Actuarial",
+                "Organización y Métodos"
+            ],
+            "5º Semestre": [
+                "Contabilidad de Costos II",
+                "Contabilidad Petrolera y Minera",
+                "Informática II",
+                "Contabilidad Agropecuaria",
+                "Contabilidad Fiscal"
+            ],
+            "6º Semestre": [
+                "Taller de Costos",
+                "Gabinete de Contabilidad",
+                "Análisis e Interpretación de Estados Financieros",
+                "Economía Fiscal",
+                "Comercio Internacional",
+                "Metodología de la Investigación"
+            ]
+        },
         "descripcion": "* Inicio\n\n* Malla Curricular\n\n## Perfil de la carrera\n\nEl Contador General a ser formado en la Universidad Latinoamericana será capaz de realizar análisis críticos, que de fe de la veracidad y confiabilidad de estados financieros de las gestiones empresariales, de las distintas organizaciones sean estas públicas, privadas y mixtas. Ejercerá su profesión dentro de los marcos de la ética profesional y bajo los principios de la honestidad, idoneidad y corrección.\n\nAsí mismo, será capaz de incluir una amplia actividad del que hacer contable, administrativo, económico y financiero, será conocedor para organizar y dirigir los sistemas de organización contable y financiero a nivel ejecutivo, así mismo prestara labores de asesoramiento administrativo — financiero. El profesional Contador General será también capaz de utilizar los adelantos tecnológicos en el campo de la computación, como un instrumento de apoyo que facilite sus labores, su formación debe estar complementada con estudios en las áreas de las ciencias cuantitativas, económicas y sociales, para que pueda ubicarse con conocimiento de su entorno en la sociedad. Finalmente, su compromiso profesional con la sociedad manifiesta un humanismo vivencial y operante.\n\n## Objetivos\n\nA la conclusión de su formación académica, el Técnico superior en Contador General de la Universidad Latinoamericana, será capaz y estará habilitado para desempeñar sus funciones en el área Económica Financiera, en las gestiones empresariales: privada, pública y mixtas, con actualidad, idoneidad, eficiencia y altamente competitivos. Tendrán una actitud critica necesaria que le permita estar consientes del entorno en que se desenvuelven, quedando abiertos al desarrollo tecnológico y a los cambios macroeconómicos.\n\nEstos profesionales tendrán una formación con alta sensibilidad social, con valores éticos y morales, que les permita constituirse en un aporte positivo, en la búsqueda de mejores condiciones de vida de los habitantes del país.\n\nLos Técnicos Superiores en Contaduría General, a la conclusión de su formación académica, poseerán un conjunto de conocimientos especializados, adquiridos durante el proceso de enseñanza — aprendizaje, que les permitirá tener las bases sólidas en el campo teórico y habilidades practicas para resolver problemas complejos y la toma de decisiones. Así mismo, serán capaces de llevar adelante investigaciones científicas tendientes a encontrar soluciones y respuestas a los problemas actuales que se presentan en la profesión, de esta manera sus trabajos se constituyan en aportes serios y mesurados en su área de especialización.\n\nContacto"
     }
 }

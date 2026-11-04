@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 if (!isset($pageTitle)) {
-    $pageTitle = 'Universidad Latinoamericana - ULAT | Formación Profesional de Excelencia';
+    $pageTitle = 'Universidad Latinoamericana — ULAT | Educación Superior en Cochabamba';
 }
 $activeNav = $activeNav ?? 'inicio';
 
@@ -21,201 +21,395 @@ $carrerasEcono = array_filter($carrerasCatalog, fn($c) => str_contains($c['facul
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?></title>
     
-    <!-- Google Fonts -->
+    <!-- Tipografía Editorial e Institucional -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
     
-    <!-- Bootstrap 5 & FontAwesome -->
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Lucide Monoline Architectural Icons (Local) -->
+    <script src="../assets/js/lucide.min.js"></script>
     
-    <!-- Estilos Institucionales ULAT -->
+    <!-- Sistema de Diseño Institucional ULAT -->
     <style>
         :root {
-            --ulat-blue-dark: #0f2744;
-            --ulat-blue-primary: #153e75;
-            --ulat-blue-accent: #1e5bb0;
-            --ulat-gold: #e5a93c;
-            --ulat-gold-hover: #c98e29;
-            --ulat-light: #f8fafc;
-            --ulat-gray: #64748b;
+            --ulat-navy-deep: #081629;
+            --ulat-blue-dark: #0c213d;
+            --ulat-blue-primary: #143866;
+            --ulat-blue-accent: #1d4ed8;
+            --ulat-gold: #d49a35;
+            --ulat-gold-hover: #b88224;
+            --ulat-gold-dark: #9a6b18;
+            --ulat-gold-soft: #fbf6ec;
+            --ulat-surface: #f8f9fb;
+            --ulat-border: #e2e8f0;
+            --ulat-text: #1e293b;
+            --ulat-muted: #64748b;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            color: #334155;
-            background-color: var(--ulat-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--ulat-text);
+            background-color: var(--ulat-surface);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         h1, h2, h3, h4, h5, h6, .font-heading {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: -0.02em;
+            color: var(--ulat-blue-dark);
         }
 
-        /* Topbar */
+        .font-editorial {
+            font-family: 'Newsreader', Georgia, serif;
+        }
+
+        /* Iconografía Monolínea Arquitectónica (Lucide 1.5px) */
+        .lucide {
+            width: 18px;
+            height: 18px;
+            stroke-width: 1.6;
+            vertical-align: -3px;
+            flex-shrink: 0;
+        }
+        .lucide-sm {
+            width: 15px;
+            height: 15px;
+            stroke-width: 1.6;
+            vertical-align: -2px;
+        }
+        .lucide-lg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 1.5;
+        }
+
+        /* Marco sobrio para iconos (Cero cajas pastel de IA) */
+        .icon-frame {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid var(--ulat-border);
+            background-color: #ffffff;
+            color: var(--ulat-blue-dark);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .icon-frame-gold {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid rgba(212, 154, 53, 0.35);
+            background-color: var(--ulat-gold-soft);
+            color: var(--ulat-gold-dark);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Índice tipográfico editorial (01, 02, 03) */
+        .academic-index {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--ulat-gold-dark);
+            letter-spacing: 0.04em;
+            padding: 4px 10px;
+            border: 1px solid rgba(212, 154, 53, 0.35);
+            background-color: var(--ulat-gold-soft);
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .ulat-eyebrow {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--ulat-gold-dark);
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        .ulat-eyebrow-light {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--ulat-gold);
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Topbar Institucional */
         .ulat-topbar {
-            background-color: var(--ulat-blue-dark);
-            color: #cbd5e1;
-            font-size: 0.82rem;
+            background-color: var(--ulat-navy-deep);
+            color: #94a3b8;
+            font-size: 0.78rem;
             padding: 7px 0;
-            border-bottom: 2px solid var(--ulat-gold);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         }
         .ulat-topbar a {
             color: #cbd5e1;
             text-decoration: none;
-            transition: color 0.2s;
+            transition: color 0.15s;
         }
         .ulat-topbar a:hover {
             color: var(--ulat-gold);
         }
 
-        /* Navbar Principal */
+        /* Navbar Principal (Fondo Azul Marino Institucional para contraste perfecto del logo blanco y enlaces en 1 sola línea) */
         .ulat-navbar {
-            background-color: #ffffff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            padding: 12px 0;
+            background-color: var(--ulat-blue-dark);
+            border-bottom: 2px solid var(--ulat-gold);
+            padding: 11px 0;
             position: sticky;
             top: 0;
             z-index: 1020;
+            box-shadow: 0 8px 24px rgba(8, 22, 41, 0.18);
+        }
+        .ulat-navbar .navbar-brand {
+            padding: 0;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
         }
         .ulat-navbar .navbar-brand img {
-            max-height: 48px;
+            height: 44px;
             width: auto;
+            display: block;
+        }
+        .ulat-navbar .navbar-nav {
+            flex-wrap: nowrap;
         }
         .ulat-navbar .nav-link {
-            font-weight: 600;
-            font-size: 0.92rem;
-            color: var(--ulat-blue-dark);
-            padding: 8px 14px !important;
-            transition: all 0.2s ease;
-            border-radius: 6px;
-        }
-        .ulat-navbar .nav-link:hover, .ulat-navbar .nav-link.active {
-            color: var(--ulat-blue-accent);
-            background-color: rgba(30, 91, 176, 0.06);
-        }
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 10px 30px rgba(15, 39, 68, 0.12);
-            border-radius: 10px;
-            padding: 10px 0;
-        }
-        .dropdown-item {
-            font-size: 0.88rem;
             font-weight: 500;
-            padding: 8px 20px;
-            color: #334155;
-            transition: all 0.2s;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.86) !important;
+            padding: 7px 11px !important;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+            border-radius: 5px;
+            position: relative;
         }
-        .dropdown-item:hover {
-            background-color: #eff6ff;
-            color: var(--ulat-blue-primary);
-            padding-left: 24px;
+        .ulat-navbar .nav-link:hover {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.07);
+        }
+        .ulat-navbar .nav-link.active {
+            color: #ffffff !important;
+            font-weight: 600;
+            background-color: rgba(212, 154, 53, 0.16);
+        }
+        .ulat-navbar .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 11px;
+            right: 11px;
+            height: 2px;
+            background-color: var(--ulat-gold);
+            border-radius: 1px;
         }
 
+        .dropdown-menu {
+            border: 1px solid var(--ulat-border);
+            box-shadow: 0 14px 34px rgba(8, 22, 41, 0.16);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 280px;
+            margin-top: 8px !important;
+        }
+        .dropdown-header-ulat {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ulat-blue-primary);
+            padding: 8px 18px 4px;
+            display: block;
+            text-decoration: none;
+        }
+        .dropdown-item {
+            font-size: 0.84rem;
+            font-weight: 500;
+            padding: 6px 18px;
+            color: #334155;
+            transition: background-color 0.15s, color 0.15s;
+        }
+        .dropdown-item:hover {
+            background-color: #f1f5f9;
+            color: var(--ulat-blue-dark);
+        }
+
+        /* Botones Institucionales (Geometría arquitectónica 6px, sin abuso de píldoras) */
         .btn-ulat-gold {
             background-color: var(--ulat-gold);
             color: #ffffff;
-            font-weight: 700;
-            border-radius: 30px;
-            padding: 9px 22px;
-            border: none;
-            box-shadow: 0 4px 14px rgba(229, 169, 60, 0.35);
-            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            padding: 8px 18px;
+            border: 1px solid var(--ulat-gold);
+            white-space: nowrap;
+            transition: all 0.18s ease;
         }
         .btn-ulat-gold:hover {
             background-color: var(--ulat-gold-hover);
+            border-color: var(--ulat-gold-hover);
             color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(229, 169, 60, 0.45);
         }
 
         .btn-ulat-primary {
-            background-color: var(--ulat-blue-primary);
-            color: #ffffff;
-            font-weight: 600;
-            border-radius: 30px;
-            padding: 9px 22px;
-            border: none;
-            transition: all 0.2s;
-        }
-        .btn-ulat-primary:hover {
             background-color: var(--ulat-blue-dark);
             color: #ffffff;
-            transform: translateY(-2px);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            padding: 9px 20px;
+            border: 1px solid var(--ulat-blue-dark);
+            white-space: nowrap;
+            transition: all 0.18s ease;
+        }
+        .btn-ulat-primary:hover {
+            background-color: var(--ulat-blue-primary);
+            border-color: var(--ulat-blue-primary);
+            color: #ffffff;
         }
 
-        /* Banner Hero */
+        .btn-ulat-outline {
+            background-color: transparent;
+            color: var(--ulat-blue-dark);
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            padding: 8px 18px;
+            border: 1px solid #cbd5e1;
+            white-space: nowrap;
+            transition: all 0.18s ease;
+        }
+        .btn-ulat-outline:hover {
+            background-color: var(--ulat-blue-dark);
+            border-color: var(--ulat-blue-dark);
+            color: #ffffff;
+        }
+
+        /* Banner Hero & Encabezados de Página */
         .ulat-hero {
             position: relative;
-            background: linear-gradient(135deg, rgba(15, 39, 68, 0.92) 0%, rgba(21, 62, 117, 0.88) 100%), url('../assets/ulat/banner_1_1920x600.jpg') center/cover no-repeat;
+            background: linear-gradient(115deg, rgba(8, 22, 41, 0.94) 0%, rgba(12, 33, 61, 0.88) 60%, rgba(20, 56, 102, 0.82) 100%), url('../assets/ulat/banner_1_1920x600.jpg') center/cover no-repeat;
             color: #ffffff;
-            padding: 90px 0 100px;
+            padding: 76px 0 84px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Cards y Componentes */
+        .ulat-page-header {
+            background: linear-gradient(120deg, var(--ulat-navy-deep) 0%, var(--ulat-blue-dark) 65%, var(--ulat-blue-primary) 100%);
+            color: #ffffff;
+            padding: 52px 0;
+            border-bottom: 1px solid var(--ulat-border);
+        }
+
+        /* Tarjetas Editoriales (Sin bordes arcoíris de IA) */
         .card-ulat {
-            border: none;
-            border-radius: 14px;
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            border: 1px solid var(--ulat-border);
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
             background: #ffffff;
             overflow: hidden;
         }
         .card-ulat:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 32px rgba(15, 39, 68, 0.12);
+            border-color: #cbd5e1;
+            box-shadow: 0 12px 28px -8px rgba(12, 33, 61, 0.1);
         }
 
+        /* Etiquetas sobrias de facultad */
         .badge-facultad {
-            font-size: 0.75rem;
+            font-size: 0.71rem;
             font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 20px;
+            letter-spacing: 0.03em;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid transparent;
         }
-        .badge-salud { background-color: #fee2e2; color: #b91c1c; }
-        .badge-tecno { background-color: #e0f2fe; color: #0369a1; }
-        .badge-econo { background-color: #fef3c7; color: #b45309; }
+        .badge-salud { background-color: #f8fafc; color: #0f2744; border-color: #cbd5e1; }
+        .badge-tecno { background-color: #f8fafc; color: #0f2744; border-color: #cbd5e1; }
+        .badge-econo { background-color: #f8fafc; color: #0f2744; border-color: #cbd5e1; }
 
-        /* Footer */
+        /* Tabla de Malla Curricular Semestral */
+        .semester-card {
+            border: 1px solid var(--ulat-border);
+            border-radius: 6px;
+            background: #ffffff;
+            height: 100%;
+        }
+        .semester-header {
+            background-color: #f8fafc;
+            border-bottom: 1px solid var(--ulat-border);
+            padding: 10px 14px;
+            font-weight: 700;
+            font-size: 0.84rem;
+            color: var(--ulat-blue-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .semester-list {
+            list-style: none;
+            padding: 10px 14px;
+            margin: 0;
+            font-size: 0.83rem;
+            color: #334155;
+        }
+        .semester-list li {
+            padding: 5px 0;
+            border-bottom: 1px dashed #e2e8f0;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .semester-list li:last-child {
+            border-bottom: none;
+        }
+        .semester-list li::before {
+            content: '·';
+            color: var(--ulat-gold-dark);
+            font-weight: 700;
+        }
+
+        /* Footer Institucional */
         .ulat-footer {
-            background-color: var(--ulat-blue-dark);
+            background-color: var(--ulat-navy-deep);
             color: #94a3b8;
-            padding: 70px 0 30px;
-            border-top: 4px solid var(--ulat-gold);
+            padding: 64px 0 28px;
+            border-top: 3px solid var(--ulat-gold);
         }
         .ulat-footer h5 {
             color: #ffffff;
-            font-size: 1.15rem;
-            margin-bottom: 22px;
-            position: relative;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 20px;
             padding-bottom: 10px;
-        }
-        .ulat-footer h5::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background-color: var(--ulat-gold);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         .ulat-footer a {
             color: #94a3b8;
             text-decoration: none;
-            transition: color 0.2s;
+            transition: color 0.15s;
             display: inline-block;
-            margin-bottom: 9px;
-            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-size: 0.86rem;
         }
         .ulat-footer a:hover {
-            color: var(--ulat-gold);
-            padding-left: 4px;
+            color: #ffffff;
         }
 
-        /* Floating Chat Widget Override */
+        /* Floating Chat Widget */
         .chat-widget {
             position: fixed;
             bottom: 24px;
@@ -223,66 +417,70 @@ $carrerasEcono = array_filter($carrerasCatalog, fn($c) => str_contains($c['facul
             z-index: 1050;
         }
         .chat-toggle-btn {
-            width: 62px;
-            height: 62px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--ulat-gold) 0%, var(--ulat-gold-hover) 100%);
-            color: white;
-            border: none;
-            box-shadow: 0 8px 24px rgba(229, 169, 60, 0.45);
+            height: 52px;
+            padding: 0 20px;
+            border-radius: 26px;
+            background-color: var(--ulat-blue-dark);
+            color: #ffffff;
+            border: 1px solid rgba(212, 154, 53, 0.5);
+            box-shadow: 0 10px 28px rgba(8, 22, 41, 0.28);
             cursor: pointer;
             position: relative;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 0.86rem;
+            gap: 10px;
         }
         .chat-toggle-btn:hover {
-            transform: scale(1.06);
-            box-shadow: 0 10px 28px rgba(229, 169, 60, 0.55);
+            background-color: var(--ulat-blue-primary);
+            transform: translateY(-2px);
         }
         .online-aura {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 14px;
-            height: 14px;
+            width: 9px;
+            height: 9px;
             background-color: #22c55e;
-            border: 2px solid white;
             border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
         }
         .chat-window {
             position: fixed;
-            bottom: 96px;
+            bottom: 88px;
             right: 24px;
-            width: 380px;
+            width: 385px;
             max-width: calc(100vw - 32px);
-            height: 540px;
-            max-height: calc(100vh - 120px);
+            height: 550px;
+            max-height: calc(100vh - 110px);
             background: #ffffff;
-            border-radius: 18px;
-            box-shadow: 0 16px 48px rgba(15, 39, 68, 0.22);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(8, 22, 41, 0.25);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid rgba(15, 39, 68, 0.08);
+            border: 1px solid var(--ulat-border);
             z-index: 1050;
         }
         .chat-header {
-            background: linear-gradient(135deg, var(--ulat-blue-dark) 0%, var(--ulat-blue-primary) 100%);
+            background-color: var(--ulat-blue-dark);
             color: white;
-            padding: 15px 18px;
+            padding: 14px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-bottom: 2px solid var(--ulat-gold);
         }
         .chat-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background-color: var(--ulat-gold);
-            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background-color: rgba(212, 154, 53, 0.2);
+            border: 1px solid var(--ulat-gold);
+            color: var(--ulat-gold);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            font-size: 0.85rem;
         }
         .chat-messages {
             flex: 1;
@@ -291,14 +489,14 @@ $carrerasEcono = array_filter($carrerasCatalog, fn($c) => str_contains($c['facul
             background-color: #f8fafc;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         .message {
-            max-width: 82%;
-            padding: 11px 15px;
-            border-radius: 14px;
-            font-size: 0.88rem;
-            line-height: 1.45;
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            line-height: 1.48;
             word-wrap: break-word;
         }
         .bot-message {
@@ -306,77 +504,88 @@ $carrerasEcono = array_filter($carrerasCatalog, fn($c) => str_contains($c['facul
             background: #ffffff;
             color: #1e293b;
             border: 1px solid #e2e8f0;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            border-bottom-left-radius: 2px;
         }
         .user-message {
             align-self: flex-end;
-            background: var(--ulat-blue-primary);
+            background: var(--ulat-blue-dark);
             color: #ffffff;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 2px;
         }
     </style>
 </head>
 <body>
 
-    <!-- TOPBAR INFORMATIVO -->
+    <!-- TOPBAR INSTITUCIONAL -->
     <div class="ulat-topbar">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <span><i class="fa-solid fa-location-dot text-warning me-1"></i> Calle Uruguay #E-836 entre 16 de Julio y Oquendo, Cochabamba</span>
-                <span class="d-none d-md-inline"><i class="fa-solid fa-phone text-warning me-1"></i> (4) 4509488 - 4221004</span>
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex align-items-center flex-wrap gap-3">
+                <span class="d-inline-flex align-items-center gap-1">
+                    <i data-lucide="map-pin" class="lucide-sm" style="color: var(--ulat-gold);"></i>
+                    Sede Central: C. Uruguay #E-836 · Campus Norte: Av. Uyuni #1889
+                </span>
+                <span class="d-none d-md-inline-flex align-items-center gap-1">
+                    <i data-lucide="phone" class="lucide-sm" style="color: var(--ulat-gold);"></i>
+                    (4) 4509488 – 4221004
+                </span>
             </div>
             <div class="d-flex align-items-center gap-3">
-                <a href="mailto:latinoamericana@ulat.edu.bo"><i class="fa-solid fa-envelope text-warning me-1"></i> latinoamericana@ulat.edu.bo</a>
-                <span class="text-white-50">|</span>
-                <a href="https://wa.me/5914509488" target="_blank"><i class="fa-brands fa-whatsapp text-success me-1"></i> WhatsApp Admisiones</a>
+                <a href="mailto:latinoamericana@ulat.edu.bo" class="d-none d-sm-inline-flex align-items-center gap-1">
+                    <i data-lucide="mail" class="lucide-sm" style="color: var(--ulat-gold);"></i>
+                    latinoamericana@ulat.edu.bo
+                </a>
+                <span class="text-white-50 d-none d-sm-inline">|</span>
+                <a href="https://wa.me/59179795778" target="_blank" class="d-inline-flex align-items-center gap-1 fw-medium text-white">
+                    <i data-lucide="message-Square" class="lucide-sm" style="color: #4ade80;"></i>
+                    WhatsApp Inscripciones: 79795778
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- NAVBAR PRINCIPAL -->
-    <nav class="navbar navbar-expand-lg ulat-navbar">
+    <!-- NAVBAR PRINCIPAL (1 SOLA LÍNEA, CONTRASTE OFICIAL) -->
+    <nav class="navbar navbar-expand-lg navbar-dark ulat-navbar">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="index.php">
-                <img src="../assets/ulat/logo.png" alt="Universidad Latinoamericana" onerror="this.src='https://ulat.edu.bo/wp-content/uploads/2021/10/logo-ulat-1.png';">
+            <a class="navbar-brand d-flex align-items-center" href="index.php">
+                <img src="../assets/ulat/logo.png" alt="Universidad Latinoamericana ULAT">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUlat" aria-controls="navbarUlat" aria-expanded="false" aria-label="Navegación">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarUlat" aria-controls="navbarUlat" aria-expanded="false" aria-label="Navegación">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarUlat">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-1">
-                    <li class="nav-link-item">
+                    <li class="nav-item">
                         <a class="nav-link <?= $activeNav === 'inicio' ? 'active' : '' ?>" href="index.php">Inicio</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle <?= $activeNav === 'facultades' ? 'active' : '' ?>" href="#" id="dropFacultades" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Facultades
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropFacultades">
-                            <li><a class="dropdown-item fw-bold text-primary" href="facultades.php#salud"><i class="fa-solid fa-heart-pulse me-2 text-danger"></i> Ciencias de la Salud</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropFacultades">
+                            <li><a class="dropdown-header-ulat" href="facultades.php#salud">Facultad de Ciencias de la Salud</a></li>
                             <?php foreach ($carrerasSalud as $s => $cs): ?>
-                                <li><a class="dropdown-item ps-4 py-1" href="carrera.php?id=<?= $s ?>"><?= htmlspecialchars($cs['nombre']) ?></a></li>
+                                <li><a class="dropdown-item" href="carrera.php?id=<?= $s ?>"><?= htmlspecialchars($cs['nombre']) ?></a></li>
                             <?php endforeach; ?>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold text-primary" href="facultades.php#tecnologia"><i class="fa-solid fa-microchip me-2 text-info"></i> Ciencia y Tecnología</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-header-ulat" href="facultades.php#tecnologia">Facultad de Ciencia y Tecnología</a></li>
                             <?php foreach ($carrerasTecno as $s => $ct): ?>
-                                <li><a class="dropdown-item ps-4 py-1" href="carrera.php?id=<?= $s ?>"><?= htmlspecialchars($ct['nombre']) ?></a></li>
+                                <li><a class="dropdown-item" href="carrera.php?id=<?= $s ?>"><?= htmlspecialchars($ct['nombre']) ?></a></li>
                             <?php endforeach; ?>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item fw-bold text-primary" href="facultades.php#economicas"><i class="fa-solid fa-scale-balanced me-2 text-warning"></i> Ciencias Económicas y Jurídicas</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li><a class="dropdown-header-ulat" href="facultades.php#economicas">Ciencias Económicas y Jurídicas</a></li>
                             <?php foreach ($carrerasEcono as $s => $ce): ?>
-                                <li><a class="dropdown-item ps-4 py-1" href="carrera.php?id=<?= $s ?>"><?= htmlspecialchars($ce['nombre']) ?></a></li>
+                                <li><a class="dropdown-item" href="carrera.php?id=<?= $s ?>"><?= htmlspecialchars($ce['nombre']) ?></a></li>
                             <?php endforeach; ?>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $activeNav === 'carreras' ? 'active' : '' ?>" href="carreras.php">Carreras (15)</a>
+                        <a class="nav-link <?= $activeNav === 'carreras' ? 'active' : '' ?>" href="carreras.php">Carreras</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?= $activeNav === 'admisiones' ? 'active' : '' ?>" href="admisiones.php">Admisiones</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $activeNav === 'becas' ? 'active' : '' ?>" href="becas.php">Becas & Plan 1 a 1</a>
+                        <a class="nav-link <?= $activeNav === 'becas' ? 'active' : '' ?>" href="becas.php">Becas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?= $activeNav === 'reglamentos' ? 'active' : '' ?>" href="reglamentos.php">Reglamentos</a>
@@ -388,12 +597,12 @@ $carrerasEcono = array_filter($carrerasCatalog, fn($c) => str_contains($c['facul
                         <a class="nav-link <?= $activeNav === 'contacto' ? 'active' : '' ?>" href="contacto.php">Contacto</a>
                     </li>
                     <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-                        <a class="btn btn-ulat-gold btn-sm px-3" href="admisiones.php#preinscripcion">
-                            <i class="fa-solid fa-graduation-cap me-1"></i> Preinscríbete
+                        <a class="btn btn-ulat-gold btn-sm px-3 py-2 d-inline-flex align-items-center gap-1" href="admisiones.php#preinscripcion">
+                            <span>Preinscripción</span>
+                            <i data-lucide="arrow-up-right" class="lucide-sm"></i>
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-

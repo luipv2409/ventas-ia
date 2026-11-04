@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias Económicas, Sociales y Jurídicas
 **Grado Académico:** Licenciatura
-**Duración:** 5 años (10 semestres)
+**Duración Oficial:** 4 años y medio (9 semestres)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Oficial ULAT
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -23,4 +25,72 @@ A la conclusión de su formación académica, el Licenciado en Derecho de la Uni
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (4 años y medio (9 semestres))
+
+### 1º Semestre
+- Introducción al Derecho
+- Psicología Jurídica
+- Derecho Romano
+- Sociología General
+- Economía Política
+- Comunicación Escrita y Oratoria Forense
+
+### 2º Semestre
+- Derecho Civil I (Personas)
+- Criminología
+- Teorías del Estado
+- Sociología Jurídica
+- Derecho Procesal y Organización Judicial
+
+### 3º Semestre
+- Derecho Civil II (Reales)
+- Derecho Penal I (Parte General)
+- Derecho Constitucional I
+- Ciencia Política
+- Derecho Administrativo
+
+### 4º Semestre
+- Derecho Civil III (Contratos)
+- Derecho Penal II (Parte General)
+- Derecho Constitucional II
+- Derecho Financiero y Tributario
+- Medicina Legal
+
+### 5º Semestre
+- Derecho Civil IV (Obligaciones)
+- Derecho Penal III (Parte Especial)
+- Derecho del Trabajo
+- Derecho Comercial I
+- Derecho Minero y Petrolero
+- Derechos Humanos
+
+### 6º Semestre
+- Derecho Civil V (Sucesiones)
+- Derecho Penal IV (Parte Especial)
+- Seguridad Social
+- Derecho Comercial II
+- Derecho Notarial y Registro Civil
+- Filosofía Jurídica
+
+### 7º Semestre
+- Derecho Procesal Civil I y Práctica Forense Civil I
+- Derecho Procesal Penal I y Práctica Forense Penal I
+- Derecho Internacional Público
+- Arbitraje y Conciliación
+- Derecho Aduanero
+- Derecho de Familia y del Menor I
+
+### 8º Semestre
+- Derecho Procesal Civil II y Práctica Forense Civil II
+- Derecho Procesal Penal II y Práctica Forense Penal II
+- Derecho Internacional Privado
+- Derecho Agrario
+- Derecho de Familia y del Menor II
+
+### 9º Semestre
+- Procedimientos Especiales
+- Derecho de Integración
+- Derecho Municipal
+- Derecho Ambiental y sus Procedimientos
+- Metodología en la Investigación
+

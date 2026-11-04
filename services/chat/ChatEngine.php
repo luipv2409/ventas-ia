@@ -473,6 +473,15 @@ class ChatEngine
             if ($porAlias !== null) {
                 return $porAlias['nombre'];
             }
+            if (!empty($this->profile->bloquePrompt('identidad_universitaria'))) {
+                $aliases = $this->profile->aliasesModelos();
+                uksort($aliases, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+                foreach ($aliases as $alias => $oficial) {
+                    if (mb_stripos($msgContent, mb_strtolower($oficial)) !== false || mb_stripos($msgContent, mb_strtolower($alias)) !== false) {
+                        return $oficial;
+                    }
+                }
+            }
             // 3. Nombre simplificado (sin prefijo de categoría)
             foreach ($this->productos as $p) {
                 $simple = mb_strtolower($this->nombreSimplificado($p['nombre']));
@@ -496,13 +505,13 @@ class ChatEngine
         try {
             require_once __DIR__ . '/../rag/RagService.php';
             $ragService = new RagService($this->pdo);
-            $ragResult  = $ragService->retrieveContext($consulta, 3, RagService::DEFAULT_MIN_SCORE, $historial);
+            $ragResult  = $ragService->retrieveContext($consulta, 5, RagService::DEFAULT_MIN_SCORE, $historial);
             if ($ragResult['found']) {
                 $out['contexto'] = "\n\n" . $ragResult['context'];
                 $out['aplicado'] = true;
                 if (!empty($ragResult['chunks'])) {
                     $out['score_max'] = (float)($ragResult['chunks'][0]['score'] ?? 0.0);
-                    $out['fuentes']   = array_slice(array_column($ragResult['chunks'], 'title'), 0, 3);
+                    $out['fuentes']   = array_slice(array_column($ragResult['chunks'], 'title'), 0, 5);
                 }
             }
         } catch (Throwable $e) {
@@ -619,12 +628,39 @@ class ChatEngine
         if ($esUniversidad) {
             $catalogFile = __DIR__ . '/../../data/ulat_catalog.json';
             $carrerasInfo = '';
+            $mallasActivasTexto = '';
             if (file_exists($catalogFile)) {
                 $carreras = json_decode((string)file_get_contents($catalogFile), true) ?: [];
                 $porFacultad = [];
+                $consultaLower = mb_strtolower($consulta . ' ' . $ultimoProducto);
+                $aliases = $this->profile->aliasesModelos();
+
+                // Identificar carreras relevantes en la consulta actual para inyectar su malla semestre por semestre
+                $carrerasDetectadas = [];
+                foreach ($aliases as $alias => $nombreOficial) {
+                    if (mb_stripos($consultaLower, mb_strtolower($alias)) !== false) {
+                        $carrerasDetectadas[mb_strtolower($nombreOficial)] = true;
+                    }
+                }
+
                 foreach ($carreras as $slug => $c) {
                     $fac = $c['facultad'] ?? 'General';
-                    $porFacultad[$fac][] = "• {$c['nombre']} ({$c['grado']}, {$c['duracion']}, slug: {$slug})";
+                    $sedeInfo = !empty($c['sede']) ? " | Sede: {$c['sede']}" : '';
+                    $porFacultad[$fac][] = "• {$c['nombre']} ({$c['grado']}, {$c['duracion']}, {$c['modalidad']}{$sedeInfo}, slug: {$slug})";
+
+                    $nomLower = mb_strtolower($c['nombre']);
+                    if (
+                        isset($carrerasDetectadas[$nomLower])
+                        || mb_stripos($consultaLower, $slug) !== false
+                        || mb_stripos($consultaLower, $nomLower) !== false
+                    ) {
+                        if (!empty($c['semestres']) && is_array($c['semestres'])) {
+                            $mallasActivasTexto .= "\nMALLA CURRICULAR OFICIAL DE " . mb_strtoupper($c['nombre']) . " ({$c['duracion']}):\n";
+                            foreach ($c['semestres'] as $semNom => $materias) {
+                                $mallasActivasTexto .= "  - {$semNom}: " . implode(', ', $materias) . ".\n";
+                            }
+                        }
+                    }
                 }
                 foreach ($porFacultad as $fac => $items) {
                     $carrerasInfo .= "\n{$fac}:\n" . implode("\n", $items) . "\n";
@@ -636,24 +672,26 @@ class ChatEngine
 
 OFERTA ACADÉMICA OFICIAL (UNIVERSIDAD LATINOAMERICANA - ULAT):
 {$carrerasInfo}
+{$mallasActivasTexto}
 {$ragContexto}
 
 CANAL ACTUAL: {$canal}.
-Contacto oficial: Teléfonos 4509488 - 4221004 | WhatsApp: +591 4509488 | Correo: latinoamericana@ulat.edu.bo
-Ubicación: Calle Uruguay #E-836 entre 16 de Julio y Oquendo, Cochabamba, Bolivia.
+Contacto oficial: Teléfonos fijos (4) 4509488 - 4221004 | WhatsApp Inscripciones: 79795778 (y +591 4509488) | Correo: latinoamericana@ulat.edu.bo
+Ubicación Sede Central: Calle Uruguay #E-836 entre 16 de Julio y Oquendo, Cochabamba, Bolivia.
+Ubicación Campus Norte (Ing. Mecánica Automotriz y Electrónica): Av. Uyuni Nº 1889 casi Av. Circunvalación.
 
 GESTIÓN DE ACCIONES Y DERIVACIONES ("acciones"):
-1. Mostrar ficha de carrera en portal ("mostrar_carrera"):
+1. Mostrar ficha de carrera en portal ("mostrar_carrera") — emítela cuando hablen de una carrera específica o pidan ver su malla:
    {"tipo": "mostrar_carrera", "slug": "ingenieria-de-sistemas", "nombre": "Ingeniería de Sistemas"}
-2. Registrar prospecto interesado ("registrar_prospecto"):
+2. Registrar prospecto interesado ("registrar_prospecto") — emítela ÚNICAMENTE cuando el usuario te proporcione su nombre y número de teléfono/WhatsApp reales en la charla:
    {"tipo": "registrar_prospecto", "nombre": "Nombre del postulante", "telefono": "Número de WhatsApp", "carrera": "Carrera de interés"}
-3. Enlace directo a WhatsApp de Admisiones ("derivar_whatsapp"):
-   {"tipo": "derivar_whatsapp", "mensaje": "Hola ULAT, me gustaría información sobre inscripciones"}
+3. Enlace directo a WhatsApp de Admisiones ("derivar_whatsapp") — emítela cuando pregunten por aranceles/precios exactos o pidan hablar con Admisiones:
+   {"tipo": "derivar_whatsapp", "mensaje": "Hola ULAT, me gustaría información sobre inscripciones y aranceles"}
 
 FORMATO DE SALIDA (OBLIGATORIO JSON ESTRICTO):
 Responde ÚNICAMENTE con un objeto JSON válido, sin texto antes ni después:
 {
-  "respuesta": "Tu mensaje de orientación y asesoría universitaria aquí.",
+  "respuesta": "Tu mensaje natural y conversacional como orientador de la ULAT aquí.",
   "acciones": []
 }
 PROMPT_UNI;
@@ -740,53 +778,92 @@ PROMPT;
     {
         $preguntaActual = mb_strtolower($preguntaTratada);
         $esReclamo = (bool)preg_match(self::REGEX_RECLAMO, $preguntaActual);
+        $esUniversidad = !empty($this->profile->bloquePrompt('identidad_universitaria'));
 
-        // A. Peticiones visuales ("muéstrame", "no los veo") -> tarjetas de la categoría
-        $esPeticionVisual = (bool)preg_match(self::REGEX_PETICION_VISUAL, $preguntaActual);
-        $categoriaId = $this->detectarCategoria($preguntaActual);
+        if (!$esUniversidad) {
+            // A. Peticiones visuales ("muéstrame", "no los veo") -> tarjetas de la categoría (solo modo tienda)
+            $esPeticionVisual = (bool)preg_match(self::REGEX_PETICION_VISUAL, $preguntaActual);
+            $categoriaId = $this->detectarCategoria($preguntaActual);
 
-        if ($esPeticionVisual && !$categoriaId) {
-            foreach (array_reverse($historial) as $h) {
-                $categoriaId = $this->detectarCategoria(mb_strtolower((string)($h['content'] ?? '')));
-                if ($categoriaId) {
-                    break;
-                }
-            }
-            if (!$categoriaId && $ultimoProducto !== '' && isset($this->mapaProductosPorNombre[mb_strtolower($ultimoProducto)])) {
-                $categoriaId = (int)$this->mapaProductosPorNombre[mb_strtolower($ultimoProducto)]['categoria_id'];
-            }
-        }
-
-        $tieneMostrar = false;
-        foreach ($acciones as $a) {
-            if (is_array($a) && ($a['tipo'] ?? '') === 'mostrar_producto') {
-                $tieneMostrar = true;
-                break;
-            }
-        }
-        if ($esPeticionVisual && !$tieneMostrar && $categoriaId) {
-            $deCategoria = array_values(array_filter($this->productos, fn($p) => (int)$p['categoria_id'] === (int)$categoriaId));
-            foreach (array_slice($deCategoria, 0, 3) as $pm) {
-                $acciones[] = ['tipo' => 'mostrar_producto', 'nombre' => $pm['nombre']];
-            }
-        }
-
-        // Fallback determinista si no hay ninguna acción
-        if (empty($acciones)) {
-            if ($categoriaId) {
-                $nomCat = '';
-                foreach ($this->categoriasLista as $cl) {
-                    if ($cl['id'] === $categoriaId) {
-                        $nomCat = $cl['nombre'];
+            if ($esPeticionVisual && !$categoriaId) {
+                foreach (array_reverse($historial) as $h) {
+                    $categoriaId = $this->detectarCategoria(mb_strtolower((string)($h['content'] ?? '')));
+                    if ($categoriaId) {
                         break;
                     }
                 }
-                $acciones[] = ['tipo' => 'filtrar_catalogo', 'categoria_id' => $categoriaId, 'mensaje_filtro' => "Mostrando {$nomCat} en el catálogo"];
-            } else {
-                foreach ($this->productos as $prod) {
-                    if (mb_stripos($preguntaActual, mb_strtolower($prod['nombre'])) !== false) {
-                        $acciones[] = ['tipo' => 'mostrar_producto', 'nombre' => $prod['nombre']];
-                        break;
+                if (!$categoriaId && $ultimoProducto !== '' && isset($this->mapaProductosPorNombre[mb_strtolower($ultimoProducto)])) {
+                    $categoriaId = (int)$this->mapaProductosPorNombre[mb_strtolower($ultimoProducto)]['categoria_id'];
+                }
+            }
+
+            $tieneMostrar = false;
+            foreach ($acciones as $a) {
+                if (is_array($a) && ($a['tipo'] ?? '') === 'mostrar_producto') {
+                    $tieneMostrar = true;
+                    break;
+                }
+            }
+            if ($esPeticionVisual && !$tieneMostrar && $categoriaId) {
+                $deCategoria = array_values(array_filter($this->productos, fn($p) => (int)$p['categoria_id'] === (int)$categoriaId));
+                foreach (array_slice($deCategoria, 0, 3) as $pm) {
+                    $acciones[] = ['tipo' => 'mostrar_producto', 'nombre' => $pm['nombre']];
+                }
+            }
+
+            // Fallback determinista si no hay ninguna acción (solo modo tienda)
+            if (empty($acciones)) {
+                if ($categoriaId) {
+                    $nomCat = '';
+                    foreach ($this->categoriasLista as $cl) {
+                        if ($cl['id'] === $categoriaId) {
+                            $nomCat = $cl['nombre'];
+                            break;
+                        }
+                    }
+                    $acciones[] = ['tipo' => 'filtrar_catalogo', 'categoria_id' => $categoriaId, 'mensaje_filtro' => "Mostrando {$nomCat} en el catálogo"];
+                } else {
+                    foreach ($this->productos as $prod) {
+                        if (mb_stripos($preguntaActual, mb_strtolower($prod['nombre'])) !== false) {
+                            $acciones[] = ['tipo' => 'mostrar_producto', 'nombre' => $prod['nombre']];
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            // En modo universidad: si no hay acción mostrar_carrera pero el usuario consulta por una carrera específica, adjuntar su tarjeta
+            $tieneCarrera = false;
+            foreach ($acciones as $a) {
+                if (is_array($a) && ($a['tipo'] ?? '') === 'mostrar_carrera') {
+                    $tieneCarrera = true;
+                    break;
+                }
+            }
+            if (!$tieneCarrera) {
+                $catalogFile = __DIR__ . '/../../data/ulat_catalog.json';
+                if (file_exists($catalogFile)) {
+                    $carrerasCat = json_decode((string)file_get_contents($catalogFile), true) ?: [];
+                    $aliases = $this->profile->aliasesModelos();
+                    uksort($aliases, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+                    $nombreDetectado = null;
+                    foreach ($aliases as $al => $of) {
+                        if (mb_stripos($preguntaActual, mb_strtolower($al)) !== false) {
+                            $nombreDetectado = $of;
+                            break;
+                        }
+                    }
+                    if ($nombreDetectado !== null) {
+                        foreach ($carrerasCat as $slug => $cData) {
+                            if (mb_strtolower($cData['nombre']) === mb_strtolower($nombreDetectado)) {
+                                $acciones[] = [
+                                    'tipo'   => 'mostrar_carrera',
+                                    'slug'   => $slug,
+                                    'nombre' => $cData['nombre'],
+                                ];
+                                break;
+                            }
+                        }
                     }
                 }
             }

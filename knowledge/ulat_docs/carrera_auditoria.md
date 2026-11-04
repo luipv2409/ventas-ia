@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias Económicas, Sociales y Jurídicas
 **Grado Académico:** Licenciatura
-**Duración:** 5 años (10 semestres)
+**Duración Oficial:** 4 años y medio (9 semestres)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Nº 241/02
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -27,4 +29,75 @@ Los Licenciados en Auditoria a la conclusión de su formación académica, posee
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (4 años y medio (9 semestres))
+
+### 1º Semestre
+- Contabilidad Básica
+- Administración General
+- Economía General
+- Álgebra
+- Comunicación Escrita
+- Derecho Comercial
+
+### 2º Semestre
+- Contabilidad Intermedia
+- Sistemas Administrativos
+- Microeconomía
+- Cálculo
+- Matemática Financiera
+- Derecho del Trabajo
+
+### 3º Semestre
+- Contabilidad Bancaria
+- Contabilidad de Sociedades
+- Macroeconomía
+- Estadística I
+- Administración de Personal
+- Derecho Tributario
+
+### 4º Semestre
+- Contabilidad de Costos I
+- Contabilidad de Servicios
+- Informática I
+- Estadística II
+- Matemática Actuarial
+- Organización y Métodos
+
+### 5º Semestre
+- Contabilidad de Costos II
+- Contabilidad Petrolera y Minera
+- Informática II
+- Contabilidad Agropecuaria
+- Contabilidad Fiscal
+
+### 6º Semestre
+- Taller de Costos
+- Gabinete de Contabilidad
+- Análisis e Interpretación de Estados Financieros
+- Economía Fiscal
+- Comercio Internacional
+- Metodología de la Investigación
+
+### 7º Semestre
+- Auditoría I
+- Auditoría Tributaria I
+- Administración Financiera
+- Presupuestos Fiscales
+- Preparación y Evaluación de Proyectos
+- Presupuestos Empresariales
+
+### 8º Semestre
+- Auditoría II
+- Auditoría Tributaria II
+- Seminario Superior
+- Auditoría Operativa
+- Auditoría Forense
+
+### 9º Semestre (Menciones)
+- Gestión Administrativa Tributaria
+- Fiscalización y Medios de Impugnación Tributaria
+- Gestión de Riesgo y Mora Tributaria
+- Gabinete de Tributación
+- Gabinete de Auditoría
+- Menciones: Gestión Tributaria, Consultoría Contable, Control Gubernamental, Auditoría Financiera
+

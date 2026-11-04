@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias Económicas, Sociales y Jurídicas
 **Grado Académico:** Técnico Superior
-**Duración:** 3 años (6 semestres)
+**Duración Oficial:** 3 años (6 semestres)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Nº 241/02
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -27,4 +29,52 @@ Los Técnicos Superiores en Contaduría General, a la conclusión de su formaci�
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (3 años (6 semestres))
+
+### 1º Semestre
+- Contabilidad Básica
+- Administración General
+- Economía General
+- Álgebra
+- Comunicación Escrita
+- Derecho Comercial
+
+### 2º Semestre
+- Contabilidad Intermedia
+- Sistemas Administrativos
+- Microeconomía
+- Cálculo
+- Matemática Financiera
+- Derecho del Trabajo
+
+### 3º Semestre
+- Contabilidad Bancaria
+- Contabilidad de Sociedades
+- Macroeconomía
+- Estadística I
+- Administración de Personal
+- Derecho Tributario
+
+### 4º Semestre
+- Contabilidad de Costos I
+- Contabilidad de Servicios
+- Informática I
+- Estadística II
+- Matemática Actuarial
+- Organización y Métodos
+
+### 5º Semestre
+- Contabilidad de Costos II
+- Contabilidad Petrolera y Minera
+- Informática II
+- Contabilidad Agropecuaria
+- Contabilidad Fiscal
+
+### 6º Semestre
+- Taller de Costos
+- Gabinete de Contabilidad
+- Análisis e Interpretación de Estados Financieros
+- Economía Fiscal
+- Comercio Internacional
+- Metodología de la Investigación
+

@@ -2,8 +2,10 @@
 
 **Facultad:** Facultad de Ciencias de la Salud
 **Grado Académico:** Licenciatura
-**Duración:** 4 años y medio (9 semestres)
+**Duración Oficial:** 5 años (10 semestres incluye Internado Rotatorio)
 **Modalidad:** Presencial
+**Resolución Ministerial:** R.M. Nº 590/07
+**Sede / Campus:** Campus Central (Calle Uruguay #E-836)
 
 ## Perfil Profesional y Campo Ocupacional
 
@@ -27,4 +29,69 @@ Formar profesionales que estén altamente preparados para proporcionar atención
 
 Contacto
 
-**Malla Curricular:** Disponible para visualización en el portal web de la ULAT.
+## Plan de Estudios y Malla Curricular Oficial (5 años (10 semestres incluye Internado Rotatorio))
+
+### 1º Semestre
+- Anatomía y Fisiología I
+- Fundamentos de Enfermería I
+- Bioquímica
+- Salud Comunitaria I
+- Soporte Básico de Vida
+- Idiomas I
+
+### 2º Semestre
+- Anatomía y Fisiología II
+- Fundamentos de Enfermería II
+- Nutrición y Dietología
+- Salud Comunitaria II
+- Psicología General
+- Idiomas II
+
+### 3º Semestre
+- Semiología
+- Técnica Quirúrgica
+- Médico Quirúrgico I
+- Salud Comunitaria III
+- Farmacología I
+
+### 4º Semestre
+- Parasitología
+- Microbiología
+- Médico Quirúrgico II
+- Salud Comunitaria IV
+- Farmacología II
+
+### 5º Semestre
+- Bioestadística y Demografía
+- Gineco Obstetricia I
+- Pediatría I
+- Salud Comunitaria V
+- Psicología Clínica
+
+### 6º Semestre
+- Epidemiología
+- Gineco Obstetricia II
+- Pediatría II
+- Salud Comunitaria VI
+- Enfermería Geriátrica
+
+### 7º Semestre
+- Terapia Intensiva I
+- Urgencias Médicas I
+- Ética y Legislación
+- Salud Comunitaria VII
+- Psiquiatría
+
+### 8º Semestre
+- Terapia Intensiva II
+- Urgencias Médicas II
+- Pruebas Diagnósticas
+- Administración Hospitalaria
+- Metodología de la Investigación
+
+### 9º y 10º Semestre (Internado Rotatorio)
+- Médico Quirúrgico
+- Salud Comunitaria
+- Gineco Obstetricia
+- Pediatría
+

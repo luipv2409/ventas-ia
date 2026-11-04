@@ -5,12 +5,12 @@ $activeNav = 'becas';
 require_once __DIR__ . '/header.php';
 ?>
 
-<div class="bg-primary text-white py-5" style="background: linear-gradient(135deg, var(--ulat-blue-dark) 0%, var(--ulat-blue-primary) 100%);">
-    <div class="container text-center py-3">
-        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-2">Apoyo Estudiantil</span>
-        <h1 class="display-5 fw-bold text-white mb-2">Programa de Becas y Beneficios ULAT</h1>
-        <p class="lead text-light text-opacity-75 max-w-700 mx-auto">
-            Garantizamos oportunidades de acceso a la educación superior mediante incentivos académicos, deportivos e institucionales.
+<div class="ulat-page-header">
+    <div class="container py-2">
+        <span class="ulat-eyebrow-light">Incentivos Académicos y Apoyo Económico</span>
+        <h1 class="display-6 fw-bold text-white mb-2">Programa de Becas y Plan Uno a Uno</h1>
+        <p class="mb-0 text-white-50" style="max-width: 680px; font-size: 0.98rem;">
+            Beneficios estudiantiles regidos por el Reglamento General de Universidades Privadas (D.S. Nº 1433) y el programa solidario ULAT – ILAT.
         </p>
     </div>
 </div>
@@ -18,113 +18,117 @@ require_once __DIR__ . '/header.php';
 <div class="container py-5">
 
     <!-- PLAN UNO A UNO -->
-    <div class="card card-ulat p-4 p-md-5 mb-5 border-start border-5 border-success" id="plan1a1">
+    <div class="card card-ulat p-4 p-md-5 mb-5" id="plan1a1">
         <div class="row align-items-center g-4">
             <div class="col-lg-8">
-                <span class="badge bg-success mb-2 px-3 py-2">Beneficio Solidario ULAT - ILAT</span>
-                <h2 class="h3 fw-bold text-dark mb-3">Plan Uno a Uno: 50% de Descuento en Cuotas</h2>
-                <p class="text-secondary lh-lg mb-3">
-                    La Universidad Latinoamericana y el Instituto Latinoamericano han diseñado el <strong>Plan Uno a Uno</strong> para apoyar económicamente a nuestros estudiantes regulares.
+                <span class="ulat-eyebrow">Beneficio Solidario ULAT – ILAT</span>
+                <h2 class="h3 fw-bold mb-3">Plan Uno a Uno: 50% de Descuento en Cuotas Mensuales</h2>
+                <p class="text-secondary small mb-3" style="line-height: 1.7;">
+                    La Universidad Latinoamericana y el Instituto Latinoamericano (ILAT) establecieron el <strong>Plan Uno a Uno</strong> con el propósito de respaldar la economía familiar de nuestros estudiantes regulares.
                 </p>
-                <div class="p-3 bg-light rounded-3 border mb-3">
-                    <h6 class="fw-bold text-primary mb-1"><i class="fa-solid fa-users me-2"></i> ¿Cómo funciona?</h6>
-                    <p class="small text-muted mb-0">
-                        El estudiante regular debe invitar a un alumno nuevo a matricularse en cualquiera de nuestras carreras o programas ofertados (Diplomados, Licenciaturas, Técnico Superior o Técnico Medio). El estudiante regular cancelará únicamente el <strong>50% de la cuota del mes</strong> por cada alumno nuevo matriculado.
+                <div class="p-3 rounded border mb-3" style="background-color: #f8fafc;">
+                    <h6 class="fw-bold text-dark mb-1">¿Cómo se aplica el beneficio?</h6>
+                    <p class="small text-secondary mb-0" style="line-height: 1.6;">
+                        Todo estudiante regular que invite a un alumno nuevo a matricularse en cualquiera de nuestras carreras o programas ofertados (Licenciaturas, Técnico Superior o Diplomados) cancela únicamente el <strong>50% de su cuota mensual</strong> por cada estudiante nuevo inscrito.
                     </p>
                 </div>
-                <p class="small text-muted mb-0">
-                    <i class="fa-solid fa-file-pdf text-danger me-1"></i> El formulario del Plan Uno a Uno puede tramitarse directamente en Dirección Administrativa o consultando en nuestro chat de admisiones.
-                </p>
+                <div class="small text-muted">
+                    El formulario oficial del Plan Uno a Uno se solicita en Dirección Administrativa o a través de Admisiones.
+                </div>
             </div>
-            <div class="col-lg-4 text-center">
-                <div class="p-4 bg-success bg-opacity-10 rounded-4">
-                    <div class="display-4 fw-bold text-success mb-1">-50%</div>
-                    <div class="fw-bold text-dark">En tu Cuota Mensual</div>
-                    <small class="text-muted d-block mt-2">Por cada alumno nuevo recomendado que se matricule</small>
+            <div class="col-lg-4">
+                <div class="p-4 rounded text-center" style="background-color: var(--ulat-gold-soft); border: 1px solid rgba(212, 154, 53, 0.4);">
+                    <span class="ulat-eyebrow mb-1">Descuento Directo</span>
+                    <div class="display-4 fw-bold mb-1" style="color: var(--ulat-blue-dark);">-50%</div>
+                    <div class="fw-bold text-dark small">En tu Cuota Mensual</div>
+                    <p class="small text-muted mt-2 mb-0">Por cada estudiante nuevo recomendado y matriculado en la gestión vigente.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- PROGRAMA DE BECAS REGULARES -->
-    <div class="text-center mb-5">
-        <h3 class="display-6 fw-bold">Modalidades de Beca</h3>
-        <p class="text-muted max-w-700 mx-auto">
-            Regidas bajo el Reglamento General de Universidades Privadas (D.S. Nº 1433) y el Reglamento Interno de Becas de la ULAT.
-        </p>
+    <!-- MODALIDADES DE BECA -->
+    <div class="mb-4">
+        <span class="ulat-eyebrow">Normativa Ministerial D.S. 1433</span>
+        <h3 class="h4 fw-bold">Modalidades de Beca Institucional</h3>
     </div>
 
     <div class="row g-4">
         <!-- Beca Excelencia -->
         <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 border-top border-4 border-warning">
-                <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-3 d-inline-block mb-3">
-                    <i class="fa-solid fa-award"></i>
+            <div class="card card-ulat h-100 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                    <span class="academic-index">BECA 01</span>
+                    <div class="icon-frame-gold">
+                        <i data-lucide="award" class="lucide"></i>
+                    </div>
                 </div>
-                <h4 class="h5 fw-bold text-dark mb-2">Beca por Excelencia Académica</h4>
-                <p class="small text-muted mb-3">
-                    Dirigida a estudiantes destacados que demuestren un alto rendimiento continuo en sus semestres universitarios.
+                <h4 class="h5 fw-bold mb-2">Beca por Excelencia Académica</h4>
+                <p class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.65;">
+                    Reconoce el mérito de los estudiantes regulares que alcanzan el más alto rendimiento académico durante el semestre anterior sin asignaturas reprobadas.
                 </p>
-                <div class="p-3 bg-light rounded small mb-3">
-                    <strong>Requisito:</strong> Promedio general superior al <strong>95%</strong> tras el primer semestre de estudio.
+                <div class="p-3 rounded small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div><strong>Requisito:</strong> Promedio igual o superior a <strong>95 puntos</strong>.</div>
+                    <div class="mt-1"><strong>Cobertura:</strong> Liberación del <strong>100%</strong> en cuotas.</div>
                 </div>
-                <p class="small text-secondary mb-0">
-                    Libera al estudiante del <strong>100% del pago de matrícula y cuotas</strong>, debiendo mantener el promedio para conservar el beneficio semestral.
-                </p>
             </div>
         </div>
 
-        <!-- Beca Deportiva -->
+        <!-- Beca Deportiva y Cultural -->
         <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 border-top border-4 border-primary">
-                <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3 d-inline-block mb-3">
-                    <i class="fa-solid fa-futbol"></i>
+            <div class="card card-ulat h-100 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                    <span class="academic-index">BECA 02</span>
+                    <div class="icon-frame">
+                        <i data-lucide="trophy" class="lucide"></i>
+                    </div>
                 </div>
-                <h4 class="h5 fw-bold text-dark mb-2">Beca Deportiva</h4>
-                <p class="small text-muted mb-3">
-                    Para jóvenes talentos que destaquen en disciplinas deportivas y representen a la universidad en torneos oficiales.
+                <h4 class="h5 fw-bold mb-2">Beca Cultura y Deporte</h4>
+                <p class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.65;">
+                    Destinada a estudiantes destacados que integran las selecciones deportivas o elencos culturales oficiales de la Universidad Latinoamericana en certámenes departamentales y nacionales.
                 </p>
-                <div class="p-3 bg-light rounded small mb-3">
-                    <strong>Requisito:</strong> Evaluación técnica y compromiso de participación en selecciones de la ULAT.
+                <div class="p-3 rounded small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div><strong>Requisito:</strong> Evaluación técnica y récord académico regular.</div>
+                    <div class="mt-1"><strong>Beneficio:</strong> Descuento porcentual semestral.</div>
                 </div>
-                <p class="small text-secondary mb-0">
-                    Otorga descuentos significativos en las cuotas mensuales de acuerdo con la evaluación y rendimiento del estudiante atleta.
-                </p>
             </div>
         </div>
 
-        <!-- Beca Convenio -->
+        <!-- Beca Convenio e Interinstitucional -->
         <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 border-top border-4 border-info">
-                <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 fs-3 d-inline-block mb-3">
-                    <i class="fa-solid fa-handshake"></i>
+            <div class="card card-ulat h-100 p-4 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                    <span class="academic-index">BECA 03</span>
+                    <div class="icon-frame">
+                        <i data-lucide="building" class="lucide"></i>
+                    </div>
                 </div>
-                <h4 class="h5 fw-bold text-dark mb-2">Beca Convenio Institucional</h4>
-                <p class="small text-muted mb-3">
-                    Descuentos preferenciales para funcionarios y familiares de instituciones públicas y privadas con convenio vigente.
+                <h4 class="h5 fw-bold mb-2">Beca Convenio Institucional</h4>
+                <p class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.65;">
+                    Aranceles preferenciales para miembros, trabajadores y familiares directos de instituciones públicas, colegios profesionales y empresas con convenio vigente con la ULAT.
                 </p>
-                <div class="p-3 bg-light rounded small mb-3">
-                    <strong>Requisito:</strong> Acreditación laboral o certificación institucional de la entidad en convenio.
+                <div class="p-3 rounded small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div><strong>Requisito:</strong> Certificación vigente de la entidad en convenio.</div>
+                    <div class="mt-1"><strong>Normativa:</strong> Reglamento Interno de Becas.</div>
                 </div>
-                <p class="small text-secondary mb-0">
-                    Los porcentajes de rebaja y condiciones específicas se encuentran estipulados en el reglamento de becas interinstitucionales.
-                </p>
             </div>
         </div>
     </div>
 
-    <!-- Banner de descarga de reglamento -->
-    <div class="card card-ulat bg-primary text-white p-4 p-md-5 mt-5">
-        <div class="row align-items-center">
+    <!-- Descarga de Reglamento -->
+    <div class="card card-ulat p-4 p-md-5 mt-5">
+        <div class="row align-items-center g-4">
             <div class="col-lg-8">
-                <h4 class="fw-bold mb-2 text-white">¿Deseas leer el Reglamento de Becas completo?</h4>
-                <p class="text-light text-opacity-75 mb-0">
-                    Consulta los artículos, escalas de puntuación y causales de mantenimiento de becas en el documento oficial normativo de la ULAT.
+                <span class="ulat-eyebrow">Transparencia Normativa</span>
+                <h4 class="fw-bold mb-2">Consulta el Reglamento Oficial de Becas</h4>
+                <p class="text-secondary small mb-0">
+                    Revisa en detalle los plazos de convocatoria, requisitos documentales y condiciones de permanencia de cada modalidad de beca.
                 </p>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a href="reglamentos.php" class="btn btn-ulat-gold">
-                    <i class="fa-solid fa-file-pdf me-1"></i> Ver Reglamentos en PDF
+            <div class="col-lg-4 text-lg-end">
+                <a href="reglamentos.php" class="btn btn-ulat-primary d-inline-flex align-items-center gap-2">
+                    <i data-lucide="file-text" class="lucide-sm"></i>
+                    <span>Ver Reglamentos en PDF</span>
                 </a>
             </div>
         </div>
@@ -133,4 +137,3 @@ require_once __DIR__ . '/header.php';
 </div>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
-

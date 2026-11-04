@@ -4,43 +4,41 @@
 ?>
 <!-- Widget Flotante de Admisiones ULAT -->
 <div id="chat-widget" class="chat-widget">
-    <button id="chat-toggle" class="chat-toggle-btn d-flex align-items-center justify-content-center" title="Asistente de Admisiones ULAT">
-        <i class="fa-solid fa-comments fs-4"></i>
+    <button id="chat-toggle" class="chat-toggle-btn d-flex align-items-center justify-content-center" title="Consultar con Guía ULAT">
         <span class="online-aura"></span>
+        <span>Orientación en Línea</span>
+        <i data-lucide="message-square" class="lucide-sm"></i>
     </button>
     <div id="chat-window" class="chat-window d-none">
         <div class="chat-header">
             <div class="d-flex align-items-center gap-2">
-                <div class="chat-avatar position-relative">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                    <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-white" style="width: 10px; height: 10px;"></span>
-                </div>
+                <div class="chat-avatar">ULAT</div>
                 <div>
-                    <div class="fw-bold lh-1" style="font-size: 0.95rem;">Guía ULAT · Admisiones</div>
-                    <small class="text-light text-opacity-75" style="font-size: 0.72rem;">En línea • Orientación y Carreras</small>
+                    <div class="fw-bold lh-1" style="font-size: 0.9rem;">Guía ULAT · Admisiones</div>
+                    <small class="text-white-50" style="font-size: 0.72rem;">Orientación Vocacional y Mallas</small>
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <button type="button" id="chat-reset" class="btn btn-sm btn-link text-white-50 p-1 text-decoration-none" title="Reiniciar conversación">
-                    <i class="fa-solid fa-rotate-left"></i>
+            <div class="d-flex align-items-center gap-1">
+                <button type="button" id="chat-reset" class="btn btn-sm btn-link text-white-50 p-1 text-decoration-none" title="Nueva consulta">
+                    <i data-lucide="rotate-ccw" class="lucide-sm"></i>
                 </button>
-                <button type="button" id="chat-close" class="btn-close btn-close-white" aria-label="Cerrar"></button>
+                <button type="button" id="chat-close" class="btn-close btn-close-white" style="font-size: 0.75rem;" aria-label="Cerrar"></button>
             </div>
         </div>
         <div id="chat-messages" class="chat-messages">
             <div class="message bot-message">
                 <div class="message-content">
-                    ¡Hola! Soy <strong>Guía ULAT</strong>, tu asesor virtual de la Universidad Latinoamericana 🎓
+                    ¡Hola! Soy <strong>Guía ULAT</strong>, del equipo de orientación y admisiones de la Universidad Latinoamericana.
                     <br><br>
-                    ¿En qué carrera estás interesado o sobre qué requisitos, becas o mallas curriculares deseas información hoy?
+                    ¿Sobre qué carrera, malla curricular, beca o requisito te gustaría conversar?
                 </div>
             </div>
         </div>
         <div class="p-2 bg-white border-top">
             <form id="chat-form" class="d-flex gap-2">
-                <input type="text" id="chat-input" class="form-control rounded-pill px-3" placeholder="Pregunta sobre carreras, becas..." autocomplete="off" required>
-                <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: var(--ulat-blue-primary); border: none;">
-                    <i class="fa-solid fa-paper-plane"></i>
+                <input type="text" id="chat-input" class="form-control form-control-sm px-3" style="border-radius: 6px; font-size: 0.86rem;" placeholder="Escribe tu consulta aquí..." autocomplete="off" required>
+                <button type="submit" class="btn btn-ulat-primary btn-sm px-3 d-flex align-items-center justify-content-center" style="border-radius: 6px;">
+                    <i data-lucide="send" class="lucide-sm"></i>
                 </button>
             </form>
         </div>
@@ -59,48 +57,91 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!chatToggle || !chatWindow || !chatForm || !chatInput || !chatMessages) return;
 
+    const STORAGE_KEY = 'ulat_chat_session_v2';
     let historialIA = [];
 
-    // Abrir/cerrar
+    function guardarEstado() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                historial: historialIA.slice(-14),
+                html: chatMessages.innerHTML,
+                open: !chatWindow.classList.contains('d-none')
+            }));
+        } catch (e) {}
+    }
+
+    function restaurarEstado() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed.historial) && parsed.historial.length > 0 && parsed.html) {
+                historialIA = parsed.historial;
+                chatMessages.innerHTML = parsed.html;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            if (parsed.open) {
+                chatWindow.classList.remove('d-none');
+            }
+        } catch (e) {}
+    }
+
+    restaurarEstado();
+
     chatToggle.addEventListener('click', () => {
         chatWindow.classList.toggle('d-none');
         if (!chatWindow.classList.contains('d-none')) {
             chatInput.focus();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+        guardarEstado();
     });
 
     chatClose.addEventListener('click', () => {
         chatWindow.classList.add('d-none');
+        guardarEstado();
     });
 
     chatReset.addEventListener('click', () => {
         historialIA = [];
+        localStorage.removeItem(STORAGE_KEY);
         chatMessages.innerHTML = `
             <div class="message bot-message">
                 <div class="message-content">
-                    ¡Conversación reiniciada! ¿Sobre qué carrera, requisito o beneficio de la ULAT te gustaría consultar?
+                    Conversación reiniciada. ¿Sobre qué carrera, malla curricular o beneficio de la ULAT te gustaría consultar?
                 </div>
             </div>
         `;
     });
 
-    function agregarMensaje(texto, emisor) {
-        const div = document.createElement('div');
-        div.className = `message ${emisor}-message`;
-        div.innerHTML = `<div class="message-content">${escapeHtml(texto).replace(/\n/g, '<br>')}</div>`;
-        chatMessages.appendChild(div);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+    function escapeHtml(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function escapeHtml(str) {
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    function limpiarTextoIA(texto) {
+        return String(texto)
+            .replace(/```(?:json)?[\s\S]*?```/gi, '')
+            .replace(/\{[^{}]*"(?:tipo|accion|slug|nombre|acciones|respuesta)"[^{}]*\}/gi, '')
+            .replace(/\*\*(.*?)\*\*/g, '$1')
+            .trim();
+    }
+
+    function agregarMensaje(texto, emisor) {
+        const limpio = emisor === 'bot' ? limpiarTextoIA(texto) : texto;
+        if (!limpio) return;
+        const div = document.createElement('div');
+        div.className = `message ${emisor}-message`;
+        div.innerHTML = `<div class="message-content">${escapeHtml(limpio).replace(/\n/g, '<br>')}</div>`;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        guardarEstado();
     }
 
     function mostrarTyping() {
         const t = document.createElement('div');
         t.id = 'chat-typing';
-        t.className = 'message bot-message text-muted fst-italic';
-        t.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Guía ULAT está respondiendo...';
+        t.className = 'message bot-message text-muted small';
+        t.innerHTML = 'Escribiendo...';
         chatMessages.appendChild(t);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -136,18 +177,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.ok && data.respuesta) {
                 agregarMensaje(data.respuesta, 'bot');
-                historialIA.push({ role: 'assistant', content: data.respuesta });
+                historialIA.push({ role: 'assistant', content: limpiarTextoIA(data.respuesta) });
 
-                // Acciones especiales emitidas por la IA
                 if (data.acciones && Array.isArray(data.acciones)) {
                     data.acciones.forEach(acc => {
                         if (acc.tipo === 'mostrar_carrera' && acc.slug) {
                             const cardCarr = document.createElement('div');
-                            cardCarr.className = 'message bot-message p-2 border-primary';
+                            cardCarr.className = 'message bot-message p-2';
                             cardCarr.innerHTML = `
-                                <div class="card card-sm border-0 bg-light p-2 text-center">
-                                    <div class="fw-bold text-primary mb-1">🎓 ${escapeHtml(acc.nombre || 'Carrera')}</div>
-                                    <a href="carrera.php?id=${encodeURIComponent(acc.slug)}" class="btn btn-sm btn-outline-primary rounded-pill mt-1">Ver Malla y Perfil</a>
+                                <div class="p-2 bg-light rounded border d-flex justify-content-between align-items-center gap-2">
+                                    <div class="small fw-semibold text-dark">${escapeHtml(acc.nombre || 'Ver Carrera')}</div>
+                                    <a href="carrera.php?id=${encodeURIComponent(acc.slug)}" class="btn btn-ulat-primary btn-sm py-1 px-2" style="font-size: 0.76rem;">Ver Malla</a>
                                 </div>
                             `;
                             chatMessages.appendChild(cardCarr);
@@ -155,37 +195,38 @@ document.addEventListener('DOMContentLoaded', () => {
                             const waBtn = document.createElement('div');
                             waBtn.className = 'message bot-message p-2';
                             waBtn.innerHTML = `
-                                <a href="${escapeHtml(acc.url)}" target="_blank" class="btn btn-sm btn-success w-100 rounded-pill d-flex align-items-center justify-content-center gap-2">
-                                    <i class="fa-brands fa-whatsapp fs-5"></i> Contactar por WhatsApp
+                                <a href="${escapeHtml(acc.url)}" target="_blank" class="btn btn-sm btn-success w-100 d-flex align-items-center justify-content-center gap-2" style="border-radius: 6px; font-size: 0.8rem;">
+                                    <span>Continuar en WhatsApp Admisiones</span>
                                 </a>
                             `;
                             chatMessages.appendChild(waBtn);
                         } else if (acc.tipo === 'registrar_prospecto') {
                             const regInfo = document.createElement('div');
-                            regInfo.className = 'message bot-message p-2 text-success fw-bold';
-                            regInfo.innerHTML = `✔ ¡Tus datos fueron registrados para el equipo de admisiones de ${escapeHtml(acc.carrera)}!`;
+                            regInfo.className = 'message bot-message p-2 small fw-semibold text-success';
+                            regInfo.innerHTML = `Datos registrados para Admisiones (${escapeHtml(acc.carrera || 'ULAT')}).`;
                             chatMessages.appendChild(regInfo);
                         }
                     });
                     chatMessages.scrollTop = chatMessages.scrollHeight;
+                    guardarEstado();
                 }
             } else {
-                agregarMensaje('Disculpa, ocurrió un detalle al conectar con el servidor. Puedes escribirnos directamente al WhatsApp oficial: (4) 4509488.', 'bot');
+                agregarMensaje('Perdón, se cortó un momento la conexión. ¿Me repites tu consulta o nos escribes al WhatsApp 79795778?', 'bot');
             }
         } catch (err) {
             ocultarTyping();
-            agregarMensaje('Error de conexión. Por favor reintenta o comunícate al (4) 4509488.', 'bot');
+            agregarMensaje('Tuvimos un detalle de red. Por favor intenta de nuevo o escríbenos al WhatsApp 79795778.', 'bot');
         }
     });
 
-    // Función global para consultar desde botones en las páginas de carreras
-    window.preguntarAlChat = function(carreraNombre) {
+    window.preguntarAlChat = function(consultaTexto) {
         if (chatWindow.classList.contains('d-none')) {
             chatWindow.classList.remove('d-none');
         }
-        chatInput.value = `Hola, quisiera más información sobre la carrera de ${carreraNombre}, duración y campo laboral.`;
+        chatInput.value = consultaTexto.startsWith('¿') || consultaTexto.startsWith('Cuéntame') || consultaTexto.startsWith('Hola')
+            ? consultaTexto
+            : `Quisiera información sobre ${consultaTexto} y su malla curricular`;
         chatInput.focus();
     };
 });
 </script>
-
