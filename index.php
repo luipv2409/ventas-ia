@@ -1,5 +1,12 @@
 <?php
 declare(strict_types=1);
+
+// Redirigir por defecto al Portal Universitario de la ULAT (modo prototipo)
+if (!isset($_GET['view']) || $_GET['view'] !== 'tienda') {
+    header('Location: ulat/index.php');
+    exit;
+}
+
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/icons.php';

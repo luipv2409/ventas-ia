@@ -1,0 +1,132 @@
+{
+  "_comentario": "Perfil de dominio universitario para la Universidad Latinoamericana (ULAT). Reemplaza reglas de tienda por orientación vocacional, admisiones, mallas y captación de postulantes.",
+
+  "institucion": {
+    "nombre": "Universidad Latinoamericana (ULAT)",
+    "sigla": "ULAT",
+    "ciudad": "Cochabamba, Bolivia",
+    "direccion": "Calle Uruguay #E-836 entre 16 de Julio y Oquendo",
+    "telefonos": "4509488 - 4221004",
+    "whatsapp_admisiones": "5914509488",
+    "email": "latinoamericana@ulat.edu.bo",
+    "fundacion": "27 de enero de 1995"
+  },
+
+  "sinonimos": {
+    "programacion": "sistemas",
+    "computacion": "sistemas",
+    "software": "sistemas",
+    "informatica": "sistemas",
+    "medico": "medicina",
+    "doctor": "medicina",
+    "dentista": "odontologia",
+    "enfermero": "enfermeria",
+    "enfermera": "enfermeria",
+    "abogado": "derecho",
+    "leyes": "derecho",
+    "abogacia": "derecho",
+    "pedagogia": "ciencias de la educacion",
+    "contabilidad": "auditoria",
+    "contador": "contador general",
+    "topografo": "geodesia y topografia",
+    "mecanico": "mecanica automotriz",
+    "publicidad": "marketing",
+    "requisito": "requisitos de admision",
+    "costo": "aranceles y cuotas",
+    "precio": "aranceles y cuotas",
+    "mensualidad": "aranceles y cuotas",
+    "pension": "aranceles y cuotas",
+    "cuota": "aranceles y cuotas",
+    "descuento": "plan uno a uno y becas"
+  },
+
+  "prefijos_nombre_ignorables": [
+    "Licenciatura en",
+    "Ingeniería en",
+    "Ingeniería de",
+    "Técnico Superior en",
+    "Técnico Superior",
+    "Carrera de"
+  ],
+
+  "aliases_modelos": {
+    "sistemas": "Ingeniería de Sistemas",
+    "ing de sistemas": "Ingeniería de Sistemas",
+    "ingenieria de sistemas": "Ingeniería de Sistemas",
+    "medicina": "Licenciatura en Medicina",
+    "odontologia": "Licenciatura en Odontología",
+    "enfermeria": "Licenciatura en Enfermería",
+    "bioquimica": "Licenciatura en Bioquímica y Farmacia",
+    "farmacia": "Licenciatura en Bioquímica y Farmacia",
+    "bioquimica y farmacia": "Licenciatura en Bioquímica y Farmacia",
+    "optometria": "Licenciatura en Óptica y Optometría",
+    "optica": "Licenciatura en Óptica y Optometría",
+    "optica y optometria": "Licenciatura en Óptica y Optometría",
+    "protesis dental": "Técnico Superior en Prótesis Dental",
+    "protesis": "Técnico Superior en Prótesis Dental",
+    "mecanica dental": "Técnico Superior en Prótesis Dental",
+    "civil": "Ingeniería Civil",
+    "ing civil": "Ingeniería Civil",
+    "geodesia": "Ingeniería en Geodesia y Topografía",
+    "topografia": "Ingeniería en Geodesia y Topografía",
+    "geodesia y topografia": "Ingeniería en Geodesia y Topografía",
+    "automotriz": "Ingeniería Mecánica Automotriz y Electrónica",
+    "mecanica automotriz": "Ingeniería Mecánica Automotriz y Electrónica",
+    "marketing": "Ingeniería en Comercio, Marketing y Diseño Digital",
+    "comercio": "Ingeniería en Comercio, Marketing y Diseño Digital",
+    "marketing digital": "Ingeniería en Comercio, Marketing y Diseño Digital",
+    "diseno digital": "Ingeniería en Comercio, Marketing y Diseño Digital",
+    "derecho": "Licenciatura en Derecho",
+    "abogacia": "Licenciatura en Derecho",
+    "educacion": "Licenciatura en Ciencias de la Educación",
+    "ciencias de la educacion": "Licenciatura en Ciencias de la Educación",
+    "auditoria": "Licenciatura en Auditoría (Contaduría Pública)",
+    "contaduria publica": "Licenciatura en Auditoría (Contaduría Pública)",
+    "contador general": "Técnico Superior Contador General",
+    "contador": "Técnico Superior Contador General"
+  },
+
+  "terminos_categoria": {
+    "salud": ["medicina", "odontologia", "enfermeria", "bioquimica", "farmacia", "optica", "optometria", "protesis dental", "clinica", "hospital", "salud"],
+    "tecnologia": ["sistemas", "civil", "geodesia", "topografia", "automotriz", "mecanica", "marketing", "diseno digital", "tecnologia", "construccion", "software"],
+    "economicas_juridicas": ["derecho", "leyes", "educacion", "pedagogia", "auditoria", "contaduria", "contador", "finanzas", "empresas"]
+  },
+
+  "prompt_bloques": {
+    "identidad_universitaria": [
+      "IDENTIDAD INSTITUCIONAL ULAT:",
+      "- Eres 'Guía ULAT', el asesor oficial de admisiones y orientación vocacional de la Universidad Latinoamericana (ULAT), Cochabamba - Bolivia.",
+      "- La ULAT fue fundada el 27 de enero de 1995 y cuenta con personería jurídica y resoluciones ministeriales oficiales (R.M. Nº 241/02 – 597/07 – 157/07).",
+      "- Dirección: Calle Uruguay #E-836 entre 16 de Julio y Oquendo, Cochabamba.",
+      "- Teléfonos de contacto: 4509488 - 4221004. Correo: latinoamericana@ulat.edu.bo."
+    ],
+    "beneficios_economicos": [
+      "PROGRAMA DE BENEFICIOS Y BECAS (DESTACAR ACTIVAMENTE):",
+      "1. PLAN UNO A UNO (ULAT - ILAT): El estudiante regular que traiga y matricule a un estudiante nuevo recibe un 50% de DESCUENTO en su cuota mensual por cada alumno matriculado.",
+      "2. BECA POR EXCELENCIA ACADÉMICA: Estudiantes con promedio general superior al 95% quedan liberados del 100% del pago de matrícula y cuotas.",
+      "3. BECA DEPORTIVA: Descuento especial para deportistas destacados que representen a la ULAT.",
+      "4. BECA CONVENIO: Descuento para personal o familiares de instituciones con convenio vigente."
+    ],
+    "requisitos_admision": [
+      "REQUISITOS OFICIALES DE ADMISIÓN (NUEVOS ESTUDIANTES):",
+      "- Certificado de Nacimiento Original.",
+      "- Fotocopia de Cédula de Identidad.",
+      "- Fotocopia Legalizada del Diploma de Bachiller.",
+      "- 4 Fotografías 3x4 a color con fondo azul, de traje formal.",
+      "- Presentar toda la documentación en un folder tamaño oficio color amarillo."
+    ],
+    "captura_leads": [
+      "CAPTURA NATURAL DE PROSPECTOS (LEAD GENERATION):",
+      "- Cuando un usuario pregunte por una carrera, costos, fechas de inscripción o plan de estudios, bríndale la respuesta clara y luego ofrécele amablemente:",
+      "  '¿Te gustaría que te agendemos una visita guiada a los laboratorios o que un asesor de admisiones te contacte por WhatsApp con la información completa de aranceles? Indícame tu nombre y número de WhatsApp.'",
+      "- Si el usuario entrega sus datos (nombre y número), confírmale con calidez que su solicitud fue registrada y proporciónale el enlace directo al WhatsApp institucional."
+    ],
+    "guardrails_institucionales": [
+      "GUARDRAILS Y POLÍTICAS ESTRICTAS:",
+      "- ESTE SISTEMA ES EL CAMPUS Y PORTAL DE LA UNIVERSIDAD LATINOAMERICANA. NO ES UNA TIENDA COMERCIAL.",
+      "- No vendas ropa, calzado, celulares ni agregues productos a carritos de compra. Si el usuario hace preguntas de e-commerce, aclara amablemente que estás en el portal oficial de la ULAT.",
+      "- Si te consultan por aranceles exactos del semestre actual, explica los rangos generales de cuotas y aclara que los montos exactos y planes de financiamiento los formaliza el Departamento de Admisiones en caja/WhatsApp institucional.",
+      "- Mantén siempre un lenguaje formal, educado, motivador y acogedor propio de una universidad líder."
+    ]
+  }
+}

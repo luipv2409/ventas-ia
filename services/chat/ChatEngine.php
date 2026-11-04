@@ -615,6 +615,50 @@ class ChatEngine
                 . "nunca digas que algo \"ya está en tu carrito\". Si el cliente decide comprar, confirma producto y precio y explícale cómo cerrar el pedido: {$cierre}.\n";
         }
 
+        $esUniversidad = !empty($this->profile->bloquePrompt('identidad_universitaria'));
+        if ($esUniversidad) {
+            $catalogFile = __DIR__ . '/../../data/ulat_catalog.json';
+            $carrerasInfo = '';
+            if (file_exists($catalogFile)) {
+                $carreras = json_decode((string)file_get_contents($catalogFile), true) ?: [];
+                $porFacultad = [];
+                foreach ($carreras as $slug => $c) {
+                    $fac = $c['facultad'] ?? 'General';
+                    $porFacultad[$fac][] = "• {$c['nombre']} ({$c['grado']}, {$c['duracion']}, slug: {$slug})";
+                }
+                foreach ($porFacultad as $fac => $items) {
+                    $carrerasInfo .= "\n{$fac}:\n" . implode("\n", $items) . "\n";
+                }
+            }
+
+            return <<<PROMPT_UNI
+{$reglasPersona}
+
+OFERTA ACADÉMICA OFICIAL (UNIVERSIDAD LATINOAMERICANA - ULAT):
+{$carrerasInfo}
+{$ragContexto}
+
+CANAL ACTUAL: {$canal}.
+Contacto oficial: Teléfonos 4509488 - 4221004 | WhatsApp: +591 4509488 | Correo: latinoamericana@ulat.edu.bo
+Ubicación: Calle Uruguay #E-836 entre 16 de Julio y Oquendo, Cochabamba, Bolivia.
+
+GESTIÓN DE ACCIONES Y DERIVACIONES ("acciones"):
+1. Mostrar ficha de carrera en portal ("mostrar_carrera"):
+   {"tipo": "mostrar_carrera", "slug": "ingenieria-de-sistemas", "nombre": "Ingeniería de Sistemas"}
+2. Registrar prospecto interesado ("registrar_prospecto"):
+   {"tipo": "registrar_prospecto", "nombre": "Nombre del postulante", "telefono": "Número de WhatsApp", "carrera": "Carrera de interés"}
+3. Enlace directo a WhatsApp de Admisiones ("derivar_whatsapp"):
+   {"tipo": "derivar_whatsapp", "mensaje": "Hola ULAT, me gustaría información sobre inscripciones"}
+
+FORMATO DE SALIDA (OBLIGATORIO JSON ESTRICTO):
+Responde ÚNICAMENTE con un objeto JSON válido, sin texto antes ni después:
+{
+  "respuesta": "Tu mensaje de orientación y asesoría universitaria aquí.",
+  "acciones": []
+}
+PROMPT_UNI;
+        }
+
         return <<<PROMPT
 {$reglasPersona}
 
@@ -800,7 +844,52 @@ PROMPT;
                     }
                     break;
 
+                case 'mostrar_carrera':
+                    $normalizadas[] = [
+                        'tipo'   => 'mostrar_carrera',
+                        'slug'   => InputSanitizer::cleanText((string)($acc['slug'] ?? ''), 80),
+                        'nombre' => InputSanitizer::cleanText((string)($acc['nombre'] ?? ''), 120),
+                    ];
+                    break;
+
+                case 'registrar_prospecto':
+                    $leadNombre = InputSanitizer::cleanText((string)($acc['nombre'] ?? 'Postulante'), 120);
+                    $leadTel    = InputSanitizer::cleanText((string)($acc['telefono'] ?? ''), 40);
+                    $leadCarr   = InputSanitizer::cleanText((string)($acc['carrera'] ?? 'General'), 120);
+                    if ($leadTel !== '') {
+                        try {
+                            $stmtL = $this->pdo->prepare("
+                                INSERT INTO admisiones_prospectos (nombre, telefono, carrera_interes, origen, notas)
+                                VALUES (?, ?, ?, 'chatbot', 'Captado en conversación con Guía ULAT')
+                            ");
+                            $stmtL->execute([$leadNombre, $leadTel, $leadCarr]);
+                        } catch (\Throwable $e) {
+                            error_log('[ChatEngine] Error guardando prospecto: ' . $e->getMessage());
+                        }
+                    }
+                    $normalizadas[] = [
+                        'tipo'     => 'registrar_prospecto',
+                        'nombre'   => $leadNombre,
+                        'telefono' => $leadTel,
+                        'carrera'  => $leadCarr,
+                        'guardado' => true,
+                    ];
+                    break;
+
+                case 'derivar_whatsapp':
+                    $msgWa = urlencode((string)($acc['mensaje'] ?? 'Hola ULAT, solicito información sobre las carreras'));
+                    $normalizadas[] = [
+                        'tipo'       => 'derivar_whatsapp',
+                        'url'        => "https://wa.me/5914509488?text={$msgWa}",
+                        'texto_link' => 'Contactar por WhatsApp a Admisiones ULAT',
+                    ];
+                    break;
+
                 case 'agregar_carrito':
+                    if (!empty($this->profile->bloquePrompt('identidad_universitaria'))) {
+                        // En modo universidad jamás se agregan productos de tienda
+                        break;
+                    }
                     $nombre  = trim((string)($acc['nombre'] ?? ''));
                     $matched = $ordinal
                         ?? $this->buscarProducto($nombre)
@@ -818,7 +907,7 @@ PROMPT;
 
         // D. Detección determinista de intención de compra (con protección de falsos positivos)
         $tieneCarrito = (bool)array_filter($normalizadas, fn($a) => $a['tipo'] === 'agregar_carrito');
-        if (!$tieneCarrito && !$esReclamo) {
+        if (!$tieneCarrito && !$esReclamo && empty($this->profile->bloquePrompt('identidad_universitaria'))) {
             $detectado = $this->detectarIntencionAgregar($preguntaActual, $preguntaTratada, $respuesta, $historial, $ultimoProducto, $ordinal, $mencionado);
             if ($detectado !== null) {
                 $normalizadas[] = $this->accionCarrito($detectado, $variante);
