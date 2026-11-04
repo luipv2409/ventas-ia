@@ -38,3 +38,4 @@ echo "OK: true\n";
 echo "Respuesta: " . $res['respuesta'] . "\n";
 echo "Acciones: " . json_encode($res['acciones'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
 echo "RAG Applied: " . ($res['rag_applied'] ? 'SÍ' : 'NO') . "\n";
+

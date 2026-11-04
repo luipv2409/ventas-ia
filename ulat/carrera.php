@@ -198,3 +198,4 @@ document.getElementById('form-carrera-lead')?.addEventListener('submit', async f
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
+

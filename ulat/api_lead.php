@@ -47,3 +47,4 @@ try {
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => 'Error interno al registrar tu solicitud.']);
 }
+

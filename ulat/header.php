@@ -396,3 +396,4 @@ $carrerasEcono = array_filter($carrerasCatalog, fn($c) => str_contains($c['facul
             </div>
         </div>
     </nav>
+

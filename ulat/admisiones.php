@@ -170,3 +170,4 @@ document.getElementById('form-admision-full')?.addEventListener('submit', async 
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
+

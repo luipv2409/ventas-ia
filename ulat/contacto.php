@@ -165,3 +165,4 @@ document.getElementById('form-contacto-page')?.addEventListener('submit', async 
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
+

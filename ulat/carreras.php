@@ -85,3 +85,4 @@ document.querySelectorAll('.btn-filtro').forEach(btn => {
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
+

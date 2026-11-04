@@ -26,7 +26,22 @@ final class DomainProfile
     public static function default(): self
     {
         if (self::$default === null) {
-            $path = getenv('DOMAIN_PROFILE_PATH') ?: (__DIR__ . '/../../config/domain_profile.json');
+            $rawPath = getenv('DOMAIN_PROFILE_PATH');
+            if ($rawPath && trim($rawPath) !== '') {
+                $trimmed = trim($rawPath);
+                if (is_file($trimmed)) {
+                    $path = $trimmed;
+                } elseif (is_file(__DIR__ . '/../../' . ltrim($trimmed, '/\\'))) {
+                    $path = __DIR__ . '/../../' . ltrim($trimmed, '/\\');
+                } else {
+                    $path = $trimmed;
+                }
+            } else {
+                $path = __DIR__ . '/../../config/domain_profile_ulat.json';
+                if (!is_file($path)) {
+                    $path = __DIR__ . '/../../config/domain_profile.json';
+                }
+            }
             self::$default = self::fromFile((string)$path);
         }
         return self::$default;

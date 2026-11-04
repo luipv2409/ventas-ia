@@ -30,3 +30,4 @@ try {
     echo "❌ Error en migración v10: " . $e->getMessage() . "\n";
     exit(1);
 }
+

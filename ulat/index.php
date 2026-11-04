@@ -291,3 +291,4 @@ document.getElementById('form-lead-hero')?.addEventListener('submit', async func
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>
+
