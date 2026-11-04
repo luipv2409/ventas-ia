@@ -44,7 +44,7 @@ class EmbeddingService
             'para', 'con', 'no', 'una', 'su', 'al', 'lo', 'como', 'mas', 'pero', 'sus', 'le',
             'ya', 'o', 'este', 'si', 'porque', 'esta', 'son', 'entre', 'esta', 'cuando', 'muy',
             'sin', 'sobre', 'ser', 'tiene', 'tambien', 'me', 'hasta', 'hay', 'donde', 'quien',
-            'desde', 'todo', 'nos', 'durante', 'todos', 'uno', 'les', 'ni', 'contra', 'otros',
+            'desde', 'todo', 'nos', 'durante', 'todos', 'les', 'ni', 'contra', 'otros',
             'ese', 'eso', 'ante', 'ellos', 'e', 'esto', 'mi', 'antes', 'algunos', 'unos', 'yo',
             'otro', 'otras', 'otra', 'el', 'ella', 'cual', 'cuanto', 'cuantos', 'que', 'cual',
             // Cortesía, saludos y verbos de relleno (no aportan intención de búsqueda)
@@ -311,6 +311,31 @@ class EmbeddingService
             'devuelven' => 'devolucion',
             'facturar' => 'factura',
             'facturacion' => 'factura',
+            // Lemas universitarios y académicos (ULAT)
+            'inscribir' => 'inscripcion',
+            'inscribirme' => 'inscripcion',
+            'inscribo' => 'inscripcion',
+            'inscripcione' => 'inscripcion',
+            'matricular' => 'matricula',
+            'matricularme' => 'matricula',
+            'matriculo' => 'matricula',
+            'titular' => 'titulacion',
+            'titularme' => 'titulacion',
+            'graduar' => 'graduacion',
+            'graduarme' => 'graduacion',
+            'convalidar' => 'convalidacion',
+            'traspasar' => 'traspaso',
+            'aprobar' => 'aprobacion',
+            'apruebo' => 'aprobacion',
+            'reprobar' => 'reprobacion',
+            'mensualidad' => 'cuota',
+            'mensualidade' => 'cuota',
+            'pension' => 'cuota',
+            'arancele' => 'arancel',
+            'arancel' => 'arancel',
+            'pensum' => 'malla',
+            'asignatura' => 'materia',
+            'semestral' => 'semestre',
         ];
 
         return $lemmas[$stemmed] ?? $stemmed;
@@ -384,6 +409,32 @@ class EmbeddingService
             '#ropa' => ['camiseta', 'polo', 'polera', 'ropa', 'prenda', 'talla', 'algodon'],
             '#hogar' => ['licuadora', 'sabana', 'cocina', 'hogar', 'cama', 'electrodomestico'],
             '#cafe' => ['cafe', 'molido', 'arabica', 'bebida'],
+            // Conceptos semánticos universitarios (ULAT)
+            '#admision' => [
+                'admision', 'inscripcion', 'inscribir', 'matricula', 'matricular', 'requisito',
+                'documento', 'bachiller', 'diploma', 'nacimiento', 'cedula', 'carnet', 'fotografia',
+                'folder', 'amarillo', 'extranjero', 'apostilla', 'postulante', 'nuevo', 'ingreso',
+            ],
+            '#beca' => [
+                'beca', 'descuento', 'rebaja', 'excelencia', 'promedio', 'deportiva', 'deporte',
+                'cultura', 'convenio', 'solidario', 'beneficio', 'incentivo', 'plan', 'recomendacion',
+            ],
+            '#malla' => [
+                'malla', 'curricular', 'pensum', 'materia', 'asignatura', 'semestre', 'plan',
+                'estudio', 'curricula', 'duracion', 'ano', 'internado', 'rotatorio', 'mencion',
+            ],
+            '#graduacion' => [
+                'graduacion', 'titulacion', 'titulo', 'tesis', 'proyecto', 'grado', 'examen',
+                'trabajo', 'dirigido', 'defensa', 'tribunal', 'licenciatura', 'tecnico', 'provision',
+            ],
+            '#evaluacion' => [
+                'evaluacion', 'nota', 'calificacion', 'aprobacion', 'aprobar', 'reprobar', 'parcial',
+                'final', 'instancia', 'asistencia', 'ponderacion', 'habilitacion', 'puntaje',
+            ],
+            '#convalidacion' => [
+                'convalidacion', 'convalidar', 'traspaso', 'homologacion', 'universidad', 'origen',
+                'programa', 'analitico', 'certificado',
+            ],
         ];
 
         $map = [];

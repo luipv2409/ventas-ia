@@ -25,18 +25,24 @@ class DocumentChunker
             $docTitle = trim($m[1]);
         }
 
-        // Dividir por encabezados de segundo nivel (## Sección)
-        $sections = preg_split('/(?=^##\s+)/m', $raw) ?: [];
+        // Dividir por encabezados de segundo o tercer nivel (## o ### Sección)
+        $sections = preg_split('/(?=^#{2,3}\s+)/m', $raw) ?: [];
         $chunks = [];
 
         foreach ($sections as $idx => $section) {
             $section = trim($section);
-            if (!preg_match('/^##\s+(.+)$/m', $section, $m)) {
-                continue; // Bloque del título H1 sin contenido propio
+            if ($section === '') {
+                continue;
             }
-            $sectionTitle = trim($m[1]);
-            $body = trim((string)preg_replace('/^##\s+.+$/m', '', $section, 1));
-            if ($body === '') {
+            if (preg_match('/^#{2,3}\s+(.+)$/m', $section, $m)) {
+                $sectionTitle = trim($m[1]);
+                $body = trim((string)preg_replace('/^#{2,3}\s+.+$/m', '', $section, 1));
+            } else {
+                // Bloque inicial bajo H1: conservar su contenido si tiene texto más allá del título # H1
+                $sectionTitle = 'Información General';
+                $body = trim((string)preg_replace('/^#\s+.+$/m', '', $section, 1));
+            }
+            if ($body === '' || $body === '###') {
                 continue;
             }
 
@@ -48,8 +54,8 @@ class DocumentChunker
                     'title'      => $header,
                     'section'    => $sectionTitle,
                     'content'    => $content,
-                    // El título de la sección se repite para darle más peso en el vector
-                    'embed_text' => $sectionTitle . "\n" . $content,
+                    // El título del documento y de la sección se repiten para darle mayor peso semántico
+                    'embed_text' => "{$docTitle} {$sectionTitle}\n" . $content,
                 ];
             }
         }

@@ -45,17 +45,27 @@ class QueryExpander
             return null;
         }
 
+        $esUni = defined('DOMAIN_PROFILE_PATH') && stripos((string)DOMAIN_PROFILE_PATH, 'ulat') !== false;
+        $labelUser = $esUni ? 'Postulante' : 'Cliente';
+        $labelBot  = $esUni ? 'Universidad' : 'Tienda';
+
         $contexto = '';
         foreach (array_slice($history, -4) as $msg) {
-            $role = ($msg['role'] ?? '') === 'user' ? 'Cliente' : 'Tienda';
+            $role = ($msg['role'] ?? '') === 'user' ? $labelUser : $labelBot;
             $contexto .= $role . ': ' . mb_substr((string)($msg['content'] ?? ''), 0, 200) . "\n";
         }
 
-        $system = 'Generas palabras clave de búsqueda para la base de información de una tienda online en Bolivia '
-            . '(productos, envíos, métodos de pago, garantía, devoluciones, horarios, facturación). '
-            . 'Devuelve SOLO entre 4 y 12 palabras clave en español, separadas por espacios, sin explicaciones '
-            . 'ni signos. Incluye sinónimos útiles. Usa la conversación previa para entender preguntas de '
-            . 'seguimiento. Si el mensaje es solo saludo, agradecimiento o charla sin consulta, devuelve: NINGUNA';
+        $system = $esUni
+            ? 'Generas palabras clave de búsqueda para la base de conocimiento de la Universidad Latinoamericana (ULAT) en Cochabamba, Bolivia '
+              . '(carreras, facultades, mallas curriculares, semestres, materias, requisitos de admisión, becas, Plan Uno a Uno, reglamentos estudiantil y de graduación, convalidaciones, sedes). '
+              . 'Devuelve SOLO entre 4 y 12 palabras clave en español, separadas por espacios, sin explicaciones ni signos. '
+              . 'Usa la conversación previa para resolver referencias a la carrera o trámite del que venían hablando. '
+              . 'Si el mensaje es solo saludo, agradecimiento o charla sin consulta, devuelve: NINGUNA'
+            : 'Generas palabras clave de búsqueda para la base de información de una tienda online en Bolivia '
+              . '(productos, envíos, métodos de pago, garantía, devoluciones, horarios, facturación). '
+              . 'Devuelve SOLO entre 4 y 12 palabras clave en español, separadas por espacios, sin explicaciones '
+              . 'ni signos. Incluye sinónimos útiles. Usa la conversación previa para entender preguntas de '
+              . 'seguimiento. Si el mensaje es solo saludo, agradecimiento o charla sin consulta, devuelve: NINGUNA';
 
         $user = ($contexto !== '' ? "Conversación previa:\n{$contexto}\n" : '') . "Mensaje actual del cliente: {$query}";
 

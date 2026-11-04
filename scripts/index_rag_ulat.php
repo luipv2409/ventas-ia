@@ -41,14 +41,23 @@ try {
     if (file_exists($catalogFile)) {
         $catalog = json_decode(file_get_contents($catalogFile), true) ?: [];
         foreach ($catalog as $slug => $c) {
+            $materiasResumen = '';
+            if (!empty($c['semestres']) && is_array($c['semestres'])) {
+                foreach ($c['semestres'] as $semNom => $mats) {
+                    $materiasResumen .= "{$semNom}: " . implode(', ', $mats) . ". ";
+                }
+            }
+
             $content = "CARRERA: {$c['nombre']}\n";
             $content .= "FACULTAD: {$c['facultad']}\n";
             $content .= "GRADO: {$c['grado']}\n";
             $content .= "DURACIÓN: {$c['duracion']}\n";
-            $content .= "MODALIDAD: {$c['modalidad']}\n\n";
-            $content .= "DESCRIPCIÓN Y PERFIL:\n" . substr($c['descripcion'], 0, 1500) . "\n";
+            $content .= "MODALIDAD: {$c['modalidad']}\n";
+            $content .= "SEDE: " . ($c['sede'] ?? 'Campus Central') . "\n\n";
+            $content .= "MALLA CURRICULAR: {$materiasResumen}\n\n";
+            $content .= "DESCRIPCIÓN Y PERFIL:\n" . substr($c['descripcion'], 0, 1200) . "\n";
 
-            $embedText = "{$c['nombre']} {$c['facultad']} {$c['grado']} {$c['duracion']} {$c['modalidad']} perfil objetivos " . substr($c['descripcion'], 0, 800);
+            $embedText = "{$c['nombre']} {$c['facultad']} {$c['grado']} {$c['duracion']} {$c['modalidad']} malla curricular materias semestres {$materiasResumen} " . substr($c['descripcion'], 0, 600);
 
             $docs[] = [
                 'collection' => 'carreras',
@@ -160,11 +169,15 @@ try {
         }
     }
 
-    // Limpiar obsoletos
+    // Limpiar obsoletos y vaciar caché de consultas RAG para reflejar el nuevo índice
     $eliminados = 0;
     foreach ($vigentes as $col => $ids) {
         $eliminados += $vectorStore->deleteStale($col, $ids);
     }
+    try {
+        $pdo->exec("TRUNCATE TABLE rag_query_cache");
+        echo "   ✔ Caché de consultas RAG (rag_query_cache) actualizada.\n";
+    } catch (Throwable $e) {}
 
     echo "\n====================================================\n";
     echo "🎉 INDEXACIÓN RAG ULAT COMPLETADA CON ÉXITO!\n";

@@ -142,9 +142,9 @@ class RagService
             }
 
             // Bloque de contexto para el prompt. Sin porcentajes ni jerga técnica, para que el
-            // modelo lo use como conocimiento propio y no lo "cite" ante el cliente.
-            $contextText = "### DATOS OFICIALES DE LA TIENDA PARA ESTA CONSULTA:\n";
-            $contextText .= "Úsalos como conocimiento propio (no menciones que te los dieron):\n\n";
+            // modelo lo use como conocimiento propio y no lo "cite" ante el usuario.
+            $contextText = "### INFORMACIÓN OFICIAL VERIFICADA PARA ESTA CONSULTA:\n";
+            $contextText .= "Úsala como conocimiento propio (no menciones que proviene de documentos o fragmentos):\n\n";
 
             foreach ($matches as $m) {
                 $contextText .= sprintf("[%s]\n%s\n\n", $m['title'], trim($m['content']));
