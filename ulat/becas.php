@@ -6,132 +6,97 @@ require_once __DIR__ . '/header.php';
 ?>
 
 <div class="ulat-page-header">
-    <div class="container py-2">
-        <span class="ulat-eyebrow-light">Incentivos Académicos y Apoyo Económico</span>
-        <h1 class="display-6 fw-bold text-white mb-2">Programa de Becas y Plan Uno a Uno</h1>
-        <p class="mb-0 text-white-50" style="max-width: 680px; font-size: 0.98rem;">
-            Beneficios estudiantiles regidos por el Reglamento General de Universidades Privadas (D.S. Nº 1433) y el programa solidario ULAT – ILAT.
-        </p>
+    <div class="container">
+        <div class="row align-items-end g-4">
+            <div class="col-lg-8">
+                <span class="ulat-eyebrow-light">Apoyo Económico e Incentivo al Mérito</span>
+                <h1 class="font-editorial display-4 text-white mb-0">Becas y Plan Uno a Uno</h1>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <p class="small text-white-50 mb-0">
+                    Programa Solidario ULAT–ILAT &amp; Reglamento de Becas D.S. 1433
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="container py-5">
 
-    <!-- PLAN UNO A UNO -->
-    <div class="card card-ulat p-4 p-md-5 mb-5" id="plan1a1">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-8">
-                <span class="ulat-eyebrow">Beneficio Solidario ULAT – ILAT</span>
-                <h2 class="h3 fw-bold mb-3">Plan Uno a Uno: 50% de Descuento en Cuotas Mensuales</h2>
-                <p class="text-secondary small mb-3" style="line-height: 1.7;">
-                    La Universidad Latinoamericana y el Instituto Latinoamericano (ILAT) establecieron el <strong>Plan Uno a Uno</strong> con el propósito de respaldar la economía familiar de nuestros estudiantes regulares.
-                </p>
-                <div class="p-3 rounded border mb-3" style="background-color: #f8fafc;">
-                    <h6 class="fw-bold text-dark mb-1">¿Cómo se aplica el beneficio?</h6>
-                    <p class="small text-secondary mb-0" style="line-height: 1.6;">
-                        Todo estudiante regular que invite a un alumno nuevo a matricularse en cualquiera de nuestras carreras o programas ofertados (Licenciaturas, Técnico Superior o Diplomados) cancela únicamente el <strong>50% de su cuota mensual</strong> por cada estudiante nuevo inscrito.
-                    </p>
-                </div>
-                <div class="small text-muted">
-                    El formulario oficial del Plan Uno a Uno se solicita en Dirección Administrativa o a través de Admisiones.
-                </div>
+    <!-- PLAN UNO A UNO (EDITORIAL ASIMÉTRICO) -->
+    <div class="p-4 p-md-5 bg-white mb-5" id="plan1a1" style="border: 1px solid var(--ulat-line);">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-4 text-lg-center" style="border-right: 1px solid var(--ulat-line);">
+                <span class="ulat-eyebrow">Beneficio ULAT – ILAT</span>
+                <div class="font-editorial display-1" style="color: var(--ulat-ink); line-height: 1;">-50%</div>
+                <div class="font-mono-code text-muted mt-2">En tu Cuota Mensual</div>
             </div>
-            <div class="col-lg-4">
-                <div class="p-4 rounded text-center" style="background-color: var(--ulat-gold-soft); border: 1px solid rgba(212, 154, 53, 0.4);">
-                    <span class="ulat-eyebrow mb-1">Descuento Directo</span>
-                    <div class="display-4 fw-bold mb-1" style="color: var(--ulat-blue-dark);">-50%</div>
-                    <div class="fw-bold text-dark small">En tu Cuota Mensual</div>
-                    <p class="small text-muted mt-2 mb-0">Por cada estudiante nuevo recomendado y matriculado en la gestión vigente.</p>
-                </div>
+            <div class="col-lg-8">
+                <h2 class="font-editorial h2 mb-3">Plan Uno a Uno: Estudia a mitad de cuota recomendando a un compañero</h2>
+                <p class="small text-muted mb-3" style="line-height: 1.75;">
+                    La Universidad Latinoamericana y el Instituto Latinoamericano (ILAT) diseñaron el <strong>Plan Uno a Uno</strong> para apoyar económicamente a nuestros estudiantes regulares.
+                </p>
+                <p class="small text-muted mb-0" style="line-height: 1.75;">
+                    Todo estudiante regular que invite a un alumno nuevo a matricularse en cualquiera de nuestras carreras o programas ofertados (Diplomados, Licenciatura, Técnico Superior o Técnico Medio) cancelará únicamente el <strong>50% de la cuota correspondiente al mes</strong> por cada alumno nuevo matriculado.
+                </p>
             </div>
         </div>
     </div>
 
     <!-- MODALIDADES DE BECA -->
     <div class="mb-4">
-        <span class="ulat-eyebrow">Normativa Ministerial D.S. 1433</span>
-        <h3 class="h4 fw-bold">Modalidades de Beca Institucional</h3>
+        <span class="ulat-eyebrow">Modalidades Reglamentarias</span>
+        <h2 class="font-editorial h2">Programa Institucional de Becas</h2>
     </div>
 
-    <div class="row g-4">
-        <!-- Beca Excelencia -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="card card-ulat h-100 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid var(--ulat-line);">
                     <span class="academic-index">BECA 01</span>
-                    <div class="icon-frame-gold">
-                        <i data-lucide="award" class="lucide"></i>
-                    </div>
+                    <span class="academic-index">COBERTURA 100%</span>
                 </div>
-                <h4 class="h5 fw-bold mb-2">Beca por Excelencia Académica</h4>
-                <p class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.65;">
-                    Reconoce el mérito de los estudiantes regulares que alcanzan el más alto rendimiento académico durante el semestre anterior sin asignaturas reprobadas.
+                <h4 class="h5 mb-2">Excelencia Académica</h4>
+                <p class="small text-muted mb-3" style="line-height: 1.7;">
+                    El estudiante que alcance un promedio general superior al <strong>95%</strong> en el semestre anterior sin materias reprobadas queda liberado del 100% del pago de matrícula y cuotas.
                 </p>
-                <div class="p-3 rounded small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div><strong>Requisito:</strong> Promedio igual o superior a <strong>95 puntos</strong>.</div>
-                    <div class="mt-1"><strong>Cobertura:</strong> Liberación del <strong>100%</strong> en cuotas.</div>
-                </div>
             </div>
         </div>
 
-        <!-- Beca Deportiva y Cultural -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+        <div class="col-lg-4">
+            <div class="card card-ulat h-100 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid var(--ulat-line);">
                     <span class="academic-index">BECA 02</span>
-                    <div class="icon-frame">
-                        <i data-lucide="trophy" class="lucide"></i>
-                    </div>
+                    <span class="academic-index">SELECCIÓN ULAT</span>
                 </div>
-                <h4 class="h5 fw-bold mb-2">Beca Cultura y Deporte</h4>
-                <p class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.65;">
-                    Destinada a estudiantes destacados que integran las selecciones deportivas o elencos culturales oficiales de la Universidad Latinoamericana en certámenes departamentales y nacionales.
+                <h4 class="h5 mb-2">Beca Deportiva y Cultural</h4>
+                <p class="small text-muted mb-3" style="line-height: 1.7;">
+                    Otorga descuentos en las cuotas mensuales a estudiantes con destacadas cualidades deportivas o artísticas que representen oficialmente a la Universidad Latinoamericana.
                 </p>
-                <div class="p-3 rounded small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div><strong>Requisito:</strong> Evaluación técnica y récord académico regular.</div>
-                    <div class="mt-1"><strong>Beneficio:</strong> Descuento porcentual semestral.</div>
-                </div>
             </div>
         </div>
 
-        <!-- Beca Convenio e Interinstitucional -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+        <div class="col-lg-4">
+            <div class="card card-ulat h-100 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid var(--ulat-line);">
                     <span class="academic-index">BECA 03</span>
-                    <div class="icon-frame">
-                        <i data-lucide="building" class="lucide"></i>
-                    </div>
+                    <span class="academic-index">INTERINSTITUCIONAL</span>
                 </div>
-                <h4 class="h5 fw-bold mb-2">Beca Convenio Institucional</h4>
-                <p class="small text-secondary mb-3 flex-grow-1" style="line-height: 1.65;">
-                    Aranceles preferenciales para miembros, trabajadores y familiares directos de instituciones públicas, colegios profesionales y empresas con convenio vigente con la ULAT.
+                <h4 class="h5 mb-2">Convenio, Familiar y Trabajo</h4>
+                <p class="small text-muted mb-3" style="line-height: 1.7;">
+                    Descuentos para personal de instituciones en convenio, familiares en primer grado de consanguinidad (Beca Familiar) y apoyo de medio tiempo dentro de la universidad (Beca Trabajo).
                 </p>
-                <div class="p-3 rounded small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div><strong>Requisito:</strong> Certificación vigente de la entidad en convenio.</div>
-                    <div class="mt-1"><strong>Normativa:</strong> Reglamento Interno de Becas.</div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Descarga de Reglamento -->
-    <div class="card card-ulat p-4 p-md-5 mt-5">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-8">
-                <span class="ulat-eyebrow">Transparencia Normativa</span>
-                <h4 class="fw-bold mb-2">Consulta el Reglamento Oficial de Becas</h4>
-                <p class="text-secondary small mb-0">
-                    Revisa en detalle los plazos de convocatoria, requisitos documentales y condiciones de permanencia de cada modalidad de beca.
-                </p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <a href="reglamentos.php" class="btn btn-ulat-primary d-inline-flex align-items-center gap-2">
-                    <i data-lucide="file-text" class="lucide-sm"></i>
-                    <span>Ver Reglamentos en PDF</span>
-                </a>
-            </div>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pt-4" style="border-top: 1px solid var(--ulat-line);">
+        <div class="small text-muted">
+            Las escalas de porcentaje y requisitos de renovación están normados en el Reglamento Oficial de Becas.
         </div>
+        <a href="reglamentos.php" class="btn btn-ulat-outline btn-sm">
+            Descargar Reglamento de Becas PDF →
+        </a>
     </div>
 
 </div>

@@ -6,62 +6,70 @@ require_once __DIR__ . '/header.php';
 ?>
 
 <div class="ulat-page-header">
-    <div class="container py-2">
-        <span class="ulat-eyebrow-light">Programas de Pregrado Acreditados</span>
-        <h1 class="display-6 fw-bold text-white mb-2">Oferta Académica Oficial (15 Carreras)</h1>
-        <p class="mb-0 text-white-50" style="max-width: 680px; font-size: 0.98rem;">
-            Planes de estudio semestrales actualizados, mallas curriculares completas y titulación en Provisión Nacional avalada por el Ministerio de Educación.
-        </p>
+    <div class="container">
+        <div class="row align-items-end g-4">
+            <div class="col-lg-8">
+                <span class="ulat-eyebrow-light">Catálogo de Pregrado · 15 Programas</span>
+                <h1 class="font-editorial display-4 text-white mb-0">Oferta Académica Oficial</h1>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <p class="small text-white-50 mb-0">
+                    Títulos en Provisión Nacional · Régimen Semestral Presencial
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="container py-5">
-    <!-- Filtros Sobrios por Facultad -->
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
-        <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-ulat-primary btn-sm btn-filtro" data-filter="all">Todas las Carreras (15)</button>
-            <button class="btn btn-ulat-outline btn-sm btn-filtro" data-filter="salud">Ciencias de la Salud (6)</button>
-            <button class="btn btn-ulat-outline btn-sm btn-filtro" data-filter="tecnologia">Ciencia y Tecnología (5)</button>
-            <button class="btn btn-ulat-outline btn-sm btn-filtro" data-filter="economicas">Económicas y Jurídicas (4)</button>
+    <!-- Barra de Filtro y Buscador Instantáneo Minimalista -->
+    <div class="row align-items-center g-3 mb-5 pb-4" style="border-bottom: 1px solid var(--ulat-line);">
+        <div class="col-lg-8">
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-ulat-primary btn-sm btn-filtro" data-filter="all">Todas · 15</button>
+                <button class="btn btn-ulat-outline btn-sm btn-filtro" data-filter="salud">Ciencias de la Salud · 06</button>
+                <button class="btn btn-ulat-outline btn-sm btn-filtro" data-filter="tecnologia">Ciencia y Tecnología · 05</button>
+                <button class="btn btn-ulat-outline btn-sm btn-filtro" data-filter="economicas">Económicas y Jurídicas · 04</button>
+            </div>
         </div>
-        <div class="small text-muted">
-            Modalidad Presencial · Régimen Semestral
+        <div class="col-lg-4">
+            <input type="search" id="buscador-carreras" class="form-control form-control-sm bg-white" placeholder="Filtrar por carrera o área (ej. Sistemas, Salud)...">
         </div>
     </div>
 
-    <!-- Grilla de Carreras -->
+    <!-- Grilla Editorial de Carreras -->
     <div class="row g-4" id="carreras-grid">
-        <?php foreach ($carrerasCatalog as $slug => $c): 
+        <?php 
+        $idx = 1;
+        foreach ($carrerasCatalog as $slug => $c): 
             $facClass = str_contains($c['facultad'], 'Salud') ? 'salud' : (str_contains($c['facultad'], 'Tecnolog') ? 'tecnologia' : 'economicas');
-            $numSemestres = isset($c['semestres']) && is_array($c['semestres']) ? count($c['semestres']) : 0;
+            $numStr = str_pad((string)$idx++, 2, '0', STR_PAD_LEFT);
         ?>
-            <div class="col-lg-4 col-md-6 carrera-item" data-category="<?= $facClass ?>">
-                <div class="card card-ulat h-100 d-flex flex-column">
-                    <div class="p-4 flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                            <span class="ulat-eyebrow mb-0"><?= htmlspecialchars($c['facultad']) ?></span>
-                            <span class="badge bg-light text-secondary border fw-medium"><?= htmlspecialchars($c['grado']) ?></span>
+            <div class="col-lg-4 col-md-6 carrera-item" data-category="<?= $facClass ?>" data-search="<?= htmlspecialchars(mb_strtolower($c['nombre'] . ' ' . $c['facultad'] . ' ' . $c['grado'])) ?>">
+                <div class="card card-ulat h-100 p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid var(--ulat-line);">
+                            <span class="academic-index"><?= $numStr ?> · <?= htmlspecialchars(str_replace('Facultad de ', '', $c['facultad'])) ?></span>
+                            <span class="academic-index"><?= htmlspecialchars($c['grado']) ?></span>
                         </div>
-                        <h3 class="h5 fw-bold text-dark mb-2">
-                            <a href="carrera.php?id=<?= $slug ?>" class="text-decoration-none text-dark"><?= htmlspecialchars($c['nombre']) ?></a>
+                        <h3 class="h5 mb-2">
+                            <a href="carrera.php?id=<?= $slug ?>" class="text-decoration-none" style="color: var(--ulat-ink);">
+                                <?= htmlspecialchars($c['nombre']) ?>
+                            </a>
                         </h3>
-                        <div class="small text-muted mb-3 d-flex flex-wrap gap-3">
-                            <span class="d-inline-flex align-items-center gap-1">
-                                <i data-lucide="calendar" class="lucide-sm"></i>
-                                <?= htmlspecialchars($c['duracion']) ?>
-                            </span>
+                        <div class="font-mono-code text-muted mb-3" style="font-size: 0.68rem;">
+                            <?= htmlspecialchars($c['duracion']) ?> · <?= htmlspecialchars($c['modalidad']) ?>
                         </div>
-                        <p class="text-secondary small mb-0" style="line-height: 1.6;">
-                            <?= htmlspecialchars(mb_substr(strip_tags($c['descripcion']), 0, 155)) ?>...
+                        <p class="small text-muted mb-4" style="line-height: 1.6;">
+                            <?= htmlspecialchars(mb_substr(strip_tags($c['descripcion']), 0, 145)) ?>...
                         </p>
                     </div>
-                    <div class="px-4 py-3 bg-light border-top d-flex justify-content-between align-items-center gap-2">
-                        <a href="carrera.php?id=<?= $slug ?>" class="btn btn-ulat-primary btn-sm flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2">
-                            <span>Malla Curricular y Perfil</span>
-                            <i data-lucide="arrow-right" class="lucide-sm"></i>
+                    <div class="pt-3 d-flex justify-content-between align-items-center" style="border-top: 1px solid var(--ulat-line);">
+                        <a href="carrera.php?id=<?= $slug ?>" class="font-mono-code text-decoration-none" style="color: var(--ulat-ink);">
+                            Ver Plan de Estudios →
                         </a>
-                        <button type="button" class="btn btn-ulat-outline btn-sm px-2.5" title="Consultar con Guía ULAT" onclick="window.preguntarAlChat('<?= addslashes($c['nombre']) ?>')">
-                            <i data-lucide="message-square" class="lucide-sm"></i>
+                        <button type="button" class="btn btn-link btn-sm p-0 text-muted text-decoration-none font-mono-code" title="Consultar con Guía ULAT" onclick="window.preguntarAlChat('<?= addslashes($c['nombre']) ?>')">
+                            Consultar ↗
                         </button>
                     </div>
                 </div>
@@ -71,24 +79,33 @@ require_once __DIR__ . '/header.php';
 </div>
 
 <script>
-document.querySelectorAll('.btn-filtro').forEach(btn => {
+const btnsFiltro = document.querySelectorAll('.btn-filtro');
+const inputSearch = document.getElementById('buscador-carreras');
+let currentCategory = 'all';
+
+function aplicarFiltros() {
+    const q = (inputSearch?.value || '').trim().toLowerCase();
+    document.querySelectorAll('.carrera-item').forEach(item => {
+        const matchCat = (currentCategory === 'all' || item.dataset.category === currentCategory);
+        const matchText = (q === '' || (item.dataset.search || '').includes(q));
+        item.style.display = (matchCat && matchText) ? 'block' : 'none';
+    });
+}
+
+btnsFiltro.forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-filtro').forEach(b => {
+        btnsFiltro.forEach(b => {
             b.classList.remove('btn-ulat-primary');
             b.classList.add('btn-ulat-outline');
         });
         btn.classList.remove('btn-ulat-outline');
         btn.classList.add('btn-ulat-primary');
-        const filter = btn.dataset.filter;
-        document.querySelectorAll('.carrera-item').forEach(item => {
-            if (filter === 'all' || item.dataset.category === filter) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
-        });
+        currentCategory = btn.dataset.filter;
+        aplicarFiltros();
     });
 });
+
+inputSearch?.addEventListener('input', aplicarFiltros);
 </script>
 
 <?php require_once __DIR__ . '/footer.php'; ?>

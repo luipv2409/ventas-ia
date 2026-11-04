@@ -1,44 +1,49 @@
 <?php
 // ulat/chat_widget_ulat.php
-// Asistente Virtual Inteligente de Admisiones: Guía ULAT
+// Asistente Virtual Minimalista de Admisiones: Guía ULAT
 ?>
-<!-- Widget Flotante de Admisiones ULAT -->
 <div id="chat-widget" class="chat-widget">
     <button id="chat-toggle" class="chat-toggle-btn d-flex align-items-center justify-content-center" title="Consultar con Guía ULAT">
         <span class="online-aura"></span>
-        <span>Orientación en Línea</span>
-        <i data-lucide="message-square" class="lucide-sm"></i>
+        <span>Guía ULAT · Orientación</span>
     </button>
     <div id="chat-window" class="chat-window d-none">
         <div class="chat-header">
             <div class="d-flex align-items-center gap-2">
                 <div class="chat-avatar">ULAT</div>
                 <div>
-                    <div class="fw-bold lh-1" style="font-size: 0.9rem;">Guía ULAT · Admisiones</div>
-                    <small class="text-white-50" style="font-size: 0.72rem;">Orientación Vocacional y Mallas</small>
+                    <div class="fw-medium lh-1" style="font-size: 0.86rem;">Guía ULAT</div>
+                    <small class="text-white-50" style="font-size: 0.7rem;">Admisiones y Orientación Vocacional</small>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-1">
-                <button type="button" id="chat-reset" class="btn btn-sm btn-link text-white-50 p-1 text-decoration-none" title="Nueva consulta">
+                <button type="button" id="chat-reset" class="btn btn-sm btn-link text-white-50 p-1 text-decoration-none" title="Reiniciar conversación">
                     <i data-lucide="rotate-ccw" class="lucide-sm"></i>
                 </button>
-                <button type="button" id="chat-close" class="btn-close btn-close-white" style="font-size: 0.75rem;" aria-label="Cerrar"></button>
+                <button type="button" id="chat-close" class="btn-close btn-close-white" style="font-size: 0.68rem;" aria-label="Cerrar"></button>
             </div>
         </div>
         <div id="chat-messages" class="chat-messages">
             <div class="message bot-message">
                 <div class="message-content">
-                    ¡Hola! Soy <strong>Guía ULAT</strong>, del equipo de orientación y admisiones de la Universidad Latinoamericana.
+                    Hola, soy <strong>Guía ULAT</strong>, del equipo de admisiones de la Universidad Latinoamericana.
                     <br><br>
                     ¿Sobre qué carrera, malla curricular, beca o requisito te gustaría conversar?
                 </div>
             </div>
         </div>
+        <!-- Chips de acceso rápido minimalistas -->
+        <div class="px-3 py-2 bg-white border-top d-flex gap-1 overflow-auto" style="scrollbar-width: none;">
+            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿Qué ingenierías tienen?')">5 Ingenierías</button>
+            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿En qué consiste el Plan Uno a Uno?')">Plan Uno a Uno</button>
+            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿Cuáles son los requisitos de admisión?')">Requisitos</button>
+            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿Qué carreras de salud ofrecen?')">Salud</button>
+        </div>
         <div class="p-2 bg-white border-top">
             <form id="chat-form" class="d-flex gap-2">
-                <input type="text" id="chat-input" class="form-control form-control-sm px-3" style="border-radius: 6px; font-size: 0.86rem;" placeholder="Escribe tu consulta aquí..." autocomplete="off" required>
-                <button type="submit" class="btn btn-ulat-primary btn-sm px-3 d-flex align-items-center justify-content-center" style="border-radius: 6px;">
-                    <i data-lucide="send" class="lucide-sm"></i>
+                <input type="text" id="chat-input" class="form-control form-control-sm px-3 border-0 bg-light" style="border-radius: 4px; font-size: 0.84rem;" placeholder="Escribe tu consulta..." autocomplete="off" required>
+                <button type="submit" class="btn btn-ulat-primary btn-sm px-3 d-flex align-items-center justify-content-center" style="border-radius: 4px;">
+                    <i data-lucide="arrow-up" class="lucide-sm"></i>
                 </button>
             </form>
         </div>
@@ -151,11 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t) t.remove();
     }
 
-    chatForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const pregunta = chatInput.value.trim();
-        if (pregunta === '') return;
-
+    async function enviarPregunta(pregunta) {
+        if (!pregunta) return;
         agregarMensaje(pregunta, 'user');
         historialIA.push({ role: 'user', content: pregunta });
         chatInput.value = '';
@@ -185,9 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             const cardCarr = document.createElement('div');
                             cardCarr.className = 'message bot-message p-2';
                             cardCarr.innerHTML = `
-                                <div class="p-2 bg-light rounded border d-flex justify-content-between align-items-center gap-2">
-                                    <div class="small fw-semibold text-dark">${escapeHtml(acc.nombre || 'Ver Carrera')}</div>
-                                    <a href="carrera.php?id=${encodeURIComponent(acc.slug)}" class="btn btn-ulat-primary btn-sm py-1 px-2" style="font-size: 0.76rem;">Ver Malla</a>
+                                <div class="d-flex justify-content-between align-items-center gap-3 py-1 px-1">
+                                    <div class="small fw-medium text-dark">${escapeHtml(acc.nombre || 'Ver Carrera')}</div>
+                                    <a href="carrera.php?id=${encodeURIComponent(acc.slug)}" class="btn btn-ulat-primary btn-sm py-1 px-2" style="font-size: 0.73rem;">Malla ↗</a>
                                 </div>
                             `;
                             chatMessages.appendChild(cardCarr);
@@ -195,14 +197,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             const waBtn = document.createElement('div');
                             waBtn.className = 'message bot-message p-2';
                             waBtn.innerHTML = `
-                                <a href="${escapeHtml(acc.url)}" target="_blank" class="btn btn-sm btn-success w-100 d-flex align-items-center justify-content-center gap-2" style="border-radius: 6px; font-size: 0.8rem;">
-                                    <span>Continuar en WhatsApp Admisiones</span>
+                                <a href="${escapeHtml(acc.url)}" target="_blank" class="btn btn-sm btn-ulat-outline w-100 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.78rem;">
+                                    <span>Abrir WhatsApp Admisiones ↗</span>
                                 </a>
                             `;
                             chatMessages.appendChild(waBtn);
                         } else if (acc.tipo === 'registrar_prospecto') {
                             const regInfo = document.createElement('div');
-                            regInfo.className = 'message bot-message p-2 small fw-semibold text-success';
+                            regInfo.className = 'message bot-message p-2 small fw-medium text-success';
                             regInfo.innerHTML = `Datos registrados para Admisiones (${escapeHtml(acc.carrera || 'ULAT')}).`;
                             chatMessages.appendChild(regInfo);
                         }
@@ -217,16 +219,28 @@ document.addEventListener('DOMContentLoaded', () => {
             ocultarTyping();
             agregarMensaje('Tuvimos un detalle de red. Por favor intenta de nuevo o escríbenos al WhatsApp 79795778.', 'bot');
         }
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        enviarPregunta(chatInput.value.trim());
     });
+
+    window.enviarChipChat = function(texto) {
+        if (chatWindow.classList.contains('d-none')) {
+            chatWindow.classList.remove('d-none');
+        }
+        enviarPregunta(texto);
+    };
 
     window.preguntarAlChat = function(consultaTexto) {
         if (chatWindow.classList.contains('d-none')) {
             chatWindow.classList.remove('d-none');
         }
-        chatInput.value = consultaTexto.startsWith('¿') || consultaTexto.startsWith('Cuéntame') || consultaTexto.startsWith('Hola')
+        const msg = consultaTexto.startsWith('¿') || consultaTexto.startsWith('Cuéntame') || consultaTexto.startsWith('Hola')
             ? consultaTexto
             : `Quisiera información sobre ${consultaTexto} y su malla curricular`;
-        chatInput.focus();
+        enviarPregunta(msg);
     };
 });
 </script>

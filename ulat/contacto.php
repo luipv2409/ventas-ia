@@ -6,131 +6,93 @@ require_once __DIR__ . '/header.php';
 ?>
 
 <div class="ulat-page-header">
-    <div class="container py-2">
-        <span class="ulat-eyebrow-light">Atención Institucional</span>
-        <h1 class="display-6 fw-bold text-white mb-2">Sedes y Canales de Contacto</h1>
-        <p class="mb-0 text-white-50" style="max-width: 680px; font-size: 0.98rem;">
-            Visítanos en nuestra Sede Central o en el Campus Norte en la ciudad de Cochabamba, o comunícate con nuestro equipo de Admisiones.
-        </p>
+    <div class="container">
+        <div class="row align-items-end g-4">
+            <div class="col-lg-8">
+                <span class="ulat-eyebrow-light">Directorio Institucional</span>
+                <h1 class="font-editorial display-4 text-white mb-0">Sedes y Contacto</h1>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <p class="small text-white-50 mb-0">
+                    Cochabamba, Bolivia · Atención continua de Lunes a Sábado
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="container py-5">
     <div class="row g-5">
-        <!-- Información de Sedes -->
         <div class="col-lg-5">
-            <div class="card card-ulat p-4 p-md-5 mb-4">
-                <span class="ulat-eyebrow mb-1">Ubicación y Teléfonos</span>
-                <h4 class="fw-bold mb-4 pb-2 border-bottom">Directorio Oficial ULAT</h4>
+            <span class="ulat-eyebrow">Ubicaciones Oficiales</span>
+            <h2 class="font-editorial h2 mb-4">Nuestros Campus</h2>
 
-                <div class="d-flex align-items-start gap-3 mb-4">
-                    <div class="icon-frame-gold">
-                        <i data-lucide="map-pin" class="lucide"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Sede Central Cochabamba</h6>
-                        <p class="text-secondary small mb-0">Calle Uruguay #E-836 entre 16 de Julio y Oquendo, Cochabamba – Bolivia.</p>
-                    </div>
-                </div>
+            <div class="swiss-grid-row">
+                <div class="font-mono-code text-muted mb-1">01 · Sede Central</div>
+                <div class="fw-medium text-dark">Calle Uruguay #E-836 entre 16 de Julio y Oquendo</div>
+                <div class="small text-muted">Cochabamba, Bolivia</div>
+            </div>
 
-                <div class="d-flex align-items-start gap-3 mb-4">
-                    <div class="icon-frame">
-                        <i data-lucide="building-2" class="lucide"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Campus Norte (Automotriz y Electrónica)</h6>
-                        <p class="text-secondary small mb-0">Av. Uyuni Nº 1889 casi Av. Circunvalación, Cochabamba – Bolivia.</p>
-                    </div>
-                </div>
+            <div class="swiss-grid-row">
+                <div class="font-mono-code text-muted mb-1">02 · Campus Norte (Automotriz y Electrónica)</div>
+                <div class="fw-medium text-dark">Av. Uyuni Nº 1889 casi Av. Circunvalación</div>
+                <div class="small text-muted">Cochabamba, Bolivia</div>
+            </div>
 
-                <div class="d-flex align-items-start gap-3 mb-4">
-                    <div class="icon-frame">
-                        <i data-lucide="message-square" class="lucide"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">WhatsApp Inscripciones en Línea</h6>
-                        <p class="text-secondary small mb-2">+591 79795778 · Atención Central: +591 4509488</p>
-                        <a href="https://wa.me/59179795778" target="_blank" class="btn btn-ulat-outline btn-sm">Escribir por WhatsApp</a>
-                    </div>
-                </div>
+            <div class="swiss-grid-row">
+                <div class="font-mono-code text-muted mb-1">03 · Teléfonos y WhatsApp</div>
+                <div class="fw-medium text-dark">Central: (4) 4509488 – (4) 4221004</div>
+                <div class="small text-muted mb-2">WhatsApp Inscripciones: +591 79795778 · Postgrado: 79787897</div>
+                <a href="https://wa.me/59179795778" target="_blank" class="font-mono-code text-dark text-decoration-none">Escribir por WhatsApp ↗</a>
+            </div>
 
-                <div class="d-flex align-items-start gap-3 mb-4">
-                    <div class="icon-frame">
-                        <i data-lucide="phone" class="lucide"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Central Telefónica</h6>
-                        <p class="text-secondary small mb-0">(4) 4509488 – (4) 4221004</p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-start gap-3 mb-4">
-                    <div class="icon-frame">
-                        <i data-lucide="mail" class="lucide"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Correo Institucional</h6>
-                        <p class="text-secondary small mb-0">latinoamericana@ulat.edu.bo</p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-start gap-3">
-                    <div class="icon-frame">
-                        <i data-lucide="clock" class="lucide"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1">Horario de Atención</h6>
-                        <p class="text-secondary small mb-0">
-                            Lunes a Viernes: 08:00 a 18:30 (horario continuo)<br>
-                            Sábados: 08:30 a 12:30
-                        </p>
-                    </div>
-                </div>
+            <div class="swiss-grid-row">
+                <div class="font-mono-code text-muted mb-1">04 · Horario de Atención</div>
+                <div class="small text-muted">Lunes a Viernes: 08:00 a 18:30 · Sábados: 08:30 a 12:30</div>
+                <div class="small text-muted">Correo: latinoamericana@ulat.edu.bo</div>
             </div>
         </div>
 
-        <!-- Formulario de Contacto -->
         <div class="col-lg-7">
             <div class="card card-ulat p-4 p-md-5 bg-white">
-                <span class="ulat-eyebrow mb-1">Atención al Postulante</span>
-                <h4 class="fw-bold mb-2">Envíanos tu Consulta</h4>
-                <p class="text-muted small mb-4">
-                    Completa el formulario y un asesor de la Dirección de Admisiones se comunicará contigo a la brevedad:
+                <span class="ulat-eyebrow">Mensaje Directo</span>
+                <h3 class="font-editorial h3 mb-2">Comunicarse con Admisiones</h3>
+                <p class="small text-muted mb-4">
+                    Déjanos tus datos y un asesor se pondrá en contacto contigo a la brevedad.
                 </p>
 
                 <form id="form-contacto-page" action="api_lead.php" method="POST">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-secondary mb-1">Nombre Completo</label>
-                            <input type="text" name="nombre" class="form-control form-control-sm" placeholder="Ej. Andrea Rojas" required>
+                            <label class="font-mono-code text-muted d-block mb-1">Nombre Completo</label>
+                            <input type="text" name="nombre" class="form-control" placeholder="Andrea Rojas" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-secondary mb-1">Teléfono / WhatsApp</label>
-                            <input type="tel" name="telefono" class="form-control form-control-sm" placeholder="Ej. 79795778" required>
+                            <label class="font-mono-code text-muted d-block mb-1">Teléfono / WhatsApp</label>
+                            <input type="tel" name="telefono" class="form-control" placeholder="79795778" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-secondary mb-1">Correo Electrónico</label>
-                            <input type="email" name="email" class="form-control form-control-sm" placeholder="andrea@ejemplo.com">
+                            <label class="font-mono-code text-muted d-block mb-1">Correo Electrónico</label>
+                            <input type="email" name="email" class="form-control" placeholder="andrea@ejemplo.com">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-semibold text-secondary mb-1">Carrera o Área de Interés</label>
-                            <select name="carrera" class="form-select form-select-sm" required>
+                            <label class="font-mono-code text-muted d-block mb-1">Carrera o Área</label>
+                            <select name="carrera" class="form-select" required>
                                 <option value="">Seleccionar carrera...</option>
                                 <?php foreach ($carrerasCatalog as $slug => $c): ?>
                                     <option value="<?= htmlspecialchars($c['nombre']) ?>"><?= htmlspecialchars($c['nombre']) ?></option>
                                 <?php endforeach; ?>
                                 <option value="Diplomados y Postgrado">Diplomados y Postgrado</option>
-                                <option value="Consulta General">Consulta General / Trámite</option>
+                                <option value="Consulta General">Consulta General</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label small fw-semibold text-secondary mb-1">Mensaje o Consulta</label>
-                            <textarea name="notas" class="form-control form-control-sm" rows="4" placeholder="Escribe aquí tu consulta sobre horarios, aranceles, convalidaciones o requisitos..." required></textarea>
+                            <label class="font-mono-code text-muted d-block mb-1">Consulta</label>
+                            <textarea name="notas" class="form-control" rows="4" placeholder="Escribe tu consulta sobre aranceles, horarios o convalidaciones..." required></textarea>
                         </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-ulat-primary px-4 py-2 d-inline-flex align-items-center gap-2">
-                                <span>Enviar Consulta a Admisiones</span>
-                                <i data-lucide="arrow-up-right" class="lucide-sm"></i>
+                        <div class="col-12 pt-2">
+                            <button type="submit" class="btn btn-ulat-primary px-4 py-2.5">
+                                Enviar Consulta →
                             </button>
                         </div>
                     </div>
@@ -149,7 +111,7 @@ document.getElementById('form-contacto-page')?.addEventListener('submit', async 
     const data = new FormData(form);
 
     status.classList.remove('d-none', 'alert-danger', 'alert-success');
-    status.innerHTML = 'Enviando mensaje...';
+    status.innerHTML = 'Enviando...';
 
     try {
         const resp = await fetch('api_lead.php', { method: 'POST', body: data });

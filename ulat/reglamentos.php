@@ -6,145 +6,110 @@ require_once __DIR__ . '/header.php';
 ?>
 
 <div class="ulat-page-header">
-    <div class="container py-2">
-        <span class="ulat-eyebrow-light">Marco Normativo Institucional</span>
-        <h1 class="display-6 fw-bold text-white mb-2">Reglamentos Universitarios Oficiales</h1>
-        <p class="mb-0 text-white-50" style="max-width: 680px; font-size: 0.98rem;">
-            Normativa interna adecuada al Reglamento General de Universidades Privadas (Decreto Supremo Nº 1433 de 12 de diciembre de 2012) y avalada por el Ministerio de Educación.
-        </p>
+    <div class="container">
+        <div class="row align-items-end g-4">
+            <div class="col-lg-8">
+                <span class="ulat-eyebrow-light">Normativa Institucional · D.S. Nº 1433</span>
+                <h1 class="font-editorial display-4 text-white mb-0">Reglamentos Oficiales</h1>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <p class="small text-white-50 mb-0">
+                    Adecuados al Reglamento General de Universidades Privadas de Bolivia
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="container py-5">
-    <div class="row g-4">
-
-        <!-- Reglamento 1: Estudiantil -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                    <span class="academic-index">NORMATIVA 01</span>
-                    <div class="icon-frame">
-                        <i data-lucide="file-text" class="lucide"></i>
+    <!-- Grilla Editorial Suiza de Reglamentos (Sin cajas ni iconos redundantes) -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-4">
+            <div class="card card-ulat h-100 p-4 p-md-5 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--ulat-line);">
+                        <span class="academic-index">NORMATIVA 01</span>
+                        <span class="academic-index">PDF OFICIAL</span>
                     </div>
+                    <h3 class="font-editorial h3 mb-2">Reglamento Estudiantil</h3>
+                    <div class="font-mono-code text-muted mb-3">11 Capítulos · Pregrado</div>
+                    <p class="small text-muted mb-4" style="line-height: 1.75;">
+                        Establece los derechos, deberes, admisión, permanencia, régimen de evaluación académica (habilitación con 65 puntos y nota mínima de aprobación de 51 puntos), convalidaciones y disciplina estudiantil.
+                    </p>
                 </div>
-                <h3 class="h5 fw-bold mb-1">Reglamento Estudiantil</h3>
-                <div class="small text-muted mb-3">Régimen Académico y Estudiantil · D.S. Nº 1433</div>
-                <p class="text-secondary small mb-4 flex-grow-1" style="line-height: 1.65;">
-                    Establece los derechos, obligaciones, admisión, permanencia, régimen de evaluación (habilitación con 65 puntos y nota mínima de aprobación de 51 puntos), convalidaciones y disciplina estudiantil en la ULAT.
-                </p>
-                <div class="p-3 rounded mb-4 small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div class="d-flex justify-content-between py-1 border-bottom">
-                        <span class="text-muted">Documento</span>
-                        <span class="fw-semibold text-dark">PDF Oficial (11 Capítulos)</span>
-                    </div>
-                    <div class="d-flex justify-content-between pt-1">
-                        <span class="text-muted">Jurisdicción</span>
-                        <span class="fw-semibold text-dark">Pregrado · Todas las Sedes</span>
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20ESTUDIANTIL.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2">
-                        <i data-lucide="external-link" class="lucide-sm"></i>
-                        <span>Lectura en Línea</span>
+                <div class="pt-3 d-flex gap-2" style="border-top: 1px solid var(--ulat-line);">
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20ESTUDIANTIL.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1">
+                        Leer en Línea ↗
                     </a>
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20ESTUDIANTIL.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2">
-                        <i data-lucide="download" class="lucide-sm"></i>
-                        <span>Descargar</span>
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20ESTUDIANTIL.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1">
+                        Descargar PDF
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Reglamento 2: Becas -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                    <span class="academic-index">NORMATIVA 02</span>
-                    <div class="icon-frame">
-                        <i data-lucide="award" class="lucide"></i>
+        <div class="col-lg-4">
+            <div class="card card-ulat h-100 p-4 p-md-5 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--ulat-line);">
+                        <span class="academic-index">NORMATIVA 02</span>
+                        <span class="academic-index">PDF OFICIAL</span>
                     </div>
+                    <h3 class="font-editorial h3 mb-2">Reglamento de Becas</h3>
+                    <div class="font-mono-code text-muted mb-3">Excelencia 95%+ · Deporte · Convenio</div>
+                    <p class="small text-muted mb-4" style="line-height: 1.75;">
+                        Norma los requisitos, plazos de convocatoria, comisiones evaluadoras y condiciones de mantenimiento para becas de excelencia académica (cobertura del 100%), cultura, deporte y convenios interinstitucionales.
+                    </p>
                 </div>
-                <h3 class="h5 fw-bold mb-1">Reglamento de Becas</h3>
-                <div class="small text-muted mb-3">Beneficios e Incentivos Estudiantiles</div>
-                <p class="text-secondary small mb-4 flex-grow-1" style="line-height: 1.65;">
-                    Regula las convocatorias, requisitos de postulación, comisiones de evaluación, porcentajes de cobertura y condiciones de mantenimiento para becas de excelencia académica (95%+), cultura, deporte y convenios.
-                </p>
-                <div class="p-3 rounded mb-4 small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div class="d-flex justify-content-between py-1 border-bottom">
-                        <span class="text-muted">Documento</span>
-                        <span class="fw-semibold text-dark">PDF Oficial Ministerial</span>
-                    </div>
-                    <div class="d-flex justify-content-between pt-1">
-                        <span class="text-muted">Destacado</span>
-                        <span class="fw-semibold text-dark">Excelencia Académica 100%</span>
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20DE%20BECAS.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2">
-                        <i data-lucide="external-link" class="lucide-sm"></i>
-                        <span>Lectura en Línea</span>
+                <div class="pt-3 d-flex gap-2" style="border-top: 1px solid var(--ulat-line);">
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20DE%20BECAS.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1">
+                        Leer en Línea ↗
                     </a>
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20DE%20BECAS.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2">
-                        <i data-lucide="download" class="lucide-sm"></i>
-                        <span>Descargar</span>
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20DE%20BECAS.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1">
+                        Descargar PDF
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Reglamento 3: Graduación -->
-        <div class="col-lg-4 col-md-6">
-            <div class="card card-ulat h-100 p-4 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                    <span class="academic-index">NORMATIVA 03</span>
-                    <div class="icon-frame">
-                        <i data-lucide="scale" class="lucide"></i>
+        <div class="col-lg-4">
+            <div class="card card-ulat h-100 p-4 p-md-5 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2" style="border-bottom: 1px solid var(--ulat-line);">
+                        <span class="academic-index">NORMATIVA 03</span>
+                        <span class="academic-index">PDF OFICIAL</span>
                     </div>
+                    <h3 class="font-editorial h3 mb-2">Reglamento de Graduación</h3>
+                    <div class="font-mono-code text-muted mb-3">05 Modalidades de Titulación</div>
+                    <p class="small text-muted mb-4" style="line-height: 1.75;">
+                        Regula las modalidades de titulación para Licenciaturas y Técnicos Superiores: Tesis de Grado, Proyecto de Grado, Examen de Grado, Trabajo Dirigido y Graduación por Excelencia Académica.
+                    </p>
                 </div>
-                <h3 class="h5 fw-bold mb-1">Reglamento de Graduación</h3>
-                <div class="small text-muted mb-3">Modalidades de Titulación Profesional</div>
-                <p class="text-secondary small mb-4 flex-grow-1" style="line-height: 1.65;">
-                    Norma las cinco modalidades oficiales de titulación universitaria para Licenciatura y Técnico Superior: Tesis de Grado, Proyecto de Grado, Examen de Grado, Trabajo Dirigido y Graduación por Excelencia.
-                </p>
-                <div class="p-3 rounded mb-4 small" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                    <div class="d-flex justify-content-between py-1 border-bottom">
-                        <span class="text-muted">Documento</span>
-                        <span class="fw-semibold text-dark">PDF Oficial de Titulación</span>
-                    </div>
-                    <div class="d-flex justify-content-between pt-1">
-                        <span class="text-muted">Alcance</span>
-                        <span class="fw-semibold text-dark">5 Modalidades de Grado</span>
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20%20DE%20GRADUACION.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2">
-                        <i data-lucide="external-link" class="lucide-sm"></i>
-                        <span>Lectura en Línea</span>
+                <div class="pt-3 d-flex gap-2" style="border-top: 1px solid var(--ulat-line);">
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20%20DE%20GRADUACION.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1">
+                        Leer en Línea ↗
                     </a>
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20%20DE%20GRADUACION.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1 d-inline-flex align-items-center justify-content-center gap-2">
-                        <i data-lucide="download" class="lucide-sm"></i>
-                        <span>Descargar</span>
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20%20DE%20GRADUACION.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1">
+                        Descargar PDF
                     </a>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- Bloque de Consulta Normativa Asistida -->
-    <div class="card card-ulat p-4 p-md-5 mt-5" style="background-color: #ffffff;">
+    <!-- Consulta Asistida sobre Reglamentos -->
+    <div class="p-4 p-md-5 bg-white" style="border: 1px solid var(--ulat-line); border-radius: 4px;">
         <div class="row align-items-center g-4">
             <div class="col-lg-8">
-                <span class="ulat-eyebrow">Orientación Normativa</span>
-                <h4 class="fw-bold mb-2">¿Buscas un artículo o requisito específico dentro de los reglamentos?</h4>
-                <p class="text-secondary mb-0 small" style="line-height: 1.6;">
-                    Nuestro orientador en línea tiene indexados los tres reglamentos completos y puede responderte al instante sobre ponderaciones de exámenes, licencias estudiantiles, convalidaciones o defensas de grado.
+                <span class="ulat-eyebrow">Consulta Normativa con IA</span>
+                <h3 class="font-editorial h3 mb-2">¿Buscas un artículo específico dentro de los reglamentos?</h3>
+                <p class="small text-muted mb-0">
+                    Guía ULAT tiene indexados los 245 fragmentos normativos de los tres reglamentos oficiales y puede responder dudas puntuales sobre exámenes, licencias, convalidaciones o defensas de grado.
                 </p>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <button type="button" class="btn btn-ulat-primary d-inline-flex align-items-center gap-2" onclick="window.preguntarAlChat('¿Cuáles son las modalidades de graduación y requisitos según el reglamento de la ULAT?')">
-                    <i data-lucide="message-square" class="lucide-sm"></i>
-                    <span>Consultar sobre Reglamentos</span>
+                <button type="button" class="btn btn-ulat-primary" onclick="window.preguntarAlChat('¿Cuáles son las modalidades de graduación según el reglamento de la ULAT?')">
+                    Consultar a Guía ULAT →
                 </button>
             </div>
         </div>
