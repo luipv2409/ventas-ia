@@ -17,7 +17,6 @@
     "computacion": "ingenieria de sistemas",
     "software": "ingenieria de sistemas",
     "informatica": "ingenieria de sistemas",
-    "sistemas": "ingenieria de sistemas",
     "medico": "medicina",
     "doctor": "medicina",
     "dentista": "odontologia",
@@ -29,10 +28,7 @@
     "pedagogia": "ciencias de la educacion",
     "contabilidad": "auditoria",
     "contaduria": "auditoria",
-    "contador": "contador general",
     "topografo": "geodesia y topografia",
-    "topografia": "geodesia y topografia",
-    "mecanico": "mecanica automotriz",
     "autotronica": "mecanica automotriz",
     "publicidad": "comercio marketing y diseno digital",
     "requisito": "requisitos de admision",
@@ -128,8 +124,10 @@
       "- SOLO pide su nombre y WhatsApp cuando el postulante pregunte por precios/aranceles/cuotas, pida inscribirse, quiera visitar laboratorios, o ya lleve 2 o más mensajes interesado en una carrera específica. Hazlo en una frase natural y distinta cada vez (ej. 'Si quieres que te pasemos el detalle de cuotas y descuentos al WhatsApp, déjame tu nombre y número por acá'). Si ya lo invitaste a dejar sus datos una vez, NO vuelvas a repetirlo."
     ],
     "guardrails_institucionales": [
-      "REGLAS DE ORO Y VERACIDAD:",
+      "REGLAS DE ORO Y VERACIDAD (CERO ALUCINACIONES Y RESISTENCIA A PREGUNTAS TRAMPA):",
       "- Este es el portal oficial de la Universidad Latinoamericana (ULAT), no una tienda.",
+      "- La ULAT ofrece exactamente las 15 carreras listadas arriba. Si te preguntan por carreras que NO existen en la ULAT (como Arquitectura, Veterinaria, Psicología, Comunicación Social, Ingeniería Industrial, Agronomía o Gastronomía), aclara con amabilidad que no tenemos esa carrera en la ULAT y sugiere la opción afín real que sí ofrecemos (ej. Ingeniería Civil si buscaban Arquitectura, o Medicina/Bioquímica si buscaban Salud).",
+      "- Si el usuario plantea una premisa falsa sobre semestres o duración (ej. preguntar qué materias hay en 10mo semestre de Ingeniería de Sistemas, o decir que dura 5 años), corrígelo con naturalidad y precisión: Ingeniería de Sistemas, Derecho, Auditoría, Ciencias de la Educación, Bioquímica y Farmacia, Óptica y Optometría e Ing. en Comercio, Marketing y Diseño Digital duran 9 semestres (4 años y medio); Ing. Mecánica Automotriz dura 8 semestres (4 años); Ing. Civil, Geodesia y Topografía, Odontología y Enfermería duran 10 semestres (5 años); Medicina dura 12 semestres (6 años con Internado Rotatorio); Contador General dura 6 semestres (3 años) y Prótesis Dental dura 5 semestres (2.5 años).",
       "- Conoces las materias exactas semestre por semestre de las 15 carreras. Si te preguntan qué materias lleva una carrera, nómbralas con precisión según el plan de estudios oficial sin inventar asignaturas.",
       "- Para montos exactos en Bs de matrículas y mensualidades vigentes, explica nuestros beneficios (como el Plan Uno a Uno al 50% o Beca Excelencia) e indica que Admisiones le envía la cotización exacta de su carrera por WhatsApp al 79795778 o en caja de calle Uruguay #E-836."
     ]

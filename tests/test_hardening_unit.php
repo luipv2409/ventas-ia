@@ -156,13 +156,19 @@ $otro->release();
 
 // ---------------------------------------------------------------- DomainProfile
 echo "\n--- DomainProfile ---\n";
-$perfil = DomainProfile::default();
-$sin = $perfil->sinonimos();
+$perfilUlat = DomainProfile::default();
+$sinUlat = $perfilUlat->sinonimos();
+$clavesUlat = array_keys($sinUlat);
+check('Perfil ULAT por defecto: sinónimos ordenados de más largo a más corto', mb_strlen($clavesUlat[0]) >= mb_strlen($clavesUlat[count($clavesUlat) - 1]));
+check('Perfil ULAT por defecto: carga 15 carreras en aliases e identidad universitaria',
+    count($perfilUlat->aliasesModelos()) >= 15 && str_contains($perfilUlat->bloquePrompt('identidad_universitaria'), 'ULAT'));
+
+$perfilTienda = DomainProfile::fromFile(__DIR__ . '/../config/domain_profile.json');
+$sin = $perfilTienda->sinonimos();
 $claves = array_keys($sin);
-check('Sinónimos ordenados de más largo a más corto', mb_strlen($claves[0]) >= mb_strlen($claves[count($claves) - 1]));
-check('"celulares" se evalúa antes que "celular"', array_search('celulares', $claves, true) < array_search('celular', $claves, true));
-check('Carga alias, variantes y bloques de prompt',
-    !empty($perfil->aliasesModelos()) && count($perfil->variantes()) >= 2 && str_contains($perfil->bloquePrompt('variantes'), 'TALLAS'));
+check('Perfil Tienda: "celulares" se evalúa antes que "celular"', array_search('celulares', $claves, true) < array_search('celular', $claves, true));
+check('Perfil Tienda: carga alias, variantes y bloques de prompt',
+    !empty($perfilTienda->aliasesModelos()) && count($perfilTienda->variantes()) >= 2 && str_contains($perfilTienda->bloquePrompt('variantes'), 'TALLAS'));
 check('Perfil vacío no rompe y devuelve estructuras vacías',
     (new DomainProfile([]))->sinonimos() === [] && (new DomainProfile([]))->bloquePrompt('variantes') === '');
 check('Archivo inexistente -> perfil vacío (sin excepción)', DomainProfile::fromFile(__DIR__ . '/no_existe.json')->sinonimos() === []);

@@ -12,6 +12,7 @@ require_once __DIR__ . '/DeepSeekClient.php';
 require_once __DIR__ . '/DomainProfile.php';
 require_once __DIR__ . '/InputSanitizer.php';
 require_once __DIR__ . '/ContextWindow.php';
+require_once __DIR__ . '/PromptGuard.php';
 
 /**
  * Motor centralizado y reutilizable para el chatbot de ventas con IA.
@@ -278,23 +279,37 @@ class ChatEngine
             InputSanitizer::cleanText($pregunta, PHP_INT_MAX)
         );
         $preguntaOriginal = InputSanitizer::cleanText($pregunta, InputSanitizer::MAX_MESSAGE_CHARS);
-        $historial = ContextWindow::trimHistory(InputSanitizer::sanitizeHistory($historial));
+        $historial = ContextWindow::trimHistory(
+            PromptGuard::cleanUntrustedHistory(InputSanitizer::sanitizeHistory($historial))
+        );
 
         if ($preguntaOriginal === '') {
             return $this->respuestaSinLLM($canal, $remitente, 'Uy, no me llegó bien tu mensaje. ¿Me lo escribes de nuevo?', $entradaTruncada);
         }
 
-        // 1-2. Sinónimos y detección de presupuesto
-        $preguntaTratada = $this->aplicarPresupuesto($this->aplicarSinonimos($preguntaOriginal));
+        $esUniversidad = !empty($this->profile->bloquePrompt('identidad_universitaria'));
+        $guardAnalysis = PromptGuard::analyzeInput($preguntaOriginal);
 
-        // 3. Último producto conversado
+        // 1-2. Sinónimos y detección de presupuesto (solo si no es entrada adversarial)
+        $preguntaTratada = $guardAnalysis['is_adversarial']
+            ? $preguntaOriginal
+            : $this->aplicarPresupuesto($this->aplicarSinonimos($preguntaOriginal));
+
+        // 3. Último producto / carrera conversada
         $ultimoProducto = $this->detectarUltimoProducto($historial);
 
-        // 4. RAG contextual
-        $rag = $this->recuperarRag($useRag, $preguntaTratada, $historial);
+        // 4. RAG contextual (no contaminar caché RAG con intentos de jailbreak)
+        $rag = $this->recuperarRag($useRag && !$guardAnalysis['is_adversarial'], $preguntaTratada, $historial);
 
-        // 5-6. Catálogo + System Prompt
-        $systemPrompt = $this->construirSystemPrompt($canal, $rag['contexto'], $preguntaTratada, $ultimoProducto);
+        // 5-6. Catálogo + System Prompt (con blindaje táctico si se detectó intento adversarial)
+        $systemPrompt = $this->construirSystemPrompt(
+            $canal,
+            $rag['contexto'],
+            $preguntaTratada,
+            $ultimoProducto,
+            $historial,
+            $guardAnalysis['directive']
+        );
 
         $mensajes = [['role' => 'system', 'content' => $systemPrompt]];
         foreach ($historial as $msg) {
@@ -305,7 +320,7 @@ class ChatEngine
         // 7. Llamada al LLM
         $aiResult = $this->client->chat($mensajes, [
             'json_mode'   => false,
-            'temperature' => 0.65,
+            'temperature' => $guardAnalysis['is_adversarial'] ? 0.35 : 0.60,
             'max_tokens'  => 650,
         ]);
         $degraded = !($aiResult['ok'] ?? false);
@@ -313,8 +328,8 @@ class ChatEngine
         $jsonRespuesta = $this->parsearRespuestaLLM($aiResult);
         $acciones = is_array($jsonRespuesta['acciones'] ?? null) ? $jsonRespuesta['acciones'] : [];
 
-        // Rescate de JSON incrustado en el texto
-        if (preg_match_all('/\{[^{}]*"tipo"\s*:\s*"[^"]+"[^{}]*\}/s', (string)$jsonRespuesta['respuesta'], $embMatches)) {
+        // Rescate de JSON incrustado en el texto (solo si el usuario no intentó inyectar JSON falso)
+        if (!$guardAnalysis['is_adversarial'] && preg_match_all('/\{[^{}]*"tipo"\s*:\s*"[^"]+"[^{}]*\}/s', (string)$jsonRespuesta['respuesta'], $embMatches)) {
             foreach ($embMatches[0] as $embStr) {
                 $parsedEmb = json_decode($embStr, true);
                 if ($parsedEmb && isset($parsedEmb['tipo'])) {
@@ -324,9 +339,12 @@ class ChatEngine
         }
 
         $respuestaTexto = HumanPersona::limpiarRespuesta((string)$jsonRespuesta['respuesta']);
+        $respuestaTexto = PromptGuard::verifyAndCleanOutput($respuestaTexto, $preguntaOriginal, $esUniversidad);
 
-        // 8-10. Validación determinista de acciones (precios y productos siempre desde la BD)
-        $accionesNormalizadas = $this->resolverAcciones($acciones, $preguntaTratada, $respuestaTexto, $historial, $ultimoProducto);
+        // 8-10. Validación determinista de acciones (precios, carreras y prospectos verificados)
+        $accionesNormalizadas = $guardAnalysis['is_adversarial']
+            ? []
+            : $this->resolverAcciones($acciones, $preguntaTratada, $respuestaTexto, $historial, $ultimoProducto, $preguntaOriginal);
 
         // 10. Formato para el canal
         $textoCanal = $this->formatearParaCanal($respuestaTexto, $accionesNormalizadas, $canal);
@@ -397,11 +415,14 @@ class ChatEngine
 
     /**
      * Sustituye sinónimos por palabra completa y de la clave más larga a la más corta
-     * ("celulares" se evalúa antes que "celular"; antes se producían reemplazos parciales).
+     * ("celulares" se evalúa antes que "celular"; evita reemplazos parciales o redundantes).
      */
     private function aplicarSinonimos(string $texto): string
     {
         foreach ($this->profile->sinonimos() as $clave => $valor) {
+            if (mb_stripos($texto, $valor) !== false) {
+                continue;
+            }
             $patron = '/(?<![\p{L}\p{N}])' . preg_quote($clave, '/') . '(?![\p{L}\p{N}])/iu';
             $texto  = (string)preg_replace($patron, str_replace(['\\', '$'], ['\\\\', '\\$'], $valor), $texto);
         }
@@ -409,15 +430,27 @@ class ChatEngine
     }
 
     /**
-     * Un mensaje que es solo un monto se interpreta como presupuesto. Los números pequeños sin
-     * moneda (ej. "42" como respuesta a "¿qué talla?") NO son presupuesto.
+     * Un mensaje que es solo un monto se interpreta como presupuesto (solo en modo tienda o con moneda explícita).
+     * Los números de teléfono bolivianos (7 u 8 dígitos) o números sueltos en modo universidad NUNCA son presupuesto.
      */
     private function aplicarPresupuesto(string $texto): string
     {
-        if (preg_match('/^(\d+(?:[.,]\d+)?)\s*(\$|bs\.?|bolivianos)?$/iu', trim($texto), $m)) {
+        $esUniversidad = !empty($this->profile->bloquePrompt('identidad_universitaria'));
+        $trimmed = trim($texto);
+
+        // Nunca reescribir teléfonos bolivianos (7 u 8 dígitos que inician con 4, 6 o 7)
+        if (preg_match('/^(?:\+?591\s*)?[467]\d{6,7}$/', $trimmed)) {
+            return $texto;
+        }
+
+        if ($esUniversidad) {
+            return $texto;
+        }
+
+        if (preg_match('/^(\d+(?:[.,]\d+)?)\s*(\$|bs\.?|bolivianos)?$/iu', $trimmed, $m)) {
             $monto = (float)str_replace(',', '.', $m[1]);
             $tieneMoneda = !empty($m[2]);
-            if ($tieneMoneda || $monto >= 100) {
+            if ($tieneMoneda || ($monto >= 100 && $monto <= 50000)) {
                 return "Mi presupuesto es de aproximadamente {$this->simboloMoneda} {$monto}. ¿Qué me recomiendas?";
             }
         }
@@ -452,13 +485,26 @@ class ChatEngine
     }
 
     /**
-     * Último producto mencionado en la conversación (más reciente primero).
+     * Último producto o carrera mencionada en la conversación (más reciente primero).
      */
     private function detectarUltimoProducto(array $historial): string
     {
+        $esUniversidad = !empty($this->profile->bloquePrompt('identidad_universitaria'));
+
         foreach (array_reverse($historial) as $msg) {
             $msgContent = mb_strtolower((string)($msg['content'] ?? ''));
             if ($msgContent === '') {
+                continue;
+            }
+
+            if ($esUniversidad) {
+                $aliases = $this->profile->aliasesModelos();
+                uksort($aliases, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+                foreach ($aliases as $alias => $oficial) {
+                    if (mb_stripos($msgContent, mb_strtolower($oficial)) !== false || mb_stripos($msgContent, mb_strtolower($alias)) !== false) {
+                        return $oficial;
+                    }
+                }
                 continue;
             }
 
@@ -472,15 +518,6 @@ class ChatEngine
             $porAlias = $this->buscarPorAlias($msgContent);
             if ($porAlias !== null) {
                 return $porAlias['nombre'];
-            }
-            if (!empty($this->profile->bloquePrompt('identidad_universitaria'))) {
-                $aliases = $this->profile->aliasesModelos();
-                uksort($aliases, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
-                foreach ($aliases as $alias => $oficial) {
-                    if (mb_stripos($msgContent, mb_strtolower($oficial)) !== false || mb_stripos($msgContent, mb_strtolower($alias)) !== false) {
-                        return $oficial;
-                    }
-                }
             }
             // 3. Nombre simplificado (sin prefijo de categoría)
             foreach ($this->productos as $p) {
@@ -604,8 +641,14 @@ class ChatEngine
         return array_map(fn($s) => $this->productos[$s['idx']], array_slice($scored, 0, $max));
     }
 
-    private function construirSystemPrompt(string $canal, string $ragContexto, string $consulta, string $ultimoProducto): string
-    {
+    private function construirSystemPrompt(
+        string $canal,
+        string $ragContexto,
+        string $consulta,
+        string $ultimoProducto,
+        array $historial = [],
+        string $securityDirective = ''
+    ): string {
         $catalogo        = $this->construirCatalogoTexto($consulta, $ultimoProducto);
         $catalogoTexto   = $catalogo['texto'];
         $categoriasJSON  = json_encode($this->categoriasLista, JSON_UNESCAPED_UNICODE);
@@ -632,10 +675,14 @@ class ChatEngine
             if (file_exists($catalogFile)) {
                 $carreras = json_decode((string)file_get_contents($catalogFile), true) ?: [];
                 $porFacultad = [];
-                $consultaLower = mb_strtolower($consulta . ' ' . $ultimoProducto);
+                $contextoReciente = $consulta . ' ' . $ultimoProducto;
+                foreach (array_slice($historial, -4) as $hMsg) {
+                    $contextoReciente .= ' ' . (string)($hMsg['content'] ?? '');
+                }
+                $consultaLower = mb_strtolower($contextoReciente);
                 $aliases = $this->profile->aliasesModelos();
 
-                // Identificar carreras relevantes en la consulta actual para inyectar su malla semestre por semestre
+                // Identificar carreras relevantes en la consulta actual y turnos recientes para inyectar su malla semestre por semestre
                 $carrerasDetectadas = [];
                 foreach ($aliases as $alias => $nombreOficial) {
                     if (mb_stripos($consultaLower, mb_strtolower($alias)) !== false) {
@@ -655,7 +702,13 @@ class ChatEngine
                         || mb_stripos($consultaLower, $nomLower) !== false
                     ) {
                         if (!empty($c['semestres']) && is_array($c['semestres'])) {
-                            $mallasActivasTexto .= "\nMALLA CURRICULAR OFICIAL DE " . mb_strtoupper($c['nombre']) . " ({$c['duracion']}):\n";
+                            $numSem = count($c['semestres']);
+                            $totalMat = array_sum(array_map('count', $c['semestres']));
+                            $mencionesTxt = !empty($c['menciones']) && is_array($c['menciones'])
+                                ? " | Menciones: " . implode(', ', $c['menciones'])
+                                : '';
+                            $mallasActivasTexto .= "\nMALLA CURRICULAR OFICIAL DE " . mb_strtoupper($c['nombre'])
+                                . " ({$c['duracion']} | Exactamente {$numSem} semestres y {$totalMat} materias en total{$mencionesTxt}):\n";
                             foreach ($c['semestres'] as $semNom => $materias) {
                                 $mallasActivasTexto .= "  - {$semNom}: " . implode(', ', $materias) . ".\n";
                             }
@@ -687,7 +740,7 @@ GESTIÓN DE ACCIONES Y DERIVACIONES ("acciones"):
    {"tipo": "registrar_prospecto", "nombre": "Nombre del postulante", "telefono": "Número de WhatsApp", "carrera": "Carrera de interés"}
 3. Enlace directo a WhatsApp de Admisiones ("derivar_whatsapp") — emítela cuando pregunten por aranceles/precios exactos o pidan hablar con Admisiones:
    {"tipo": "derivar_whatsapp", "mensaje": "Hola ULAT, me gustaría información sobre inscripciones y aranceles"}
-
+{$securityDirective}
 FORMATO DE SALIDA (OBLIGATORIO JSON ESTRICTO):
 Responde ÚNICAMENTE con un objeto JSON válido, sin texto antes ni después:
 {
@@ -725,7 +778,7 @@ GESTIÓN DE ACCIONES Y TARJETAS EN EL CHAT ("acciones"):
 1. Filtrar catálogo ("filtrar_catalogo"): {"tipo": "filtrar_catalogo", "categoria_id": 4, "mensaje_filtro": "Mostrando Zapatillas"}
 2. Mostrar tarjeta de producto ("mostrar_producto"): {"tipo": "mostrar_producto", "nombre": "Nike Air Zoom Pegasus 40", "precio": 1560.00}
 3. Agregar al carrito ("agregar_carrito"): {"tipo": "agregar_carrito", "nombre": "Nombre exacto", "precio": 660.00}
-
+{$securityDirective}
 FORMATO DE SALIDA (OBLIGATORIO JSON ESTRICTO):
 Responde ÚNICAMENTE con un objeto JSON válido, sin texto antes ni después:
 {
@@ -774,11 +827,27 @@ PROMPT;
      * Convierte las acciones propuestas por el LLM (más las inferidas por reglas deterministas)
      * en acciones validadas. Invariante: id, nombre, precio, stock e imagen provienen del catálogo.
      */
-    private function resolverAcciones(array $acciones, string $preguntaTratada, string $respuesta, array $historial, string $ultimoProducto): array
-    {
+    private function resolverAcciones(
+        array $acciones,
+        string $preguntaTratada,
+        string $respuesta,
+        array $historial,
+        string $ultimoProducto,
+        string $preguntaOriginal = ''
+    ): array {
         $preguntaActual = mb_strtolower($preguntaTratada);
-        $esReclamo = (bool)preg_match(self::REGEX_RECLAMO, $preguntaActual);
         $esUniversidad = !empty($this->profile->bloquePrompt('identidad_universitaria'));
+        $esReclamo = $esUniversidad
+            ? (bool)preg_match('/(?<![\p{L}\p{N}])(queja|reclamo|estafador|estafa|denuncia|p[eé]simo servicio)/ui', $preguntaActual)
+            : (bool)preg_match(self::REGEX_RECLAMO, $preguntaActual);
+
+        $carrerasCat = [];
+        if ($esUniversidad) {
+            $catalogFile = __DIR__ . '/../../data/ulat_catalog.json';
+            if (file_exists($catalogFile)) {
+                $carrerasCat = json_decode((string)file_get_contents($catalogFile), true) ?: [];
+            }
+        }
 
         if (!$esUniversidad) {
             // A. Peticiones visuales ("muéstrame", "no los veo") -> tarjetas de la categoría (solo modo tienda)
@@ -840,31 +909,62 @@ PROMPT;
                     break;
                 }
             }
-            if (!$tieneCarrera) {
-                $catalogFile = __DIR__ . '/../../data/ulat_catalog.json';
-                if (file_exists($catalogFile)) {
-                    $carrerasCat = json_decode((string)file_get_contents($catalogFile), true) ?: [];
-                    $aliases = $this->profile->aliasesModelos();
-                    uksort($aliases, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
-                    $nombreDetectado = null;
-                    foreach ($aliases as $al => $of) {
-                        if (mb_stripos($preguntaActual, mb_strtolower($al)) !== false) {
-                            $nombreDetectado = $of;
+            if (!$tieneCarrera && !empty($carrerasCat)) {
+                $aliases = $this->profile->aliasesModelos();
+                uksort($aliases, fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+                $nombreDetectado = null;
+                foreach ($aliases as $al => $of) {
+                    if (mb_stripos($preguntaActual, mb_strtolower($al)) !== false) {
+                        $nombreDetectado = $of;
+                        break;
+                    }
+                }
+                if ($nombreDetectado !== null) {
+                    foreach ($carrerasCat as $slug => $cData) {
+                        if (mb_strtolower($cData['nombre']) === mb_strtolower($nombreDetectado)) {
+                            $acciones[] = [
+                                'tipo'   => 'mostrar_carrera',
+                                'slug'   => $slug,
+                                'nombre' => $cData['nombre'],
+                            ];
                             break;
                         }
                     }
-                    if ($nombreDetectado !== null) {
-                        foreach ($carrerasCat as $slug => $cData) {
-                            if (mb_strtolower($cData['nombre']) === mb_strtolower($nombreDetectado)) {
-                                $acciones[] = [
-                                    'tipo'   => 'mostrar_carrera',
-                                    'slug'   => $slug,
-                                    'nombre' => $cData['nombre'],
-                                ];
-                                break;
-                            }
+                }
+            }
+
+            // Fallback determinista para registrar_prospecto si el usuario dejó su celular en este mensaje y el LLM olvidó emitir la acción
+            $tieneProspecto = false;
+            foreach ($acciones as $a) {
+                if (is_array($a) && ($a['tipo'] ?? '') === 'registrar_prospecto') {
+                    $tieneProspecto = true;
+                    break;
+                }
+            }
+            $textoUsuarioCrudo = $preguntaOriginal !== '' ? $preguntaOriginal : $preguntaTratada;
+            if (!$tieneProspecto && preg_match('/(?<!\d)([67]\d{7})(?!\d)/', $textoUsuarioCrudo, $mTel)) {
+                $celDetectado = $mTel[1];
+                $telefonosInstitucionales = ['79795778', '79787897', '77905372'];
+                if (!in_array($celDetectado, $telefonosInstitucionales, true)) {
+                    $nombreInferido = 'Postulante';
+                    if (preg_match('/(?:me llamo|soy|mi nombre es)\s+([\p{L}]+(?:\s+[\p{L}]+){0,2})/ui', $textoUsuarioCrudo, $mNom)) {
+                        $nombreInferido = trim($mNom[1]);
+                    } else {
+                        $sinNumero = trim((string)preg_replace('/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/u', ' ', $textoUsuarioCrudo));
+                        $palabras = array_values(array_filter(
+                            explode(' ', $sinNumero),
+                            fn($w) => mb_strlen($w) >= 3 && !in_array(mb_strtolower($w), ['hola', 'whatsapp', 'numero', 'celular', 'telefono', 'para', 'porfa', 'gracias', 'quiero', 'inscribirme', 'info'], true)
+                        ));
+                        if (!empty($palabras) && count($palabras) <= 4) {
+                            $nombreInferido = implode(' ', array_slice($palabras, 0, 3));
                         }
                     }
+                    $acciones[] = [
+                        'tipo'     => 'registrar_prospecto',
+                        'nombre'   => $nombreInferido,
+                        'telefono' => $celDetectado,
+                        'carrera'  => $ultimoProducto !== '' ? $ultimoProducto : 'General',
+                    ];
                 }
             }
         }
@@ -878,7 +978,7 @@ PROMPT;
         $mencionado = $this->productoMencionadoEn($respuesta);
         $variante   = $this->detectarVariante($preguntaTratada);
 
-        // C. Normalización: precios y datos SIEMPRE desde el catálogo
+        // C. Normalización: precios, carreras y prospectos SIEMPRE verificados
         $normalizadas = [];
         foreach ($acciones as $acc) {
             if (!is_array($acc) || !isset($acc['tipo'])) {
@@ -894,6 +994,9 @@ PROMPT;
                     break;
 
                 case 'filtrar_catalogo':
+                    if ($esUniversidad) {
+                        break;
+                    }
                     $catId = isset($acc['categoria_id']) ? (int)$acc['categoria_id'] : null;
                     if ($catId !== null && !in_array($catId, array_column($this->categoriasLista, 'id'), true)) {
                         $catId = null; // categoría inventada por el LLM
@@ -907,6 +1010,9 @@ PROMPT;
                     break;
 
                 case 'mostrar_producto':
+                    if ($esUniversidad) {
+                        break;
+                    }
                     $matched = $this->buscarProducto((string)($acc['nombre'] ?? ''));
                     if ($matched) {
                         $normalizadas[] = [
@@ -922,42 +1028,83 @@ PROMPT;
                     break;
 
                 case 'mostrar_carrera':
-                    $normalizadas[] = [
-                        'tipo'   => 'mostrar_carrera',
-                        'slug'   => InputSanitizer::cleanText((string)($acc['slug'] ?? ''), 80),
-                        'nombre' => InputSanitizer::cleanText((string)($acc['nombre'] ?? ''), 120),
-                    ];
+                    $rawSlug   = InputSanitizer::cleanText((string)($acc['slug'] ?? ''), 80);
+                    $rawNombre = InputSanitizer::cleanText((string)($acc['nombre'] ?? ''), 120);
+                    $carreraVerificada = null;
+                    if (!empty($carrerasCat)) {
+                        if (isset($carrerasCat[$rawSlug])) {
+                            $carreraVerificada = ['slug' => $rawSlug, 'nombre' => $carrerasCat[$rawSlug]['nombre']];
+                        } else {
+                            foreach ($carrerasCat as $cSlug => $cInfo) {
+                                if (
+                                    mb_strtolower($cInfo['nombre']) === mb_strtolower($rawNombre)
+                                    || ($rawNombre !== '' && mb_stripos($cInfo['nombre'], $rawNombre) !== false)
+                                ) {
+                                    $carreraVerificada = ['slug' => $cSlug, 'nombre' => $cInfo['nombre']];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if ($carreraVerificada !== null) {
+                        $normalizadas[] = [
+                            'tipo'   => 'mostrar_carrera',
+                            'slug'   => $carreraVerificada['slug'],
+                            'nombre' => $carreraVerificada['nombre'],
+                        ];
+                    }
                     break;
 
                 case 'registrar_prospecto':
-                    $leadNombre = InputSanitizer::cleanText((string)($acc['nombre'] ?? 'Postulante'), 120);
-                    $leadTel    = InputSanitizer::cleanText((string)($acc['telefono'] ?? ''), 40);
-                    $leadCarr   = InputSanitizer::cleanText((string)($acc['carrera'] ?? 'General'), 120);
-                    if ($leadTel !== '') {
+                    $leadNombre = strip_tags(InputSanitizer::cleanText((string)($acc['nombre'] ?? 'Postulante'), 120));
+                    $leadTelRaw = strip_tags(InputSanitizer::cleanText((string)($acc['telefono'] ?? ''), 40));
+                    $leadCarr   = strip_tags(InputSanitizer::cleanText((string)($acc['carrera'] ?? ($ultimoProducto ?: 'General')), 120));
+
+                    $soloDigitos = (string)preg_replace('/\D+/', '', $leadTelRaw);
+                    $telefonosProhibidos = ['79795778', '59179795778', '4509488', '5914509488', '4221004', '79787897', '77905372'];
+
+                    // Verificar que el teléfono tenga entre 7 y 15 dígitos, no sea el de la propia ULAT,
+                    // y haya sido escrito realmente por el usuario en la conversación
+                    $textoUsuarioTotal = $preguntaOriginal . ' ' . $preguntaTratada;
+                    foreach ($historial as $hItem) {
+                        if (($hItem['role'] ?? '') === 'user') {
+                            $textoUsuarioTotal .= ' ' . (string)($hItem['content'] ?? '');
+                        }
+                    }
+                    $digitosUsuario = (string)preg_replace('/\D+/', '', $textoUsuarioTotal);
+                    $ultimos7 = mb_substr($soloDigitos, -7);
+
+                    if (
+                        strlen($soloDigitos) >= 7
+                        && strlen($soloDigitos) <= 15
+                        && !in_array($soloDigitos, $telefonosProhibidos, true)
+                        && $ultimos7 !== ''
+                        && str_contains($digitosUsuario, $ultimos7)
+                    ) {
                         try {
                             $stmtL = $this->pdo->prepare("
                                 INSERT INTO admisiones_prospectos (nombre, telefono, carrera_interes, origen, notas)
                                 VALUES (?, ?, ?, 'chatbot', 'Captado en conversación con Guía ULAT')
                             ");
-                            $stmtL->execute([$leadNombre, $leadTel, $leadCarr]);
+                            $stmtL->execute([$leadNombre, $soloDigitos, $leadCarr]);
                         } catch (\Throwable $e) {
                             error_log('[ChatEngine] Error guardando prospecto: ' . $e->getMessage());
                         }
+                        $normalizadas[] = [
+                            'tipo'     => 'registrar_prospecto',
+                            'nombre'   => $leadNombre,
+                            'telefono' => $soloDigitos,
+                            'carrera'  => $leadCarr,
+                            'guardado' => true,
+                        ];
                     }
-                    $normalizadas[] = [
-                        'tipo'     => 'registrar_prospecto',
-                        'nombre'   => $leadNombre,
-                        'telefono' => $leadTel,
-                        'carrera'  => $leadCarr,
-                        'guardado' => true,
-                    ];
                     break;
 
                 case 'derivar_whatsapp':
                     $msgWa = urlencode((string)($acc['mensaje'] ?? 'Hola ULAT, solicito información sobre las carreras'));
                     $normalizadas[] = [
                         'tipo'       => 'derivar_whatsapp',
-                        'url'        => "https://wa.me/5914509488?text={$msgWa}",
+                        'url'        => "https://wa.me/59179795778?text={$msgWa}",
                         'texto_link' => 'Contactar por WhatsApp a Admisiones ULAT',
                     ];
                     break;
@@ -1023,8 +1170,8 @@ PROMPT;
         $vistas = [];
         $out = [];
         foreach ($acciones as $a) {
-            $clave = ($a['tipo'] ?? '') . '|' . ($a['id'] ?? '') . '|' . ($a['variante'] ?? '') . '|' . ($a['categoria_id'] ?? '');
-            if (in_array($a['tipo'], ['agregar_carrito', 'mostrar_producto'], true) && isset($vistas[$clave])) {
+            $clave = ($a['tipo'] ?? '') . '|' . ($a['id'] ?? '') . '|' . ($a['variante'] ?? '') . '|' . ($a['categoria_id'] ?? '') . '|' . ($a['slug'] ?? '') . '|' . ($a['telefono'] ?? '');
+            if (in_array($a['tipo'], ['agregar_carrito', 'mostrar_producto', 'mostrar_carrera', 'registrar_prospecto', 'derivar_whatsapp'], true) && isset($vistas[$clave])) {
                 continue;
             }
             $vistas[$clave] = true;
