@@ -1,4 +1,9 @@
 <?php
+
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('CLI only');
+}
 /**
  * Test de validación de Inteligencia de Negocios (BI), Historial y Comparador Kimovil
  */

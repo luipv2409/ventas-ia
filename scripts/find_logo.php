@@ -1,4 +1,9 @@
 <?php
+
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('CLI only');
+}
 $c = file_get_contents(__DIR__ . '/../knowledge/ULAT/Universidad Latinoamericana (28_10_2026 1：00：04 p.m.).html');
 $targetDir = __DIR__ . '/../assets/ulat';
 if (!is_dir($targetDir)) {

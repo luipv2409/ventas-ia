@@ -1,5 +1,10 @@
 <?php
 declare(strict_types=1);
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('CLI only');
+}
+
 
 /**
  * Suite de Pruebas de Concurrencia, Bloqueo de Sesiones y Rate Limiting en Vivo (PhD QA).

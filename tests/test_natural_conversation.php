@@ -1,4 +1,9 @@
 <?php
+
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('CLI only');
+}
 // Simulación de la conversación multi-turno del usuario
 $mensajesConversacion = [
     "hola",

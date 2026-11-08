@@ -1,5 +1,10 @@
 <?php
 declare(strict_types=1);
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('CLI only');
+}
+
 
 // Permitir ejecución desde CLI o desde navegador web para administradores
 $isCli = (php_sapi_name() === 'cli');

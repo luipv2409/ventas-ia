@@ -1,0 +1,44 @@
+# ============================================================
+# Hardening Webroot Apache — Portal & Chatbot ULAT
+# ============================================================
+Options -Indexes
+ServerSignature Off
+
+# Bloquear acceso a cualquier archivo o carpeta oculta (.env, .git, .dockerignore, etc.)
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Bloquear archivos sensibles, configuraciones, esquemas, logs y documentación interna
+<FilesMatch "(?i)\.(env|md|json|sql|log|bak|lock|yml|yaml|ini|sh|ps1|dist|example)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Bloquear explícitamente archivos de entorno o credenciales con espacios
+<FilesMatch "(?i)^(API\s*KEYS.*|Dockerfile|composer\.(json|lock))$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Denegar navegación directa a directorios internos de aplicación
+    RewriteRule ^(config|services|database|storage|knowledge|scripts|tests|data|integraciones|docker|legacy-ecommerce)(/|$) - [F,L,NC]
+</IfModule>
