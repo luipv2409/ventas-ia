@@ -30,7 +30,7 @@ if ($fp) {
     $baseUrl = 'http://localhost:8085/api/chat_externo.php';
 }
 
-$apiKey = defined('CHAT_EXTERNAL_API_KEY') && CHAT_EXTERNAL_API_KEY !== '' ? CHAT_EXTERNAL_API_KEY : 'ical_chat_sec_2026';
+$apiKey = defined('CHAT_EXTERNAL_API_KEY') ? (string)CHAT_EXTERNAL_API_KEY : '';
 $pdo = Database::getConnection();
 $fallos = 0;
 

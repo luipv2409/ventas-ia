@@ -3,57 +3,91 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ventas_ia_app
+    container_name: ulat_portal_app
     restart: unless-stopped
     ports:
-      - "${WEB_PORT:-8085}:80"
+      - "${WEB_PORT:-8085}:8080"
     environment:
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_NAME: ${APP_NAME:-Universidad Latinoamericana — ULAT}
+      APP_URL: ${APP_URL:-http://localhost:8085/ulat}
+      APP_SECRET_KEY: ${APP_SECRET_KEY:?Define APP_SECRET_KEY en .env (32+ bytes aleatorios)}
+      TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS:-}
       DB_HOST: db
       DB_PORT: 3306
       DB_NAME: ${DB_NAME:-ventas_ia}
-      DB_USER: ${DB_USER:-root}
-      DB_PASS: ${DB_PASS:-rootpassword}
+      DB_USER: ${DB_USER:-ulat_app}
+      DB_PASS: ${DB_PASS:?Define DB_PASS en .env}
       DB_CHARSET: utf8mb4
-      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?Define DEEPSEEK_API_KEY en .env}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      CHAT_EXTERNAL_API_KEY: ${CHAT_EXTERNAL_API_KEY:-}
+      WHATSAPP_VERIFY_TOKEN: ${WHATSAPP_VERIFY_TOKEN:-}
+      RAG_VECTOR_DRIVER: ${RAG_VECTOR_DRIVER:-mysql}
+      PINECONE_API_KEY: ${PINECONE_API_KEY:-}
+      PINECONE_INDEX_HOST: ${PINECONE_INDEX_HOST:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      CHAT_RATE_LIMIT_PER_MIN: ${CHAT_RATE_LIMIT_PER_MIN:-12}
+      CHAT_RATE_LIMIT_IP_PER_MIN: ${CHAT_RATE_LIMIT_IP_PER_MIN:-120}
+      CHAT_RATE_LIMIT_FRONTEND_PER_MIN: ${CHAT_RATE_LIMIT_FRONTEND_PER_MIN:-15}
+      CHAT_RATE_LIMIT_FRONTEND_PER_DAY: ${CHAT_RATE_LIMIT_FRONTEND_PER_DAY:-150}
+      LEAD_RATE_LIMIT_PER_10MIN: ${LEAD_RATE_LIMIT_PER_10MIN:-5}
+      CHAT_RETENTION_DAYS: ${CHAT_RETENTION_DAYS:-90}
+      LEAD_RETENTION_DAYS: ${LEAD_RETENTION_DAYS:-365}
     volumes:
-      - .:/var/www/html
+      - reports_data:/var/www/html/storage/reports
+    networks:
+      - default
+      - ulat_internal
     depends_on:
       db:
         condition: service_healthy
 
   db:
     image: mariadb:10.11
-    container_name: ventas_ia_db
+    container_name: ulat_portal_db
     restart: unless-stopped
-    ports:
-      - "${DB_PORT:-3307}:3306"
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    # Sin exposición pública de puertos (solo accesible por red interna Docker)
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASS:-rootpassword}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:?Define DB_ROOT_PASS en .env}
       MYSQL_DATABASE: ${DB_NAME:-ventas_ia}
+      MYSQL_USER: ${DB_USER:-ulat_app}
+      MYSQL_PASSWORD: ${DB_PASS:?Define DB_PASS en .env}
     volumes:
       - db_data:/var/lib/mysql
       - ./docker/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
-      - ./database/ventas_ia.sql:/docker-entrypoint-initdb.d/01-ventas_ia.sql:ro
+      - ./database/production_schema.sql:/docker-entrypoint-initdb.d/01-production_schema.sql:ro
+    networks:
+      - ulat_internal
     healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u $$MYSQL_USER -p$$MYSQL_PASSWORD || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 15
       start_period: 10s
 
   pma:
-    image: phpmyadmin:latest
-    container_name: ventas_ia_pma
-    restart: unless-stopped
+    image: phpmyadmin:5.2
+    container_name: ulat_portal_pma
+    profiles: ["dev"]
+    restart: "no"
     ports:
-      - "${PMA_PORT:-8082}:80"
+      - "127.0.0.1:${PMA_PORT:-8082}:80"
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: ${DB_PASS:-rootpassword}
+      PMA_ARBITRARY: 0
+    networks:
+      - ulat_internal
     depends_on:
       db:
         condition: service_healthy
 
+networks:
+  ulat_internal:
+    internal: true
+
 volumes:
   db_data:
+  reports_data:

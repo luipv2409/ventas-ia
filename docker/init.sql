@@ -1,3 +1,3 @@
--- Inicialización de base de datos para Docker
-CREATE DATABASE IF NOT EXISTS `ventas_ia` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `ventas_ia`;
+-- Inicialización de sesión UTF-8 completa para el esquema consolidado ULAT
+-- (MariaDB crea y selecciona automáticamente la base definida en MYSQL_DATABASE)
+SET NAMES utf8mb4;

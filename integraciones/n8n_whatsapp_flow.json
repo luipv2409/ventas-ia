@@ -1,5 +1,5 @@
 {
-  "name": "ICAL WhatsApp Cloud API con Chatbot IA (DeepSeek + RAG)",
+  "name": "ULAT WhatsApp Cloud API con Chatbot IA (DeepSeek + RAG)",
   "nodes": [
     {
       "parameters": {
@@ -36,7 +36,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extraer de forma segura el remitente, mensaje y phone_number_id del webhook de WhatsApp\nconst entry = $input.first().json.body?.entry?.[0];\nconst change = entry?.changes?.[0]?.value;\nconst message = change?.messages?.[0];\n\nif (!message || message.type !== 'text') {\n  return []; // Ignorar eventos que no sean mensajes de texto entrantes (ej. estados de entrega 'read/sent')\n}\n\nreturn [{\n  json: {\n    remitente: message.from,\n    mensaje: message.text.body,\n    phoneNumberId: change.metadata?.phone_number_id || '',\n    nombreCliente: change.contacts?.[0]?.profile?.name || 'Cliente'\n  }\n}];"
+        "jsCode": "// Extraer y validar de forma segura el remitente, mensaje y phone_number_id del webhook de WhatsApp\nconst entry = $input.first().json.body?.entry?.[0];\nconst change = entry?.changes?.[0]?.value;\nconst message = change?.messages?.[0];\n\nif (!message || message.type !== 'text' || typeof message.text?.body !== 'string') {\n  return [];\n}\n\nconst remitente = String(message.from || '').replace(/[^0-9+]/g, '').slice(0, 32);\nconst phoneNumberId = String(change.metadata?.phone_number_id || '').replace(/[^0-9]/g, '').slice(0, 32);\nif (!remitente || !phoneNumberId) {\n  return [];\n}\n\nreturn [{\n  json: {\n    remitente,\n    mensaje: message.text.body.slice(0, 1200),\n    phoneNumberId,\n    nombrePostulante: String(change.contacts?.[0]?.profile?.name || 'Postulante').slice(0, 100)\n  }\n}];"
       },
       "id": "node-filter-extract",
       "name": "Filtrar y Extraer Datos de Mensaje",
@@ -50,7 +50,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.CHAT_API_URL || 'http://localhost/api/chat_externo.php' }}",
+        "url": "={{ $env.CHAT_API_URL }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -60,19 +60,19 @@
             },
             {
               "name": "X-API-Key",
-              "value": "={{ $env.CHAT_EXTERNAL_API_KEY || 'ical_chat_sec_2026' }}"
+              "value": "={{ $env.CHAT_EXTERNAL_API_KEY }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"canal\": \"whatsapp\",\n  \"remitente\": \"{{ $json.remitente }}\",\n  \"mensaje\": \"{{ $json.mensaje }}\",\n  \"use_rag\": true\n}",
+        "jsonBody": "={{ JSON.stringify({ canal: 'whatsapp', remitente: $json.remitente, mensaje: $json.mensaje, use_rag: true }) }}",
         "options": {
-          "timeout": 25000
+          "timeout": 20000
         }
       },
       "id": "node-http-chat-api",
-      "name": "Llamar Motor IA (ChatEngine PHP)",
+      "name": "Llamar Motor IA ULAT (ChatEngine PHP)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -99,8 +99,10 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $('Filtrar y Extraer Datos de Mensaje').item.json.remitente }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"preview_url\": false,\n    \"body\": {{ JSON.stringify($json.whatsapp_texto || $json.respuesta) }}\n  }\n}",
-        "options": {}
+        "jsonBody": "={{ JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: $('Filtrar y Extraer Datos de Mensaje').item.json.remitente, type: 'text', text: { preview_url: false, body: String($json.whatsapp_texto || $json.respuesta || '').slice(0, 4096) } }) }}",
+        "options": {
+          "timeout": 15000
+        }
       },
       "id": "node-send-whatsapp",
       "name": "Enviar Respuesta por WhatsApp",
@@ -129,10 +131,23 @@
     },
     {
       "parameters": {
+        "jsCode": "const q = $input.first().json.query || {};\nconst mode = String(q['hub.mode'] || q.hub_mode || '');\nconst token = String(q['hub.verify_token'] || q.hub_verify_token || '');\nconst rawChallenge = String(q['hub.challenge'] || q.hub_challenge || '');\nconst expected = String($env.WHATSAPP_VERIFY_TOKEN || '');\n\nif (!expected || mode !== 'subscribe' || token !== expected) {\n  return [{ json: { ok: false, statusCode: 403, body: 'Forbidden' } }];\n}\n\nconst safeChallenge = rawChallenge.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 128);\nreturn [{ json: { ok: true, statusCode: 200, body: safeChallenge } }];"
+      },
+      "id": "node-verify-token",
+      "name": "Validar hub.verify_token y Sanitizar Challenge",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        540
+      ]
+    },
+    {
+      "parameters": {
         "respondWith": "text",
-        "responseBody": "={{ $json.query['hub.challenge'] || $json.query.hub_challenge }}",
+        "responseBody": "={{ $json.body }}",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.statusCode }}"
         }
       },
       "id": "node-respond-challenge",
@@ -140,7 +155,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        400,
+        640,
         540
       ]
     }
@@ -166,14 +181,14 @@
       "main": [
         [
           {
-            "node": "Llamar Motor IA (ChatEngine PHP)",
+            "node": "Llamar Motor IA ULAT (ChatEngine PHP)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Llamar Motor IA (ChatEngine PHP)": {
+    "Llamar Motor IA ULAT (ChatEngine PHP)": {
       "main": [
         [
           {
@@ -185,6 +200,17 @@
       ]
     },
     "Webhook WhatsApp GET (Verificación Meta)": {
+      "main": [
+        [
+          {
+            "node": "Validar hub.verify_token y Sanitizar Challenge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar hub.verify_token y Sanitizar Challenge": {
       "main": [
         [
           {

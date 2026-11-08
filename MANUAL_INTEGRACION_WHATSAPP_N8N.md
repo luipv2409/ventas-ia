@@ -40,7 +40,7 @@ flowchart LR
 
 ### 1. Verificación GET (Meta Webhook Handshake)
 * **Método:** `GET`
-* **URL:** `https://tu-dominio.com/api/chat_externo.php?hub.mode=subscribe&hub.challenge=123456&hub.verify_token=ical_chat_sec_2026`
+* **URL:** `https://tu-dominio.com/api/chat_externo.php?hub.mode=subscribe&hub.challenge=123456&hub.verify_token=<TU_WHATSAPP_VERIFY_TOKEN>`
 * **Respuesta:** `123456` (en texto plano con código HTTP 200).
 
 ### 2. Procesamiento de Mensajes POST
@@ -49,7 +49,7 @@ flowchart LR
 * **Headers:**
   ```http
   Content-Type: application/json
-  X-API-Key: ical_chat_sec_2026
+  X-API-Key: <TU_CHAT_EXTERNAL_API_KEY>
   ```
 * **Payload de Entrada (JSON):**
   ```json
