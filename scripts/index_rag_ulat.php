@@ -174,10 +174,14 @@ try {
         }
     }
 
-    // Limpiar obsoletos y vaciar caché de consultas RAG para reflejar el nuevo índice
+    // Limpiar obsoletos, purgar colecciones heredadas de tienda y vaciar caché de consultas RAG
     $eliminados = 0;
     foreach ($vigentes as $col => $ids) {
         $eliminados += $vectorStore->deleteStale($col, $ids);
+    }
+    $purgadosTienda = $pdo->exec("DELETE FROM rag_documents WHERE collection NOT IN ('admisiones', 'becas', 'carreras', 'institucional', 'reglamentos')");
+    if ($purgadosTienda > 0) {
+        echo "   ✔ Purgados {$purgadosTienda} fragmentos contaminados ajenos a ULAT (catalogo/politicas).\n";
     }
     try {
         $pdo->exec("TRUNCATE TABLE rag_query_cache");

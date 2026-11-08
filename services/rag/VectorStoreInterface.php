@@ -40,7 +40,7 @@ interface VectorStoreInterface
      * @param array $queryEmbedding Vector de la consulta
      * @param int $topK Número máximo de resultados
      * @param float $minScore Umbral mínimo de similitud
-     * @param string|null $collection Colección por la que filtrar (opcional)
+     * @param string|string[]|null $collection Colección o lista de colecciones permitidas (opcional)
      * @param array $queryUnits Unidades de token para evaluar cobertura
      * @return array<int, array{id: int|string, collection: string, doc_id: string, title: string, content: string, score: float, metadata: array}>
      */
@@ -48,7 +48,7 @@ interface VectorStoreInterface
         array $queryEmbedding,
         int $topK = 4,
         float $minScore = 0.25,
-        ?string $collection = null,
+        string|array|null $collection = null,
         array $queryUnits = []
     ): array;
 

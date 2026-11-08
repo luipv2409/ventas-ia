@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Services\Rag;
 
 use Throwable;
+use Services\Chat\DomainProfile;
+
+require_once __DIR__ . '/../chat/DomainProfile.php';
 
 /**
  * Expansión de consultas con DeepSeek (Query Expansion).
@@ -45,7 +48,8 @@ class QueryExpander
             return null;
         }
 
-        $esUni = defined('DOMAIN_PROFILE_PATH') && stripos((string)DOMAIN_PROFILE_PATH, 'ulat') !== false;
+        $esUni = (defined('DOMAIN_PROFILE_PATH') && stripos((string)DOMAIN_PROFILE_PATH, 'ulat') !== false)
+            || DomainProfile::default()->bloquePrompt('identidad_universitaria') !== '';
         $labelUser = $esUni ? 'Postulante' : 'Cliente';
         $labelBot  = $esUni ? 'Universidad' : 'Tienda';
 
@@ -67,7 +71,8 @@ class QueryExpander
               . 'ni signos. Incluye sinónimos útiles. Usa la conversación previa para entender preguntas de '
               . 'seguimiento. Si el mensaje es solo saludo, agradecimiento o charla sin consulta, devuelve: NINGUNA';
 
-        $user = ($contexto !== '' ? "Conversación previa:\n{$contexto}\n" : '') . "Mensaje actual del cliente: {$query}";
+        $promptPrefix = $esUni ? 'Consulta actual del postulante: ' : 'Mensaje actual del cliente: ';
+        $user = ($contexto !== '' ? "Conversación previa:\n{$contexto}\n" : '') . $promptPrefix . $query;
 
         try {
             $ch = curl_init($this->apiUrl);
@@ -89,6 +94,8 @@ class QueryExpander
                 ],
                 CURLOPT_TIMEOUT        => $this->timeout,
                 CURLOPT_CONNECTTIMEOUT => 2,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
             ]);
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

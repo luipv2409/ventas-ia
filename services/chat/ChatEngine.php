@@ -944,7 +944,7 @@ PROMPT;
             $textoUsuarioCrudo = $preguntaOriginal !== '' ? $preguntaOriginal : $preguntaTratada;
             if (!$tieneProspecto && preg_match('/(?<!\d)([67]\d{7})(?!\d)/', $textoUsuarioCrudo, $mTel)) {
                 $celDetectado = $mTel[1];
-                $telefonosInstitucionales = ['79795778', '79787897', '77905372'];
+                $telefonosInstitucionales = ['79795778', '79787897', '77905372', '71734769', '72226681'];
                 if (!in_array($celDetectado, $telefonosInstitucionales, true)) {
                     $nombreInferido = 'Postulante';
                     if (preg_match('/(?:me llamo|soy|mi nombre es)\s+([\p{L}]+(?:\s+[\p{L}]+){0,2})/ui', $textoUsuarioCrudo, $mNom)) {
@@ -1061,7 +1061,15 @@ PROMPT;
                     $leadCarr   = strip_tags(InputSanitizer::cleanText((string)($acc['carrera'] ?? ($ultimoProducto ?: 'General')), 120));
 
                     $soloDigitos = (string)preg_replace('/\D+/', '', $leadTelRaw);
-                    $telefonosProhibidos = ['79795778', '59179795778', '4509488', '5914509488', '4221004', '79787897', '77905372'];
+                    $telefonosProhibidos = [
+                        '79795778', '59179795778',
+                        '4509488', '5914509488', '44509488', '59144509488',
+                        '4221004', '5914221004', '44221004', '59144221004',
+                        '79787897', '59179787897',
+                        '77905372', '59177905372',
+                        '71734769', '59171734769',
+                        '72226681', '59172226681',
+                    ];
 
                     // Verificar que el teléfono tenga entre 7 y 15 dígitos, no sea el de la propia ULAT,
                     // y haya sido escrito realmente por el usuario en la conversación

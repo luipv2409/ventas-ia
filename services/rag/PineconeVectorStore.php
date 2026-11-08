@@ -20,12 +20,17 @@ class PineconeVectorStore implements VectorStoreInterface
     private VectorStore $fallbackStore;
     private bool $isAvailable;
 
+    private PDO $pdo;
+
     public function __construct(PDO $pdo, ?string $apiKey = null, ?string $host = null)
     {
-        $this->apiKey = $apiKey ?? (defined('PINECONE_API_KEY') ? (string)PINECONE_API_KEY : (getenv('PINECONE_API_KEY') ?: ''));
-        $this->host   = $host ?? (defined('PINECONE_INDEX_HOST') ? (string)PINECONE_INDEX_HOST : (getenv('PINECONE_INDEX_HOST') ?: 'ventas-ia-rag-9jc19q6.svc.aped-4627-b74a.pinecone.io'));
+        $this->pdo    = $pdo;
+        $this->apiKey = trim((string)($apiKey ?? (defined('PINECONE_API_KEY') ? PINECONE_API_KEY : (getenv('PINECONE_API_KEY') ?: ''))));
+        $rawHost      = trim((string)($host ?? (defined('PINECONE_INDEX_HOST') ? PINECONE_INDEX_HOST : (getenv('PINECONE_INDEX_HOST') ?: ''))));
+        $rawHost      = (string)preg_replace('#^https?://#i', '', $rawHost);
+        $this->host   = rtrim($rawHost, '/');
         $this->fallbackStore = new VectorStore($pdo);
-        $this->isAvailable = (!empty($this->apiKey) && !empty($this->host));
+        $this->isAvailable = ($this->apiKey !== '' && $this->host !== '');
     }
 
     public function isAvailable(): bool
@@ -81,7 +86,7 @@ class PineconeVectorStore implements VectorStoreInterface
                 'namespace' => $collection,
             ];
 
-            $url = 'https://' . rtrim($this->host, '/') . '/vectors/upsert';
+            $url = 'https://' . $this->host . '/vectors/upsert';
             $ch = curl_init($url);
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
@@ -93,6 +98,8 @@ class PineconeVectorStore implements VectorStoreInterface
                 ],
                 CURLOPT_TIMEOUT        => 8,
                 CURLOPT_CONNECTTIMEOUT => 3,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
             ]);
 
             $resp = curl_exec($ch);
@@ -110,11 +117,11 @@ class PineconeVectorStore implements VectorStoreInterface
         array $queryEmbedding,
         int $topK = 4,
         float $minScore = 0.25,
-        ?string $collection = null,
+        string|array|null $collection = null,
         array $queryUnits = []
     ): array {
-        // Si Pinecone no está activo o la consulta es dispersa, usar el fallback optimizado de MySQL
-        if (!$this->isAvailable || !array_is_list($queryEmbedding)) {
+        // Si Pinecone no está activo, la consulta es dispersa o filtra múltiples namespaces, usar MySQL
+        if (!$this->isAvailable || !array_is_list($queryEmbedding) || is_array($collection)) {
             return $this->fallbackStore->searchSimilar($queryEmbedding, $topK, $minScore, $collection, $queryUnits);
         }
 
@@ -124,11 +131,11 @@ class PineconeVectorStore implements VectorStoreInterface
                 'topK'            => $topK,
                 'includeMetadata' => true,
             ];
-            if ($collection !== null) {
+            if (is_string($collection) && $collection !== '') {
                 $payload['namespace'] = $collection;
             }
 
-            $url = 'https://' . rtrim($this->host, '/') . '/query';
+            $url = 'https://' . $this->host . '/query';
             $ch = curl_init($url);
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
@@ -140,6 +147,8 @@ class PineconeVectorStore implements VectorStoreInterface
                 ],
                 CURLOPT_TIMEOUT        => 6,
                 CURLOPT_CONNECTTIMEOUT => 3,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
             ]);
 
             $resp = curl_exec($ch);
@@ -182,6 +191,46 @@ class PineconeVectorStore implements VectorStoreInterface
 
     public function deleteStale(string $collection, array $keepDocIds): int
     {
+        if (empty($keepDocIds)) {
+            return 0;
+        }
+
+        if ($this->isAvailable) {
+            try {
+                $placeholders = implode(',', array_fill(0, count($keepDocIds), '?'));
+                $stmt = $this->pdo->prepare(
+                    "SELECT doc_id FROM rag_documents WHERE collection = ? AND doc_id NOT IN ({$placeholders})"
+                );
+                $stmt->execute(array_merge([$collection], array_values($keepDocIds)));
+                $staleIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($staleIds)) {
+                    $pineconeIds = array_map(fn($id) => "{$collection}_{$id}", $staleIds);
+                    $ch = curl_init('https://' . $this->host . '/vectors/delete');
+                    curl_setopt_array($ch, [
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_POST           => true,
+                        CURLOPT_POSTFIELDS     => json_encode([
+                            'ids'       => array_values($pineconeIds),
+                            'namespace' => $collection,
+                        ], JSON_UNESCAPED_UNICODE),
+                        CURLOPT_HTTPHEADER     => [
+                            'Content-Type: application/json',
+                            'Api-Key: ' . $this->apiKey,
+                        ],
+                        CURLOPT_TIMEOUT        => 6,
+                        CURLOPT_CONNECTTIMEOUT => 3,
+                        CURLOPT_SSL_VERIFYPEER => true,
+                        CURLOPT_SSL_VERIFYHOST => 2,
+                    ]);
+                    curl_exec($ch);
+                    curl_close($ch);
+                }
+            } catch (Throwable $e) {
+                error_log('[PINECONE DRIVER WARN] Fallo al sincronizar deleteStale: ' . $e->getMessage());
+            }
+        }
+
         return $this->fallbackStore->deleteStale($collection, $keepDocIds);
     }
 }

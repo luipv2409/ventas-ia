@@ -16,10 +16,14 @@ require_once __DIR__ . '/DomainProfile.php';
  */
 final class HumanPersona
 {
-    public static function nombreAsesor(array $config): string
+    public static function nombreAsesor(array $config, ?DomainProfile $perfil = null): string
     {
         $nombre = trim((string)($config['nombre_asesor'] ?? ''));
-        return $nombre !== '' ? $nombre : 'Valeria';
+        if ($nombre !== '') {
+            return $nombre;
+        }
+        $perfil = $perfil ?? DomainProfile::default();
+        return $perfil->bloquePrompt('identidad_universitaria') !== '' ? 'Guía ULAT' : 'Valeria';
     }
 
     public static function reglas(string $nombreAsesor, string $tienda, string $telefono, ?DomainProfile $perfil = null): string
@@ -169,12 +173,26 @@ REGLAS;
     /**
      * Mensaje de respaldo cuando falla la API (sin códigos técnicos ni "error de IA").
      */
-    public static function mensajeFallo(string $telefono): string
+    public static function mensajeFallo(string $telefono = '79795778', ?DomainProfile $perfil = null): string
     {
+        $perfil = $perfil ?? DomainProfile::default();
+        $esUni  = $perfil->bloquePrompt('identidad_universitaria') !== '';
+        $telLimpio = trim($telefono);
+
+        if ($esUni) {
+            $digitos = preg_replace('/\D+/', '', $telLimpio) ?? '';
+            // En modo ULAT, garantizar que el WhatsApp de respaldo sea un móvil institucional válido (79795778)
+            if ($digitos === '' || str_contains($digitos, '70000000') || !preg_match('/^(?:591)?[67]\d{7}$/', $digitos)) {
+                $telLimpio = '79795778';
+            }
+        } elseif ($telLimpio === '' || $telLimpio === 'No disponible') {
+            $telLimpio = '79795778';
+        }
+
         $opciones = [
-            'Perdón, se me cortó un momento 😅 ¿Me repites lo último?',
+            'Perdón, se me cortó un momento. ¿Me repites lo último?',
             'Uy, no me llegó bien tu mensaje. ¿Me lo escribes de nuevo?',
-            "Disculpa, tuve un problemita para revisar eso. ¿Me lo repites? Si es urgente, escríbenos al WhatsApp {$telefono}.",
+            "Disculpa, tuve un problemita para revisar eso. ¿Me lo repites? Si es urgente, escríbenos al WhatsApp {$telLimpio}.",
         ];
         return $opciones[array_rand($opciones)];
     }

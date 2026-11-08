@@ -15,9 +15,16 @@ use Throwable;
  */
 class PdfExtractor
 {
+    /** Tamaño máximo de archivo PDF aceptado en memoria (20 MB) */
+    public const MAX_PDF_BYTES = 20 * 1024 * 1024;
+    /** Límite máximo de descompresión por stream FlateDecode contra bombas zlib (10 MB) */
+    public const MAX_STREAM_BYTES = 10 * 1024 * 1024;
+    /** Límite máximo de texto acumulado por documento (4 MB) */
+    public const MAX_EXTRACTED_CHARS = 4 * 1024 * 1024;
+
     /**
      * Extrae texto plano de un archivo PDF.
-     * Retorna string vacío si el archivo no existe, está corrupto o es un PDF solo de imágenes.
+     * Retorna string vacío si el archivo no existe, supera el tamaño máximo, está corrupto o es solo de imágenes.
      */
     public static function extractText(string $filePath): string
     {
@@ -25,14 +32,20 @@ class PdfExtractor
             return '';
         }
 
+        $fileSize = @filesize($filePath);
+        if ($fileSize === false || $fileSize <= 0 || $fileSize > self::MAX_PDF_BYTES) {
+            error_log('[PdfExtractor] Archivo rechazado por tamaño inválido o excesivo: ' . basename($filePath));
+            return '';
+        }
+
         // 1. Intentar pdftotext si está disponible en el entorno
         $cliText = self::extractWithCli($filePath);
         if ($cliText !== null && mb_strlen(trim($cliText)) > 20) {
-            return self::cleanText($cliText);
+            return self::cleanText(mb_substr($cliText, 0, self::MAX_EXTRACTED_CHARS));
         }
 
         // 2. Extractor nativo PHP
-        $raw = file_get_contents($filePath);
+        $raw = file_get_contents($filePath, false, null, 0, self::MAX_PDF_BYTES);
         if ($raw === false || $raw === '') {
             return '';
         }
@@ -89,12 +102,12 @@ class PdfExtractor
             $streamData = substr($pdfData, $streamStart, $end - $streamStart);
             $pos = $end + 9;
 
-            // Intentar descomprimir con gzuncompress / gzinflate
+            // Intentar descomprimir con gzuncompress / gzinflate acotado contra bombas zlib
             $decompressed = null;
-            if ($streamData !== '') {
-                $decompressed = @gzuncompress($streamData);
+            if ($streamData !== '' && strlen($streamData) <= self::MAX_PDF_BYTES) {
+                $decompressed = @gzuncompress($streamData, self::MAX_STREAM_BYTES);
                 if ($decompressed === false) {
-                    $decompressed = @gzinflate($streamData);
+                    $decompressed = @gzinflate($streamData, self::MAX_STREAM_BYTES);
                 }
             }
 
@@ -104,6 +117,9 @@ class PdfExtractor
             if (preg_match_all('/BT[\s\S]*?ET/s', $textSource, $btMatches)) {
                 foreach ($btMatches[0] as $btBlock) {
                     $extracted .= self::parseBtBlock($btBlock) . "\n";
+                    if (strlen($extracted) >= self::MAX_EXTRACTED_CHARS) {
+                        break 2;
+                    }
                 }
             }
         }

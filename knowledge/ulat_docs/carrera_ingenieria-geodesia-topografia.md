@@ -15,7 +15,7 @@
 
 ## Perfil de la carrera
 
-Las características particulares de la Ingeniería Civil harán que este profesional sea único y con casi absoluta certeza, se puede decir que en la actualidad no hay un solo profesional de esta área sin vinculación laboral ya que se tiene gran acogida en diversas instituciones y entidades del sector público y privado.
+Las características particulares de la Ingeniería en Geodesia y Topografía harán que este profesional sea único y con casi absoluta certeza, se puede decir que en la actualidad no hay un solo profesional de esta área sin vinculación laboral ya que se tiene gran acogida en diversas instituciones y entidades del sector público y privado.
 
 Este profesional podrá desempeñarse en los siguientes puestos:
 
@@ -39,13 +39,13 @@ Se puede mencionar: catastros municipales, oficinas de planeación y valorizaci�
 
 Contribuir a la formación de excelentes seres humanos e ingenieros calificados que, dentro del contexto que les sea factible o posible desarrollarse, ofrezcan su valioso concurso a la solución de diversos problemas pertenecientes a los saberes descritos.
 
-Desarrollar espacios eminentemente prácticos para la investigación científica y tecnológica integrados a procesos de producción y conocimientos, su dominio, experimentación, aplicación en proyectos y acciones de problemas del entorno socia, en función del avance de los contenidos curriculares de cada caso.
+Desarrollar espacios eminentemente prácticos para la investigación científica y tecnológica integrados a procesos de producción y conocimientos, su dominio, experimentación, aplicación en proyectos y acciones de problemas del entorno social, en función del avance de los contenidos curriculares de cada caso.
 
-Formar profesionales con actitudes y capacidades reflexivas, críticas y creativas que, a través de las prácticas investigativas de campo y de equipos, respondan casual explicativamente a los diferentes hechos y fenómenos del campo del Ingeniero Geodesta Topografo.
+Formar profesionales con actitudes y capacidades reflexivas, críticas y creativas que, a través de las prácticas investigativas de campo y de equipos, respondan casual explicativamente a los diferentes hechos y fenómenos del campo del Ingeniero Geodesta Topógrafo.
 
 Crear, actualizar y desarrollar cuadros profesionales de calidad en las áreas de la Ciencia Geodésica, capaces en el análisis y solución de problemas nacionales que coadyuven en el desarrollo técnico y científico.
 
-Tomando como la definición de la Geodesia la necesidad de establecer dimenciones y figura en el estudio del campo gravitacional externo de la tierra, el geodesta establece mediciones astronómicas, gravimétricas y fotogramétricas, conllevando además, al estudio geodinámico global, lo cual impacta en el desarrollo económico y científico.
+Tomando como la definición de la Geodesia la necesidad de establecer dimensiones y figura en el estudio del campo gravitacional externo de la tierra, el geodesta establece mediciones astronómicas, gravimétricas y fotogramétricas, conllevando además, al estudio geodinámico global, lo cual impacta en el desarrollo económico y científico.
 
 Contacto
 

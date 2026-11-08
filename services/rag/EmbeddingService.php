@@ -117,12 +117,10 @@ class EmbeddingService
             return null;
         }
 
-        // Si hay API key de OpenAI configurada, usar text-embedding-3-small
+        // Si hay API key de OpenAI configurada, exigir vector denso de esa dimensión
+        // (nunca mezclar silenciosamente vectores densos de 1536 dims con TF-IDF disperso ante error de red)
         if (!empty($this->openAiKey)) {
-            $apiEmbedding = $this->callOpenAiEmbedding($text);
-            if ($apiEmbedding !== null) {
-                return $apiEmbedding;
-            }
+            return $this->callOpenAiEmbedding($text);
         }
 
         // Modo autónomo local (Zero-cost, compatible con DeepSeek como LLM)
@@ -472,7 +470,9 @@ class EmbeddingService
                     'Authorization: Bearer ' . $this->openAiKey
                 ],
                 CURLOPT_TIMEOUT        => 4,
-                CURLOPT_CONNECTTIMEOUT => 2
+                CURLOPT_CONNECTTIMEOUT => 2,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
             ]);
 
             $response = curl_exec($ch);

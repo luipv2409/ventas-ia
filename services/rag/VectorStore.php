@@ -145,25 +145,52 @@ class VectorStore implements VectorStoreInterface
     }
 
     /**
+     * Construye cláusula SQL y parámetros posicionales para filtrar por una o varias colecciones.
+     * @param string|string[]|null $collection
+     * @return array{clause: string, params: array<int, string>}
+     */
+    private function buildCollectionFilter(string|array|null $collection, string $prefix = 'WHERE'): array
+    {
+        if ($collection === null) {
+            return ['clause' => '', 'params' => []];
+        }
+        $list = is_array($collection)
+            ? array_values(array_filter(array_map('strval', $collection), fn(string $c): bool => $c !== ''))
+            : ($collection !== '' ? [$collection] : []);
+
+        if (empty($list)) {
+            return ['clause' => '', 'params' => []];
+        }
+        if (count($list) === 1) {
+            return ['clause' => " {$prefix} collection = ?", 'params' => [$list[0]]];
+        }
+        $placeholders = implode(',', array_fill(0, count($list), '?'));
+        return ['clause' => " {$prefix} collection IN ({$placeholders})", 'params' => $list];
+    }
+
+    /**
      * Búsqueda léxica con el índice FULLTEXT de MariaDB.
      * Retorna [id => relevancia]. Si el índice no existe, retorna [] sin romper nada.
+     * @param string|string[]|null $collection
      * @return array<int, float>
      */
-    public function fulltextScores(string $query, int $limit = 20): array
+    public function fulltextScores(string $query, int $limit = 20, string|array|null $collection = null): array
     {
         $query = trim($query);
         if ($query === '') {
             return [];
         }
         try {
+            $filter = $this->buildCollectionFilter($collection, 'AND');
             $stmt = $this->pdo->prepare("
-                SELECT id, MATCH(title, content) AGAINST(:q1 IN NATURAL LANGUAGE MODE) AS rel
+                SELECT id, MATCH(title, content) AGAINST(? IN NATURAL LANGUAGE MODE) AS rel
                 FROM rag_documents
-                WHERE MATCH(title, content) AGAINST(:q2 IN NATURAL LANGUAGE MODE)
+                WHERE MATCH(title, content) AGAINST(? IN NATURAL LANGUAGE MODE)
+                {$filter['clause']}
                 ORDER BY rel DESC
                 LIMIT " . max(1, $limit)
             );
-            $stmt->execute([':q1' => $query, ':q2' => $query]);
+            $stmt->execute(array_merge([$query, $query], $filter['params']));
 
             $scores = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -184,7 +211,7 @@ class VectorStore implements VectorStoreInterface
      * @param array $queryEmbedding Vector de la consulta
      * @param int $topK Número máximo de resultados a recuperar
      * @param float $minScore Umbral mínimo de similitud (0.0 a 1.0)
-     * @param string|null $collection Filtrar por colección ('catalogo', 'politicas', etc.)
+     * @param string|string[]|null $collection Filtrar por colección o lista blanca de colecciones
      * @param array $queryUnits Unidades de la consulta (ver EmbeddingService::buildQuery) para cobertura
      * @return array
      */
@@ -192,7 +219,7 @@ class VectorStore implements VectorStoreInterface
         array $queryEmbedding,
         int $topK = 4,
         float $minScore = 0.25,
-        ?string $collection = null,
+        string|array|null $collection = null,
         array $queryUnits = []
     ): array {
         if (empty($queryEmbedding)) {
@@ -200,52 +227,55 @@ class VectorStore implements VectorStoreInterface
         }
 
         try {
-            // Verificar tamaño de la colección para poda de candidatos
-            $countSql = "SELECT COUNT(*) FROM rag_documents" . ($collection !== null ? " WHERE collection = :c" : "");
-            $cntStmt = $this->pdo->prepare($countSql);
-            if ($collection !== null) {
-                $cntStmt->execute([':c' => $collection]);
-            } else {
-                $cntStmt->execute();
-            }
+            $whereFilter = $this->buildCollectionFilter($collection, 'WHERE');
+            $andFilter   = $this->buildCollectionFilter($collection, 'AND');
+
+            // Verificar tamaño del corpus permitido (evaluación exacta en memoria hasta 1.000 fragmentos)
+            $cntStmt = $this->pdo->prepare("SELECT COUNT(*) FROM rag_documents" . $whereFilter['clause']);
+            $cntStmt->execute($whereFilter['params']);
             $totalCount = (int)$cntStmt->fetchColumn();
 
-            // Si hay más de 80 documentos, generar subconjunto de candidatos en SQL (Two-Stage Retrieval)
-            if ($totalCount > 80) {
-                $termKeys = array_keys(array_filter($queryEmbedding, fn($w) => is_numeric($w) && (float)$w > 0.05));
-                $termsText = implode(' ', array_slice($termKeys, 0, 8));
+            if ($totalCount === 0) {
+                return [];
+            }
 
-                $sql = "
-                    (SELECT id, collection, doc_id, title, content, metadata_json, embedding 
-                     FROM rag_documents 
-                     WHERE MATCH(title, content) AGAINST(:terms IN NATURAL LANGUAGE MODE) "
-                     . ($collection !== null ? "AND collection = :col1 " : "") . "
-                     LIMIT 50)
-                    UNION
-                    (SELECT id, collection, doc_id, title, content, metadata_json, embedding 
-                     FROM rag_documents "
-                     . ($collection !== null ? "WHERE collection = :col2 " : "") . "
-                     ORDER BY updated_at DESC 
-                     LIMIT 30)
-                ";
-                $stmt = $this->pdo->prepare($sql);
-                $params = [':terms' => $termsText ?: 'tienda productos'];
-                if ($collection !== null) {
-                    $params[':col1'] = $collection;
-                    $params[':col2'] = $collection;
-                }
-                $stmt->execute($params);
-            } else {
-                $sql = "SELECT id, collection, doc_id, title, content, metadata_json, embedding FROM rag_documents";
-                if ($collection !== null) {
-                    $sql .= " WHERE collection = :col";
-                }
-                $stmt = $this->pdo->prepare($sql);
-                if ($collection !== null) {
-                    $stmt->execute([':col' => $collection]);
+            if ($totalCount > 1000) {
+                $termKeys = array_keys(array_filter(
+                    $queryEmbedding,
+                    fn($w, $k) => is_string($k) && !str_starts_with($k, '#') && !str_contains($k, '_') && is_numeric($w) && (float)$w > 0.04,
+                    ARRAY_FILTER_USE_BOTH
+                ));
+                $termsText = trim(implode(' ', array_slice($termKeys, 0, 12)));
+
+                if ($termsText !== '') {
+                    $sql = "
+                        (SELECT id, collection, doc_id, title, content, metadata_json, embedding
+                         FROM rag_documents
+                         WHERE MATCH(title, content) AGAINST(? IN NATURAL LANGUAGE MODE)
+                         {$andFilter['clause']}
+                         LIMIT 250)
+                        UNION
+                        (SELECT id, collection, doc_id, title, content, metadata_json, embedding
+                         FROM rag_documents
+                         {$whereFilter['clause']}
+                         ORDER BY updated_at DESC
+                         LIMIT 100)
+                    ";
+                    $stmt = $this->pdo->prepare($sql);
+                    $stmt->execute(array_merge([$termsText], $andFilter['params'], $whereFilter['params']));
                 } else {
-                    $stmt->execute();
+                    $stmt = $this->pdo->prepare(
+                        "SELECT id, collection, doc_id, title, content, metadata_json, embedding FROM rag_documents"
+                        . $whereFilter['clause'] . " ORDER BY updated_at DESC LIMIT 350"
+                    );
+                    $stmt->execute($whereFilter['params']);
                 }
+            } else {
+                $stmt = $this->pdo->prepare(
+                    "SELECT id, collection, doc_id, title, content, metadata_json, embedding FROM rag_documents"
+                    . $whereFilter['clause']
+                );
+                $stmt->execute($whereFilter['params']);
             }
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
