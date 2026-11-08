@@ -294,6 +294,13 @@ class ChatEngine
         $historial = ContextWindow::trimHistory(
             PromptGuard::cleanUntrustedHistory(InputSanitizer::sanitizeHistory($historial))
         );
+        // Descartar posibles turnos previos de respaldo por fallo transitorio para no contaminar el contexto multi-turno
+        $historial = array_values(array_filter($historial, static function (array $m): bool {
+            if (($m['role'] ?? '') !== 'assistant') {
+                return true;
+            }
+            return preg_match('/^(?:Perdón,\s*se me cortó un momento|Uy,\s*no me llegó bien tu mensaje|Disculpa,\s*tuve un problemita para revisar eso)/ui', trim((string)($m['content'] ?? ''))) !== 1;
+        }));
 
         if ($preguntaOriginal === '') {
             return $this->respuestaSinLLM($canal, $remitente, 'Uy, no me llegó bien tu mensaje. ¿Me lo escribes de nuevo?', $entradaTruncada);
@@ -325,7 +332,20 @@ class ChatEngine
 
         $mensajes = [['role' => 'system', 'content' => $systemPrompt]];
         foreach ($historial as $msg) {
-            $mensajes[] = ['role' => $msg['role'], 'content' => $msg['content']];
+            $msgContent = (string)$msg['content'];
+            // En json_mode=true (response_format: json_object), los turnos previos 'assistant' DEBEN viajar
+            // serializados en el mismo esquema JSON {respuesta, acciones}; de lo contrario el decodificador
+            // restringido de DeepSeek entra en conflicto con texto plano previo y emite solo espacios (whitespace).
+            if ($msg['role'] === 'assistant') {
+                $trimmed = ltrim($msgContent);
+                if (!str_starts_with($trimmed, '{') || !is_array(json_decode($trimmed, true))) {
+                    $msgContent = (string)json_encode([
+                        'respuesta' => $msgContent,
+                        'acciones'  => [],
+                    ], JSON_UNESCAPED_UNICODE);
+                }
+            }
+            $mensajes[] = ['role' => $msg['role'], 'content' => $msgContent];
         }
         $mensajes[] = ['role' => 'user', 'content' => $preguntaTratada];
 
@@ -1469,7 +1489,7 @@ PROMPT;
                 (:sid, :preg, :resp, :tok_tot, :lat, :tok_p, :tok_c, :tok_ch, :r_score, :r_fuentes, :acc)
             ");
             $stmtLog->execute([
-                ':sid'        => mb_substr($sessionLogId, 0, 190),
+                ':sid'        => mb_substr($sessionLogId, 0, 95),
                 ':preg'       => $pregunta,
                 ':resp'       => $respuesta,
                 ':tok_tot'    => (int)($tokensUsage['total_tokens'] ?? 0),
@@ -1478,7 +1498,7 @@ PROMPT;
                 ':tok_c'      => (int)($tokensUsage['completion_tokens'] ?? 0),
                 ':tok_ch'     => (int)($tokensUsage['cache_hit_tokens'] ?? 0),
                 ':r_score'    => $rag['score_max'],
-                ':r_fuentes'  => !empty($rag['fuentes']) ? implode(', ', $rag['fuentes']) : null,
+                ':r_fuentes'  => !empty($rag['fuentes']) ? mb_substr(implode(', ', $rag['fuentes']), 0, 1000) : null,
                 ':acc'        => json_encode($acciones, JSON_UNESCAPED_UNICODE),
             ]);
         } catch (Throwable $e) {

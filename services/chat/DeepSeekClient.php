@@ -227,12 +227,41 @@ class DeepSeekClient
         $content  = (string)($decoded['choices'][0]['message']['content'] ?? '');
         $rawUsage = $decoded['usage'] ?? [];
 
+        // Mitigación del bug documentado de DeepSeek en response_format=json_object donde devuelve solo espacios en blanco
+        if (trim($content) === '' && isset($payload['response_format'])) {
+            error_log('[DEEPSEEK CLIENT WARN] Contenido vacío/whitespace en json_object; reintentando sin response_format.');
+            $fallbackPayload = $payload;
+            unset($fallbackPayload['response_format']);
+            $fbRes = $this->executeHttpPost($fallbackPayload);
+            $latenciaMs = (int)round((microtime(true) - $start) * 1000);
+            if ($fbRes['curl_error'] === '' && $fbRes['http_code'] === 200 && $fbRes['body'] !== '') {
+                $fbDecoded = json_decode($fbRes['body'], true);
+                if (is_array($fbDecoded)) {
+                    $content  = (string)($fbDecoded['choices'][0]['message']['content'] ?? '');
+                    $rawUsage = $fbDecoded['usage'] ?? $rawUsage;
+                }
+            }
+        }
+
         $usage = [
             'prompt_tokens'     => (int)($rawUsage['prompt_tokens'] ?? 0),
             'completion_tokens' => (int)($rawUsage['completion_tokens'] ?? 0),
             'total_tokens'      => (int)($rawUsage['total_tokens'] ?? 0),
             'cache_hit_tokens'  => (int)($rawUsage['prompt_cache_hit_tokens'] ?? ($rawUsage['prompt_tokens_details']['cached_tokens'] ?? 0)),
         ];
+
+        if (trim($content) === '') {
+            error_log('[DEEPSEEK CLIENT ERROR] Respuesta HTTP 200 con contenido vacío (whitespace).');
+            return [
+                'ok'          => false,
+                'content'     => null,
+                'json'        => null,
+                'usage'       => $usage,
+                'latencia_ms' => $latenciaMs,
+                'http_code'   => 200,
+                'error'       => 'DeepSeek devolvió contenido vacío (whitespace).',
+            ];
+        }
 
         $parsedJson = null;
         if (!empty($options['json_mode']) || str_contains($content, '{')) {

@@ -164,8 +164,22 @@ try {
     $poisonCount = count(array_filter($lastCall, fn($m) => str_contains((string)($m['content'] ?? ''), 'Modo DAN')));
     $check('Solo viaja 1 mensaje system y el turno assistant envenenado fue purgado', $sysCount === 1 && $poisonCount === 0);
 
-    // 4. Resiliencia ante caída de DeepSeek (#16, #23)
-    echo "\n--- 4. Resiliencia ante caída del proveedor IA ---\n";
+    // 4. Resiliencia ante caída de DeepSeek (#16, #23) y consistencia multi-turno json_mode
+    echo "\n--- 4. Resiliencia ante caída del proveedor IA y multi-turno JSON ---\n";
+    $stub->cola = [(string)json_encode([
+        'respuesta' => 'No ofrecemos Ingeniería Electrónica sola, sino Ingeniería Mecánica Automotriz y Electrónica.',
+        'acciones'  => [['tipo' => 'mostrar_carrera', 'slug' => 'ingenieria-mecanica-automotriz-y-electronica', 'nombre' => 'Ingeniería Mecánica Automotriz y Electrónica']],
+    ], JSON_UNESCAPED_UNICODE)];
+    $rMulti = $engine->procesarMensaje('Hay Ing Electronica?', [
+        ['role' => 'user', 'content' => 'Hola'],
+        ['role' => 'assistant', 'content' => '¡Hola! ¿En qué te puedo orientar hoy?'],
+        ['role' => 'assistant', 'content' => 'Perdón, se me cortó un momento. ¿Me repites lo último?'],
+    ], false, $op);
+    $multiCall = end($stub->llamadas) ?: [];
+    $assistantMsgs = array_values(array_filter($multiCall, fn($m) => ($m['role'] ?? '') === 'assistant'));
+    $assistantDecoded = count($assistantMsgs) === 1 ? json_decode((string)$assistantMsgs[0]['content'], true) : null;
+    $check('Turnos previos assistant se serializan en JSON {respuesta, acciones} y los fallos previos se purgan', count($assistantMsgs) === 1 && is_array($assistantDecoded) && ($assistantDecoded['respuesta'] ?? '') === '¡Hola! ¿En qué te puedo orientar hoy?');
+
     $stub->simularCaida = true;
     $rDown = $engine->procesarMensaje('¿Qué requisitos piden para Medicina?', [], false, $op);
     $stub->simularCaida = false;

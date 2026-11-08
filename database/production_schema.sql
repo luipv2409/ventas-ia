@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `chat_logs` (
     `tokens_completado` INT UNSIGNED DEFAULT NULL,
     `tokens_cache_hit` INT UNSIGNED DEFAULT 0,
     `rag_score_max` DECIMAL(5,4) DEFAULT NULL,
-    `rag_fuentes` VARCHAR(255) DEFAULT NULL,
+    `rag_fuentes` TEXT DEFAULT NULL,
     `acciones_json` TEXT DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `idx_chat_logs_session` (`session_id`),
@@ -168,3 +168,4 @@ CREATE TABLE IF NOT EXISTS `admisiones_prospectos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
+

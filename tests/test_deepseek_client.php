@@ -109,6 +109,42 @@ try {
     $fastFail = $mockOutage->chat([['role' => 'user', 'content' => 'Durante caida']], ['no_sleep' => true]);
     $check('Con Circuit Breaker ABIERTO responde fast-fail 503 sin invocar red', !$fastFail['ok'] && $fastFail['http_code'] === 503 && $transportHits === $hitsBeforeFastFail);
 
+    // 5. Recuperación automática ante whitespace-only bug de DeepSeek en json_object
+    $wsPayloads = [];
+    $mockWhitespace = new DeepSeekClient(
+        'sk-test-dummy',
+        'https://api.deepseek.com/v1/chat/completions',
+        'deepseek-chat',
+        5,
+        0,
+        2,
+        static function (array $payload) use (&$wsPayloads): array {
+            $wsPayloads[] = $payload;
+            if (isset($payload['response_format'])) {
+                return [
+                    'http_code'  => 200,
+                    'body'       => (string)json_encode([
+                        'choices' => [['message' => ['content' => str_repeat(' ', 64)]]],
+                        'usage'   => ['prompt_tokens' => 4500, 'completion_tokens' => 64, 'total_tokens' => 4564],
+                    ]),
+                    'curl_error' => '',
+                ];
+            }
+            return [
+                'http_code'  => 200,
+                'body'       => (string)json_encode([
+                    'choices' => [['message' => ['content' => '{"respuesta":"Ingeniería Electrónica no está sola; ofrecemos Ingeniería Mecánica Automotriz y Electrónica.","acciones":[]}']]],
+                    'usage'   => ['prompt_tokens' => 4500, 'completion_tokens' => 28, 'total_tokens' => 4528],
+                ]),
+                'curl_error' => '',
+            ];
+        },
+        $cbFile
+    );
+    $mockWhitespace->resetCircuitBreaker();
+    $resWs = $mockWhitespace->chat([['role' => 'user', 'content' => 'Hay Ing Electronica?']], ['json_mode' => true, 'no_sleep' => true]);
+    $check('Fallback automático sin response_format cuando DeepSeek devuelve whitespace en json_object', $resWs['ok'] && count($wsPayloads) === 2 && !isset($wsPayloads[1]['response_format']) && str_contains((string)($resWs['json']['respuesta'] ?? ''), 'Automotriz'));
+
     // 5. Llamada opcional en vivo solo si se solicita --live
     if (in_array('--live', $argv ?? [], true)) {
         $live = new DeepSeekClient();

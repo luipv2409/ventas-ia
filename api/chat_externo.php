@@ -205,8 +205,8 @@ try {
             'remitente' => $remitente
         ]);
 
-        // 8. Persistencia automática de la conversación para canales externos
-        if ($remitente !== 'anonimo') {
+        // 8. Persistencia automática de la conversación para canales externos (omitir si fue fallo degradado)
+        if ($remitente !== 'anonimo' && empty($resultado['degraded'])) {
             $engine->guardarMensajeSesion($canal, $remitente, 'user', $mensaje);
             $engine->guardarMensajeSesion($canal, $remitente, 'assistant', $resultado['respuesta'], [
                 'acciones' => $resultado['acciones'] ?? [],

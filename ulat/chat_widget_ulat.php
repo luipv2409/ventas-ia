@@ -207,7 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.ok && data.respuesta) {
                 agregarMensaje(data.respuesta, 'bot');
-                historialUI.push({ role: 'assistant', content: limpiarTextoIA(data.respuesta) });
+                if (!data.degraded) {
+                    historialUI.push({ role: 'assistant', content: limpiarTextoIA(data.respuesta) });
+                } else if (historialUI.length > 0 && historialUI[historialUI.length - 1].role === 'user') {
+                    historialUI.pop();
+                }
                 guardarEstado();
 
                 if (data.acciones && Array.isArray(data.acciones)) {

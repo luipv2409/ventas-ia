@@ -127,13 +127,15 @@ try {
         'use_rag'   => $useRag,
     ]);
 
-    // 4. Persistir el turno real validado en la sesión del servidor
-    SecurityKernel::startSession(false);
-    $histActual = is_array($_SESSION['ulat_chat_history'] ?? null) ? $_SESSION['ulat_chat_history'] : [];
-    $histActual[] = ['role' => 'user', 'content' => InputSanitizer::cleanText($pregunta, 800)];
-    $histActual[] = ['role' => 'assistant', 'content' => (string)$resultado['respuesta']];
-    $_SESSION['ulat_chat_history'] = array_slice($histActual, -14);
-    session_write_close();
+    // 4. Persistir el turno real validado en la sesión del servidor (omitir si hubo fallo degradado de red/IA)
+    if (empty($resultado['degraded'])) {
+        SecurityKernel::startSession(false);
+        $histActual = is_array($_SESSION['ulat_chat_history'] ?? null) ? $_SESSION['ulat_chat_history'] : [];
+        $histActual[] = ['role' => 'user', 'content' => InputSanitizer::cleanText($pregunta, 800)];
+        $histActual[] = ['role' => 'assistant', 'content' => (string)$resultado['respuesta']];
+        $_SESSION['ulat_chat_history'] = array_slice($histActual, -14);
+        session_write_close();
+    }
 
     // 5. Streaming opcional Server-Sent Events (SSE)
     if ($isStreaming) {
@@ -171,6 +173,7 @@ try {
         'ok'        => true,
         'respuesta' => $resultado['respuesta'],
         'acciones'  => $resultado['acciones'],
+        'degraded'  => (bool)($resultado['degraded'] ?? false),
     ];
     if ($useRag) {
         $resPayload['rag_applied'] = (bool)($resultado['rag_applied'] ?? false);
