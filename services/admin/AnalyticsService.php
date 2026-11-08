@@ -4,234 +4,224 @@ declare(strict_types=1);
 namespace Services\Admin;
 
 use PDO;
+use Services\Security\SecurityKernel;
 
 /**
- * Servicio de Inteligencia de Negocios y Analítica Ejecutiva (BI).
- * Provee métricas de rotación, márgenes, segmentación de clientes,
- * alertas estratégicas y generación de reportes descargables para el Admin.
+ * Servicio de Inteligencia Institucional y Analítica de Admisiones ULAT.
  */
 class AnalyticsService
 {
-    private PDO $pdo;
-    private float $tasaCambio;
-    private string $simbolo;
+    private const TIPOS_PERMITIDOS = ['prospectos', 'conversaciones', 'ejecutivo'];
+    private const FORMATOS_PERMITIDOS = ['csv', 'html'];
 
-    public function __construct(PDO $pdo, float $tasaCambio = 1.0, string $simbolo = 'Bs')
+    private PDO $pdo;
+
+    public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->tasaCambio = $tasaCambio > 0 ? $tasaCambio : 1.0;
-        $this->simbolo = $simbolo;
     }
 
-    /**
-     * Resumen ejecutivo integral de KPIs
-     */
     public function getExecutiveSummary(): array
     {
-        // 1. Ventas del día, semana y mes
-        $hoy = $this->pdo->query("
-            SELECT COUNT(*) as pedidos, COALESCE(SUM(total), 0) as total 
-            FROM pedidos WHERE DATE(creado_en) = CURDATE()
-        ")->fetch(PDO::FETCH_ASSOC) ?: ['pedidos' => 0, 'total' => 0];
+        $leads = $this->pdo->query("
+            SELECT
+                COUNT(*) AS total,
+                COALESCE(SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END), 0) AS hoy,
+                COALESCE(SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 ELSE 0 END), 0) AS mes,
+                COALESCE(SUM(CASE WHEN estado = 'nuevo' THEN 1 ELSE 0 END), 0) AS pendientes,
+                COALESCE(SUM(CASE WHEN estado = 'matriculado' THEN 1 ELSE 0 END), 0) AS matriculados
+            FROM admisiones_prospectos
+        ")->fetch(PDO::FETCH_ASSOC) ?: ['total' => 0, 'hoy' => 0, 'mes' => 0, 'pendientes' => 0, 'matriculados' => 0];
 
-        $mes = $this->pdo->query("
-            SELECT COUNT(*) as pedidos, COALESCE(SUM(total), 0) as total,
-                   COALESCE(AVG(total), 0) as ticket_promedio
-            FROM pedidos 
-            WHERE MONTH(creado_en) = MONTH(CURDATE()) AND YEAR(creado_en) = YEAR(CURDATE())
-        ")->fetch(PDO::FETCH_ASSOC) ?: ['pedidos' => 0, 'total' => 0, 'ticket_promedio' => 0];
+        $chats = $this->pdo->query("
+            SELECT
+                COUNT(*) AS total_mes,
+                ROUND(COALESCE(AVG(latencia_ms), 0)) AS latencia_media_ms,
+                COALESCE(SUM(tokens_usados), 0) AS tokens_mes,
+                COALESCE(SUM(CASE WHEN rag_score_max >= 0.25 THEN 1 ELSE 0 END), 0) AS rag_hits
+            FROM chat_logs
+            WHERE creado_en >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        ")->fetch(PDO::FETCH_ASSOC) ?: ['total_mes' => 0, 'latencia_media_ms' => 0, 'tokens_mes' => 0, 'rag_hits' => 0];
 
-        // 2. Inventario valorizado
-        $inv = $this->pdo->query("
-            SELECT COUNT(*) as total_skus, 
-                   SUM(stock) as unidades_totales,
-                   SUM(stock * precio) as valor_usd_base
-            FROM productos WHERE activo = 1
-        ")->fetch(PDO::FETCH_ASSOC) ?: ['total_skus' => 0, 'unidades_totales' => 0, 'valor_usd_base' => 0];
-
-        $valorBaseUsd = (float)$inv['valor_usd_base'];
-        $valorVentaBs = round($valorBaseUsd * $this->tasaCambio, 2);
-
-        // 3. Productos en riesgo de agotamiento (stock < 5)
-        $stockCritico = $this->pdo->query("
-            SELECT id, nombre, stock, precio 
-            FROM productos 
-            WHERE activo = 1 AND stock < 5 
-            ORDER BY stock ASC
-        ")->fetchAll(PDO::FETCH_ASSOC);
-
-        // 4. Velocidad de rotación estimada (unidades vendidas en últimos 30 días)
-        $rotacion = $this->pdo->query("
-            SELECT p.id, p.nombre, p.stock, COALESCE(SUM(dp.cantidad), 0) as vendidas_mes
-            FROM productos p
-            LEFT JOIN detalle_pedidos dp ON p.id = dp.producto_id
-            LEFT JOIN pedidos ped ON dp.pedido_id = ped.id AND ped.creado_en >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-            WHERE p.activo = 1
-            GROUP BY p.id
-            ORDER BY vendidas_mes DESC
+        $topCarreras = $this->pdo->query("
+            SELECT carrera_interes, COUNT(*) AS cantidad
+            FROM admisiones_prospectos
+            GROUP BY carrera_interes
+            ORDER BY cantidad DESC
             LIMIT 5
         ")->fetchAll(PDO::FETCH_ASSOC);
 
+        $totalChatsMes = (int)$chats['total_mes'];
+        $ragRate = $totalChatsMes > 0 ? round(((int)$chats['rag_hits'] / $totalChatsMes) * 100, 1) : 0.0;
+
         return [
-            'ventas_hoy' => [
-                'pedidos'    => (int)$hoy['pedidos'],
-                'total_usd'  => (float)$hoy['total'],
-                'total_bs'   => round(((float)$hoy['total']) * $this->tasaCambio, 2),
+            'prospectos' => [
+                'total'        => (int)$leads['total'],
+                'hoy'          => (int)$leads['hoy'],
+                'mes'          => (int)$leads['mes'],
+                'pendientes'   => (int)$leads['pendientes'],
+                'matriculados' => (int)$leads['matriculados'],
             ],
-            'ventas_mes' => [
-                'pedidos'         => (int)$mes['pedidos'],
-                'total_usd'       => (float)$mes['total'],
-                'total_bs'        => round(((float)$mes['total']) * $this->tasaCambio, 2),
-                'ticket_promedio_bs' => round(((float)$mes['ticket_promedio']) * $this->tasaCambio, 2),
+            'chatbot' => [
+                'consultas_mes'     => $totalChatsMes,
+                'latencia_media_ms' => (int)$chats['latencia_media_ms'],
+                'tokens_mes'        => (int)$chats['tokens_mes'],
+                'cobertura_rag_pct' => $ragRate,
             ],
-            'inventario' => [
-                'skus_activos'     => (int)$inv['total_skus'],
-                'unidades_totales' => (int)$inv['unidades_totales'],
-                'valor_base_usd'   => $valorBaseUsd,
-                'valor_venta_bs'   => $valorVentaBs,
-            ],
-            'productos_criticos' => $stockCritico,
-            'top_rotacion'       => $rotacion,
-            'tasa_cambio'        => $this->tasaCambio,
-            'moneda'             => $this->simbolo,
+            'top_carreras' => $topCarreras,
         ];
     }
 
-    /**
-     * Genera sugerencias y recomendaciones estratégicas automáticas para el Administrador
-     */
     public function getStrategicAdvice(): array
     {
         $consejos = [];
-        $resumen = $this->getExecutiveSummary();
+        $res = $this->getExecutiveSummary();
 
-        // Regla 1: Alerta de reposición inmediata
-        if (!empty($resumen['productos_criticos'])) {
-            $nombres = array_map(fn($p) => "{$p['nombre']} ({$p['stock']} u.)", array_slice($resumen['productos_criticos'], 0, 3));
+        if ($res['prospectos']['pendientes'] > 0) {
             $consejos[] = [
                 'prioridad' => 'ALTA',
-                'icono'     => '⚠️',
-                'titulo'    => 'Reposición de Stock Urgente',
-                'detalle'   => 'Los siguientes productos están a punto de quebrar stock: ' . implode(', ', $nombres) . '. Se recomienda emitir orden de compra a proveedores.'
+                'icono'     => '📞',
+                'titulo'    => 'Seguimiento de Postulantes Pendientes',
+                'detalle'   => "Existen {$res['prospectos']['pendientes']} postulante(s) en estado 'nuevo' esperando contacto de Admisiones.",
             ];
         }
 
-        // Regla 2: Oportunidad de Upselling / Promoción
-        if (!empty($resumen['top_rotacion'])) {
-            $estrella = $resumen['top_rotacion'][0];
-            if ((int)$estrella['vendidas_mes'] > 0) {
-                $consejos[] = [
-                    'prioridad' => 'MEDIA',
-                    'icono'     => '🚀',
-                    'titulo'    => 'Producto Estrella Identificado',
-                    'detalle'   => "El producto '{$estrella['nombre']}' lidera las ventas del mes con {$estrella['vendidas_mes']} unidades vendidas. Sugerencia: Crear combos con accesorios para elevar el ticket promedio."
-                ];
-            }
+        if (!empty($res['top_carreras'])) {
+            $top = $res['top_carreras'][0];
+            $consejos[] = [
+                'prioridad' => 'MEDIA',
+                'icono'     => '🎓',
+                'titulo'    => 'Carrera con Mayor Interés Actual',
+                'detalle'   => "La carrera '{$top['carrera_interes']}' concentra {$top['cantidad']} solicitud(es). Se recomienda reforzar cupos y material informativo.",
+            ];
         }
 
-        // Regla 3: Tasa de cambio y salud del inventario
-        $valorBs = number_format($resumen['inventario']['valor_venta_bs'], 2);
         $consejos[] = [
             'prioridad' => 'INFO',
-            'icono'     => '💡',
-            'titulo'    => 'Valorización del Inventario',
-            'detalle'   => "Tu inventario actual está valorizado en {$this->simbolo} {$valorBs} ({$resumen['inventario']['unidades_totales']} unidades totales). Mantén un margen de seguridad frente a fluctuaciones de divisas."
+            'icono'     => '📚',
+            'titulo'    => 'Salud del Asistente Guía ULAT',
+            'detalle'   => "Cobertura documental RAG del {$res['chatbot']['cobertura_rag_pct']}% con latencia media de {$res['chatbot']['latencia_media_ms']} ms en los últimos 30 días.",
         ];
 
         return $consejos;
     }
 
-    /**
-     * Genera un reporte formateado y lo guarda en storage/reports/ para descarga
-     * Retorna la ruta y URL para que Jarvis le entregue el botón de descarga al admin.
-     */
-    public function generateReportFile(string $tipo = 'inventario', string $formato = 'csv'): array
+    public function generateReportFile(string $tipo = 'prospectos', string $formato = 'csv'): array
     {
-        $tipo = !empty($tipo) ? strtolower(trim($tipo)) : 'inventario';
-        $formato = !empty($formato) ? strtolower(trim($formato)) : 'csv';
-        if ($formato !== 'csv' && $formato !== 'html') {
+        $tipo = strtolower(trim($tipo));
+        if (!in_array($tipo, self::TIPOS_PERMITIDOS, true)) {
+            $tipo = 'prospectos';
+        }
+
+        $formato = strtolower(trim($formato));
+        if (!in_array($formato, self::FORMATOS_PERMITIDOS, true)) {
             $formato = 'csv';
         }
 
         $reportsDir = __DIR__ . '/../../storage/reports';
         if (!is_dir($reportsDir)) {
-            @mkdir($reportsDir, 0777, true);
+            @mkdir($reportsDir, 0750, true);
         }
-        @chmod($reportsDir, 0777);
+        @chmod($reportsDir, 0750);
 
         $timestamp = date('Ymd_His');
-        $filename = "reporte_{$tipo}_{$timestamp}." . ($formato === 'csv' ? 'csv' : 'html');
-        $filepath = $reportsDir . '/' . $filename;
-        $urlDescarga = "../api/descargar_reporte.php?archivo=" . urlencode($filename);
+        $suffix = bin2hex(random_bytes(3));
+        $filename = "reporte_{$tipo}_{$timestamp}_{$suffix}.{$formato}";
+        $filepath = $reportsDir . DIRECTORY_SEPARATOR . $filename;
+        $urlDescarga = '../api/descargar_reporte.php?archivo=' . rawurlencode($filename);
 
         if ($formato === 'csv') {
-            $fp = @fopen($filepath, 'w');
+            $fp = @fopen($filepath, 'wb');
             if ($fp === false) {
-                // Reintento tras chmod
-                @chmod($reportsDir, 0777);
-                $fp = @fopen($filepath, 'w');
+                throw new \RuntimeException('No fue posible generar el archivo de reporte.');
             }
-            if ($fp === false) {
-                throw new \RuntimeException("No se pudo escribir el archivo en el servidor. Verifica permisos de 'storage/reports'.");
-            }
-            // BOM UTF-8 para Excel
-            fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
+            fwrite($fp, "\xEF\xBB\xBF"); // BOM UTF-8
 
-            if ($tipo === 'inventario') {
-                fputcsv($fp, ['ID', 'Producto', 'Categoría', 'Precio USD Base', "Precio Público ({$this->simbolo})", 'Stock', 'SKU', "Valorizado ({$this->simbolo})"]);
+            if ($tipo === 'conversaciones') {
+                fputcsv($fp, ['ID', 'Fecha', 'Pregunta', 'Respuesta', 'Latencia (ms)', 'Tokens', 'RAG Score']);
                 $stmt = $this->pdo->query("
-                    SELECT p.id, p.nombre, c.nombre as categoria, p.precio, p.stock, p.sku
-                    FROM productos p
-                    LEFT JOIN categorias c ON p.categoria_id = c.id
-                    WHERE p.activo = 1
-                    ORDER BY p.stock ASC
+                    SELECT id, creado_en, pregunta, respuesta, latencia_ms, tokens_usados, rag_score_max
+                    FROM chat_logs
+                    ORDER BY creado_en DESC
+                    LIMIT 500
                 ");
                 while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $pBs = round(((float)$r['precio']) * $this->tasaCambio, 2);
-                    $valTotalBs = round($pBs * (int)$r['stock'], 2);
-                    fputcsv($fp, [$r['id'], $r['nombre'], $r['categoria'], $r['precio'], $pBs, $r['stock'], $r['sku'], $valTotalBs]);
+                    fputcsv($fp, [
+                        (int)$r['id'],
+                        SecurityKernel::sanitizeCsvCell($r['creado_en']),
+                        SecurityKernel::sanitizeCsvCell($r['pregunta']),
+                        SecurityKernel::sanitizeCsvCell($r['respuesta']),
+                        (int)($r['latencia_ms'] ?? 0),
+                        (int)($r['tokens_usados'] ?? 0),
+                        (string)($r['rag_score_max'] ?? '0'),
+                    ]);
                 }
             } else {
-                // Reporte Ejecutivo de Ventas y Pedidos
-                fputcsv($fp, ['ID Pedido', 'Cliente', 'Estado', 'Fecha', 'Total USD', "Total ({$this->simbolo})"]);
+                fputcsv($fp, ['ID', 'Nombre', 'Teléfono', 'Email', 'Carrera de Interés', 'Origen', 'Estado', 'Notas', 'Fecha']);
                 $stmt = $this->pdo->query("
-                    SELECT p.id, c.nombre as cliente, p.estado, p.creado_en, p.total
-                    FROM pedidos p
-                    JOIN clientes c ON p.cliente_id = c.id
-                    ORDER BY p.creado_en DESC
+                    SELECT id, nombre, telefono, email, carrera_interes, origen, estado, notas, created_at
+                    FROM admisiones_prospectos
+                    ORDER BY created_at DESC
+                    LIMIT 1000
                 ");
                 while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $tBs = round(((float)$r['total']) * $this->tasaCambio, 2);
-                    fputcsv($fp, [$r['id'], $r['cliente'], $r['estado'], $r['creado_en'], $r['total'], $tBs]);
+                    fputcsv($fp, [
+                        (int)$r['id'],
+                        SecurityKernel::sanitizeCsvCell($r['nombre']),
+                        SecurityKernel::sanitizeCsvCell($r['telefono']),
+                        SecurityKernel::sanitizeCsvCell($r['email'] ?? ''),
+                        SecurityKernel::sanitizeCsvCell($r['carrera_interes']),
+                        SecurityKernel::sanitizeCsvCell($r['origen']),
+                        SecurityKernel::sanitizeCsvCell($r['estado']),
+                        SecurityKernel::sanitizeCsvCell($r['notas'] ?? ''),
+                        SecurityKernel::sanitizeCsvCell($r['created_at']),
+                    ]);
                 }
             }
             fclose($fp);
         } else {
-            // Formato HTML imprimible ejecutivo
             $resumen = $this->getExecutiveSummary();
-            $html = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Reporte Ejecutivo</title>";
-            $html .= "<style>body{font-family:sans-serif;padding:30px;color:#1e293b;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #cbd5e1;padding:10px;text-align:left;}th{background:#f1f5f9;}</style></head><body>";
-            $html .= "<h2>📊 Reporte Ejecutivo de Gestión — " . date('d/m/Y H:i') . "</h2>";
-            $html .= "<p><strong>Tasa de cambio:</strong> 1 USD = {$this->tasaCambio} {$this->simbolo}</p>";
-            $html .= "<p><strong>Ventas del mes:</strong> {$this->simbolo} {$resumen['ventas_mes']['total_bs']} ({$resumen['ventas_mes']['pedidos']} pedidos)</p>";
-            $html .= "<p><strong>Inventario total valorizado:</strong> {$this->simbolo} " . number_format($resumen['inventario']['valor_venta_bs'], 2) . "</p>";
-            $html .= "<h3>Inventario Actual</h3><table><tr><th>Producto</th><th>Stock</th><th>Precio Base USD</th><th>Precio Oficial ({$this->simbolo})</th></tr>";
-            
-            $stmt = $this->pdo->query("SELECT nombre, stock, precio FROM productos WHERE activo = 1 ORDER BY stock ASC");
+            $fechaHoy = SecurityKernel::e(date('d/m/Y H:i'));
+            $html  = "<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><title>Reporte Institucional ULAT</title>";
+            $html .= "<style>body{font-family:sans-serif;padding:30px;color:#0f172a;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #cbd5e1;padding:8px 10px;text-align:left;font-size:13px;}th{background:#f1f5f9;}</style></head><body>";
+            $html .= "<h2>Reporte Institucional de Admisiones e IA — ULAT ({$fechaHoy})</h2>";
+            $html .= "<p><strong>Prospectos totales:</strong> " . (int)$resumen['prospectos']['total']
+                   . " | <strong>Pendientes:</strong> " . (int)$resumen['prospectos']['pendientes']
+                   . " | <strong>Matriculados:</strong> " . (int)$resumen['prospectos']['matriculados'] . "</p>";
+            $html .= "<p><strong>Consultas Guía ULAT (30d):</strong> " . (int)$resumen['chatbot']['consultas_mes']
+                   . " | <strong>Cobertura RAG:</strong> " . SecurityKernel::e($resumen['chatbot']['cobertura_rag_pct']) . "%</p>";
+            $html .= "<h3>Últimos Prospectos Registrados</h3>";
+            $html .= "<table><tr><th>ID</th><th>Postulante</th><th>Teléfono</th><th>Carrera</th><th>Origen</th><th>Estado</th><th>Fecha</th></tr>";
+
+            $stmt = $this->pdo->query("
+                SELECT id, nombre, telefono, carrera_interes, origen, estado, created_at
+                FROM admisiones_prospectos
+                ORDER BY created_at DESC
+                LIMIT 200
+            ");
             while ($p = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $bs = round(((float)$p['precio']) * $this->tasaCambio, 2);
-                $html .= "<tr><td>{$p['nombre']}</td><td>{$p['stock']}</td><td>\${$p['precio']}</td><td>{$this->simbolo} {$bs}</td></tr>";
+                $html .= '<tr>'
+                    . '<td>#' . (int)$p['id'] . '</td>'
+                    . '<td>' . SecurityKernel::e($p['nombre']) . '</td>'
+                    . '<td>' . SecurityKernel::e($p['telefono']) . '</td>'
+                    . '<td>' . SecurityKernel::e($p['carrera_interes']) . '</td>'
+                    . '<td>' . SecurityKernel::e($p['origen']) . '</td>'
+                    . '<td>' . SecurityKernel::e($p['estado']) . '</td>'
+                    . '<td>' . SecurityKernel::e($p['created_at']) . '</td>'
+                    . '</tr>';
             }
-            $html .= "</table></body></html>";
+            $html .= '</table></body></html>';
             file_put_contents($filepath, $html);
         }
+
+        @chmod($filepath, 0640);
 
         return [
             'nombre_archivo' => $filename,
             'url'            => $urlDescarga,
             'formato'        => strtoupper($formato),
             'tipo'           => $tipo,
-            'fecha'          => date('d/m/Y H:i')
+            'fecha'          => date('d/m/Y H:i'),
         ];
     }
 }

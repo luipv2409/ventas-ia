@@ -1,145 +1,143 @@
 <?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/database.php';
+
 $pdo = Database::getConnection();
 
-// Ventas por mes (últimos 6 meses)
-$stmt = $pdo->query("
-    SELECT DATE_FORMAT(creado_en, '%Y-%m') AS mes, SUM(total) AS total, COUNT(*) AS num_pedidos
-    FROM pedidos
-    WHERE creado_en >= DATE_SUB(CURRENT_DATE(), INTERVAL 6 MONTH)
-    GROUP BY mes
-    ORDER BY mes ASC
-");
-$ventasMensuales = $stmt->fetchAll();
-
-// Productos más vendidos (top 5)
-$stmt = $pdo->query("
-    SELECT p.nombre, SUM(dp.cantidad) AS total_vendido
-    FROM detalle_pedidos dp
-    JOIN productos p ON dp.producto_id = p.id
-    GROUP BY p.id
-    ORDER BY total_vendido DESC
-    LIMIT 5
-");
-$productosTop = $stmt->fetchAll();
-
-// Pedidos por estado
-$stmt = $pdo->query("
-    SELECT estado, COUNT(*) AS total
-    FROM pedidos
-    GROUP BY estado
-");
-$pedidosEstado = $stmt->fetchAll();
-
-// Ingresos diarios últimos 7 días
-$stmt = $pdo->query("
-    SELECT DATE(creado_en) AS fecha, SUM(total) AS total
-    FROM pedidos
-    WHERE creado_en >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
-    GROUP BY fecha
+// 1. Conversaciones diarias últimos 14 días
+$conversacionesDiarias = $pdo->query("
+    SELECT DATE(creado_en) AS fecha, COUNT(*) AS total
+    FROM chat_logs
+    WHERE creado_en >= DATE_SUB(CURRENT_DATE(), INTERVAL 14 DAY)
+    GROUP BY DATE(creado_en)
     ORDER BY fecha ASC
-");
-$ingresosDiarios = $stmt->fetchAll();
+")->fetchAll(PDO::FETCH_ASSOC);
 
-// Pasamos los datos a JavaScript
+// 2. Top carreras solicitadas por prospectos
+$carrerasTop = $pdo->query("
+    SELECT carrera_interes AS carrera, COUNT(*) AS total
+    FROM admisiones_prospectos
+    GROUP BY carrera_interes
+    ORDER BY total DESC
+    LIMIT 6
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// 3. Prospectos por estado de seguimiento
+$prospectosEstado = $pdo->query("
+    SELECT estado, COUNT(*) AS total
+    FROM admisiones_prospectos
+    GROUP BY estado
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// 4. Prospectos por canal de captación
+$prospectosOrigen = $pdo->query("
+    SELECT origen, COUNT(*) AS total
+    FROM admisiones_prospectos
+    GROUP BY origen
+")->fetchAll(PDO::FETCH_ASSOC);
+
 $datosJSON = json_encode([
-    'ventasMensuales' => $ventasMensuales,
-    'productosTop' => $productosTop,
-    'pedidosEstado' => $pedidosEstado,
-    'ingresosDiarios' => $ingresosDiarios,
-], JSON_UNESCAPED_UNICODE);
+    'conversacionesDiarias' => $conversacionesDiarias,
+    'carrerasTop'           => $carrerasTop,
+    'prospectosEstado'      => $prospectosEstado,
+    'prospectosOrigen'      => $prospectosOrigen,
+], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
 ob_start();
 ?>
-<h2>📈 Métricas de Ventas</h2>
-<div class="row mt-4">
+<h2 class="fw-bold brand-font mb-1">Métricas de Admisiones y Chatbot ULAT</h2>
+<p class="text-muted small mb-4">Analítica consolidada de interacción estudiantil y demanda por carrera.</p>
+
+<div class="row">
     <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h5>Ventas Totales por Mes (últimos 6 meses)</h5></div>
-            <div class="card-body"><canvas id="ventasMensualesChart" height="300"></canvas></div>
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-3"><h6 class="fw-bold mb-0">Consultas Diarias en Guía ULAT (14 días)</h6></div>
+            <div class="card-body"><canvas id="conversacionesChart" height="260"></canvas></div>
         </div>
     </div>
     <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h5>Productos Más Vendidos (Top 5)</h5></div>
-            <div class="card-body"><canvas id="productosTopChart" height="300"></canvas></div>
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-3"><h6 class="fw-bold mb-0">Carreras con Mayor Demanda</h6></div>
+            <div class="card-body"><canvas id="carrerasTopChart" height="260"></canvas></div>
         </div>
     </div>
     <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h5>Pedidos por Estado</h5></div>
-            <div class="card-body"><canvas id="pedidosEstadoChart" height="300"></canvas></div>
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-3"><h6 class="fw-bold mb-0">Prospectos por Estado</h6></div>
+            <div class="card-body"><canvas id="estadoChart" height="260"></canvas></div>
         </div>
     </div>
     <div class="col-lg-6 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white"><h5>Ingresos Diarios (últimos 7 días)</h5></div>
-            <div class="card-body"><canvas id="ingresosDiariosChart" height="300"></canvas></div>
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-3"><h6 class="fw-bold mb-0">Canales de Captación</h6></div>
+            <div class="card-body"><canvas id="origenChart" height="260"></canvas></div>
         </div>
     </div>
 </div>
 <?php
 $contenido = ob_get_clean();
-$titulo = 'Métricas';
-$extraHead = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>';
-$extraScripts = "
+$titulo = 'Métricas ULAT';
+$extraHead = '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous"></script>';
+$extraScripts = <<<HTML
 <script>
-const datos = $datosJSON;
-const colores = ['#007bff','#28a745','#ffc107','#dc3545','#17a2b8','#6f42c1'];
+const datos = {$datosJSON};
+const paleta = ['#0D1E36', '#C59B27', '#1E3A8A', '#0F766E', '#64748B', '#B45309'];
 
-new Chart(document.getElementById('ventasMensualesChart'), {
-    type: 'bar',
-    data: {
-        labels: datos.ventasMensuales.map(v => v.mes),
-        datasets: [{
-            label: 'Total vendido (\$)',
-            data: datos.ventasMensuales.map(v => v.total),
-            backgroundColor: '#007bff',
-            borderRadius: 8
-        }]
-    },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-});
-
-new Chart(document.getElementById('productosTopChart'), {
-    type: 'pie',
-    data: {
-        labels: datos.productosTop.map(p => p.nombre),
-        datasets: [{
-            data: datos.productosTop.map(p => p.total_vendido),
-            backgroundColor: colores.slice(0, datos.productosTop.length)
-        }]
-    },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-});
-
-new Chart(document.getElementById('pedidosEstadoChart'), {
-    type: 'doughnut',
-    data: {
-        labels: datos.pedidosEstado.map(p => p.estado),
-        datasets: [{
-            data: datos.pedidosEstado.map(p => p.total),
-            backgroundColor: colores.slice(0, datos.pedidosEstado.length)
-        }]
-    },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-});
-
-new Chart(document.getElementById('ingresosDiariosChart'), {
+new Chart(document.getElementById('conversacionesChart'), {
     type: 'line',
     data: {
-        labels: datos.ingresosDiarios.map(i => i.fecha),
+        labels: datos.conversacionesDiarias.map(d => d.fecha),
         datasets: [{
-            label: 'Ingresos (\$)',
-            data: datos.ingresosDiarios.map(i => i.total),
-            borderColor: '#28a745',
-            backgroundColor: 'rgba(40,167,69,0.1)',
+            label: 'Consultas atendidas',
+            data: datos.conversacionesDiarias.map(d => Number(d.total)),
+            borderColor: '#0D1E36',
+            backgroundColor: 'rgba(13, 30, 54, 0.08)',
             fill: true,
-            tension: 0.3,
-            pointRadius: 5
+            tension: 0.3
         }]
     },
     options: { responsive: true, scales: { y: { beginAtZero: true } } }
 });
-</script>";
-require 'layout.php';
+
+new Chart(document.getElementById('carrerasTopChart'), {
+    type: 'bar',
+    data: {
+        labels: datos.carrerasTop.map(c => c.carrera),
+        datasets: [{
+            label: 'Postulantes',
+            data: datos.carrerasTop.map(c => Number(c.total)),
+            backgroundColor: '#C59B27',
+            borderRadius: 6
+        }]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+});
+
+new Chart(document.getElementById('estadoChart'), {
+    type: 'doughnut',
+    data: {
+        labels: datos.prospectosEstado.map(e => e.estado),
+        datasets: [{
+            data: datos.prospectosEstado.map(e => Number(e.total)),
+            backgroundColor: paleta
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('origenChart'), {
+    type: 'pie',
+    data: {
+        labels: datos.prospectosOrigen.map(o => o.origen),
+        datasets: [{
+            data: datos.prospectosOrigen.map(o => Number(o.total)),
+            backgroundColor: paleta
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+</script>
+HTML;
+require __DIR__ . '/layout.php';
