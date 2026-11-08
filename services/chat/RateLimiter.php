@@ -7,13 +7,8 @@ use PDO;
 use Throwable;
 
 /**
- * Limitador de tasa de ventana fija, respaldado en MySQL/MariaDB (sin Redis).
- *
- * Protege contra "denegación de servicio económica": cada mensaje llama a un LLM de pago, así
- * que un script malicioso (o un bucle en n8n) podría gastar la cuota en minutos.
- *
- * El incremento es atómico (INSERT ... ON DUPLICATE KEY UPDATE). Si la BD falla, el limitador
- * "falla abierto" (permite) y lo registra: preferimos disponibilidad a bloquear clientes reales.
+ * Limitador de tasa de ventana fija respaldado en MySQL/MariaDB con fallback
+ * atómico en disco (flock) y modo fail-closed ante fallos críticos.
  */
 final class RateLimiter
 {
@@ -38,22 +33,20 @@ final class RateLimiter
     }
 
     /**
-     * Registra un intento y dice si está permitido.
-     *
      * @return array{allowed: bool, count: int, limit: int, retry_after: int}
      */
     public function hit(string $bucket, int $limit, int $windowSeconds = 60, ?int $now = null): array
     {
-        $now         = $now ?? time();
+        $now           = $now ?? time();
         $windowSeconds = max(1, $windowSeconds);
-        $windowStart = intdiv($now, $windowSeconds) * $windowSeconds;
-        $bucket      = mb_substr($bucket, 0, 190);
+        $windowStart   = intdiv($now, $windowSeconds) * $windowSeconds;
+        $bucket        = mb_substr($bucket, 0, 190);
+        $retryAfter    = max(1, ($windowStart + $windowSeconds) - $now);
 
         try {
             try {
                 $count = $this->increment($bucket, $windowStart);
             } catch (Throwable $e) {
-                // Tabla inexistente (SQLSTATE 42S02): se crea una vez y se reintenta
                 if (str_contains($e->getMessage(), '42S02') || stripos($e->getMessage(), "doesn't exist") !== false) {
                     $this->ensureSchema();
                     $count = $this->increment($bucket, $windowStart);
@@ -62,21 +55,20 @@ final class RateLimiter
                 }
             }
 
-            // Limpieza oportunista (~1% de las llamadas): ventanas de más de 1 hora
             if (random_int(1, 100) === 1) {
                 $this->pdo->prepare('DELETE FROM chat_rate_limits WHERE window_start < :t')
-                    ->execute([':t' => $now - 3600]);
+                    ->execute([':t' => $now - 86400]);
             }
 
             return [
                 'allowed'     => $count <= $limit,
                 'count'       => $count,
                 'limit'       => $limit,
-                'retry_after' => max(1, ($windowStart + $windowSeconds) - $now),
+                'retry_after' => $retryAfter,
             ];
         } catch (Throwable $e) {
-            error_log('[RateLimiter] Falla abierta por error de BD: ' . $e->getMessage());
-            return ['allowed' => true, 'count' => 0, 'limit' => $limit, 'retry_after' => 0];
+            error_log('[RateLimiter] Error de BD, activando respaldo local: ' . $e->getMessage());
+            return $this->hitFallbackFile($bucket, $windowStart, $limit, $retryAfter);
         }
     }
 
@@ -90,5 +82,46 @@ final class RateLimiter
         $stmt = $this->pdo->prepare('SELECT hits FROM chat_rate_limits WHERE bucket = :b AND window_start = :w');
         $stmt->execute([':b' => $bucket, ':w' => $windowStart]);
         return (int)$stmt->fetchColumn();
+    }
+
+    /**
+     * Respaldo local con bloqueo exclusivo flock() y cierre seguro (fail-closed) si el FS falla.
+     *
+     * @return array{allowed: bool, count: int, limit: int, retry_after: int}
+     */
+    private function hitFallbackFile(string $bucket, int $windowStart, int $limit, int $retryAfter): array
+    {
+        $dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ulat_ratelimits';
+        if (!is_dir($dir) && !@mkdir($dir, 0700, true) && !is_dir($dir)) {
+            return ['allowed' => false, 'count' => $limit + 1, 'limit' => $limit, 'retry_after' => $retryAfter];
+        }
+
+        $file = $dir . DIRECTORY_SEPARATOR . sha1($bucket . '|' . $windowStart) . '.cnt';
+        $fp = @fopen($file, 'c+b');
+        if ($fp === false) {
+            return ['allowed' => false, 'count' => $limit + 1, 'limit' => $limit, 'retry_after' => $retryAfter];
+        }
+
+        if (!@flock($fp, LOCK_EX)) {
+            fclose($fp);
+            return ['allowed' => false, 'count' => $limit + 1, 'limit' => $limit, 'retry_after' => $retryAfter];
+        }
+
+        $raw = stream_get_contents($fp);
+        $count = ($raw !== false && ctype_digit(trim($raw))) ? ((int)trim($raw) + 1) : 1;
+
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, (string)$count);
+        fflush($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
+        return [
+            'allowed'     => $count <= $limit,
+            'count'       => $count,
+            'limit'       => $limit,
+            'retry_after' => $retryAfter,
+        ];
     }
 }

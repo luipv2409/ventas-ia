@@ -38,7 +38,7 @@ require_once __DIR__ . '/header.php';
                     </p>
                 </div>
                 <div class="pt-3 d-flex gap-2" style="border-top: 1px solid var(--ulat-line);">
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20ESTUDIANTIL.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1">
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20ESTUDIANTIL.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-ulat-outline btn-sm flex-grow-1">
                         Leer en Línea ↗
                     </a>
                     <a href="../assets/ulat/pdf/REGLAMENTO%20ESTUDIANTIL.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1">
@@ -62,7 +62,7 @@ require_once __DIR__ . '/header.php';
                     </p>
                 </div>
                 <div class="pt-3 d-flex gap-2" style="border-top: 1px solid var(--ulat-line);">
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20DE%20BECAS.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1">
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20DE%20BECAS.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-ulat-outline btn-sm flex-grow-1">
                         Leer en Línea ↗
                     </a>
                     <a href="../assets/ulat/pdf/REGLAMENTO%20DE%20BECAS.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1">
@@ -86,7 +86,7 @@ require_once __DIR__ . '/header.php';
                     </p>
                 </div>
                 <div class="pt-3 d-flex gap-2" style="border-top: 1px solid var(--ulat-line);">
-                    <a href="../assets/ulat/pdf/REGLAMENTO%20%20DE%20GRADUACION.pdf" target="_blank" class="btn btn-ulat-outline btn-sm flex-grow-1">
+                    <a href="../assets/ulat/pdf/REGLAMENTO%20%20DE%20GRADUACION.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-ulat-outline btn-sm flex-grow-1">
                         Leer en Línea ↗
                     </a>
                     <a href="../assets/ulat/pdf/REGLAMENTO%20%20DE%20GRADUACION.pdf" download class="btn btn-ulat-primary btn-sm flex-grow-1">
@@ -108,7 +108,7 @@ require_once __DIR__ . '/header.php';
                 </p>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <button type="button" class="btn btn-ulat-primary" onclick="window.preguntarAlChat('¿Cuáles son las modalidades de graduación según el reglamento de la ULAT?')">
+                <button type="button" class="btn btn-ulat-primary" data-chat-prompt="¿Cuáles son las modalidades de graduación según el reglamento de la ULAT?">
                     Consultar a Guía ULAT →
                 </button>
             </div>

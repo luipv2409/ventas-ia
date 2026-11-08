@@ -49,7 +49,7 @@
                     <div class="small mb-3">
                         Telf. (4) 4509488 – 4221004 · WhatsApp 79795778
                     </div>
-                    <a href="https://wa.me/59179795778" target="_blank" class="btn btn-ulat-ghost-light btn-sm w-100">
+                    <a href="https://wa.me/59179795778" target="_blank" rel="noopener noreferrer" class="btn btn-ulat-ghost-light btn-sm w-100">
                         WhatsApp Admisiones ↗
                     </a>
                 </div>
@@ -71,7 +71,9 @@
     <!-- Widget Flotante Guía ULAT -->
     <?php require_once __DIR__ . '/chat_widget_ulat.php'; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
     <script>
         if (window.lucide) {
             lucide.createIcons({ attrs: { 'stroke-width': 1.4 } });

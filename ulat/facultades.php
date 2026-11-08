@@ -38,7 +38,7 @@ require_once __DIR__ . '/header.php';
                 <div class="bg-white p-4 p-md-5" style="border: 1px solid var(--ulat-line);">
                     <div class="font-mono-code text-muted mb-3">Programas Académicos de Salud</div>
                     <?php foreach ($carrerasSalud as $slug => $c): ?>
-                        <a href="carrera.php?id=<?= $slug ?>" class="career-link-row py-3">
+                        <a href="carrera.php?id=<?= rawurlencode((string) $slug) ?>" class="career-link-row py-3">
                             <div>
                                 <div class="fw-medium text-dark"><?= htmlspecialchars($c['nombre']) ?></div>
                                 <div class="font-mono-code text-muted" style="font-size: 0.67rem;"><?= htmlspecialchars($c['duracion']) ?> · <?= htmlspecialchars($c['grado']) ?></div>
@@ -66,7 +66,7 @@ require_once __DIR__ . '/header.php';
                 <div class="bg-white p-4 p-md-5" style="border: 1px solid var(--ulat-line);">
                     <div class="font-mono-code text-muted mb-3">Programas de Ingeniería</div>
                     <?php foreach ($carrerasTecno as $slug => $c): ?>
-                        <a href="carrera.php?id=<?= $slug ?>" class="career-link-row py-3">
+                        <a href="carrera.php?id=<?= rawurlencode((string) $slug) ?>" class="career-link-row py-3">
                             <div>
                                 <div class="fw-medium text-dark"><?= htmlspecialchars($c['nombre']) ?></div>
                                 <div class="font-mono-code text-muted" style="font-size: 0.67rem;"><?= htmlspecialchars($c['duracion']) ?> · <?= htmlspecialchars($c['sede'] ?? 'Campus Central') ?></div>
@@ -94,7 +94,7 @@ require_once __DIR__ . '/header.php';
                 <div class="bg-white p-4 p-md-5" style="border: 1px solid var(--ulat-line);">
                     <div class="font-mono-code text-muted mb-3">Programas Jurídicos, Financieros y Educativos</div>
                     <?php foreach ($carrerasEcono as $slug => $c): ?>
-                        <a href="carrera.php?id=<?= $slug ?>" class="career-link-row py-3">
+                        <a href="carrera.php?id=<?= rawurlencode((string) $slug) ?>" class="career-link-row py-3">
                             <div>
                                 <div class="fw-medium text-dark"><?= htmlspecialchars($c['nombre']) ?></div>
                                 <div class="font-mono-code text-muted" style="font-size: 0.67rem;"><?= htmlspecialchars($c['duracion']) ?> · <?= htmlspecialchars($c['grado']) ?></div>

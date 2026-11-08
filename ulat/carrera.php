@@ -39,10 +39,10 @@ require_once __DIR__ . '/header.php';
             </div>
             <div class="col-lg-4 text-lg-end">
                 <div class="d-flex flex-wrap justify-content-lg-end gap-2">
-                    <button type="button" class="btn btn-ulat-gold" onclick="window.preguntarAlChat('<?= addslashes($c['nombre']) ?>')">
+                    <button type="button" class="btn btn-ulat-gold" data-chat-prompt="<?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?>">
                         Consultar con Guía ULAT
                     </button>
-                    <a href="https://wa.me/59179795778?text=<?= urlencode("Hola ULAT, me interesa recibir información y aranceles de la carrera de {$c['nombre']}") ?>" target="_blank" class="btn btn-ulat-ghost-light">
+                    <a href="https://wa.me/59179795778?text=<?= rawurlencode("Hola ULAT, me interesa recibir información y aranceles de la carrera de {$c['nombre']}") ?>" target="_blank" rel="noopener noreferrer" class="btn btn-ulat-ghost-light">
                         WhatsApp ↗
                     </a>
                 </div>
@@ -127,18 +127,26 @@ require_once __DIR__ . '/header.php';
                     </p>
                     
                     <form id="form-carrera-lead" action="api_lead.php" method="POST">
-                        <input type="hidden" name="carrera" value="<?= htmlspecialchars($c['nombre']) ?>">
+                        <?= \Services\Security\SecurityKernel::csrfInput() ?>
+                        <input type="text" name="website_url" class="d-none" tabindex="-1" autocomplete="off">
+                        <input type="hidden" name="carrera" value="<?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?>">
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Nombre Completo</label>
-                            <input type="text" name="nombre" class="form-control" placeholder="Carlos Mendoza" required>
+                            <input type="text" name="nombre" class="form-control" maxlength="120" placeholder="Carlos Mendoza" required>
                         </div>
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Teléfono / WhatsApp</label>
-                            <input type="tel" name="telefono" class="form-control" placeholder="79795778" required>
+                            <input type="tel" name="telefono" class="form-control" maxlength="20" placeholder="79795778" required>
                         </div>
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Correo Electrónico (Opcional)</label>
-                            <input type="email" name="email" class="form-control" placeholder="correo@ejemplo.com">
+                            <input type="email" name="email" class="form-control" maxlength="150" placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="consentimiento" value="1" id="consent-carrera" required>
+                            <label class="form-check-label small text-muted" for="consent-carrera" style="font-size: 0.74rem;">
+                                Autorizo a la ULAT a contactarme con información académica de esta carrera.
+                            </label>
                         </div>
                         <button type="submit" class="btn btn-ulat-primary w-100 py-2.5">
                             Solicitar Aranceles y Cupo →
@@ -185,22 +193,22 @@ document.getElementById('form-carrera-lead')?.addEventListener('submit', async f
     const data = new FormData(form);
 
     status.classList.remove('d-none', 'alert-danger', 'alert-success');
-    status.innerHTML = 'Registrando solicitud...';
+    status.textContent = 'Registrando solicitud...';
 
     try {
-        const resp = await fetch('api_lead.php', { method: 'POST', body: data });
+        const resp = await fetch('api_lead.php', { method: 'POST', body: data, credentials: 'same-origin' });
         const res = await resp.json();
         if (res.ok) {
             status.className = 'small mt-2 alert alert-success p-2 text-center';
-            status.innerHTML = 'Solicitud registrada. Admisiones te contactará en breve.';
+            status.textContent = res.mensaje || 'Solicitud registrada. Admisiones te contactará en breve.';
             form.reset();
         } else {
             status.className = 'small mt-2 alert alert-danger p-2 text-center';
-            status.innerHTML = res.error || 'Ocurrió un error al enviar.';
+            status.textContent = res.error || 'Ocurrió un error al enviar.';
         }
     } catch(err) {
         status.className = 'small mt-2 alert alert-danger p-2 text-center';
-        status.innerHTML = 'Error de conexión.';
+        status.textContent = 'Error de conexión.';
     }
 });
 </script>

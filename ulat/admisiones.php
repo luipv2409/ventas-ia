@@ -125,30 +125,38 @@ require_once __DIR__ . '/header.php';
                     </p>
 
                     <form id="form-admision-full" action="api_lead.php" method="POST">
+                        <?= \Services\Security\SecurityKernel::csrfInput() ?>
+                        <input type="text" name="website_url" class="d-none" tabindex="-1" autocomplete="off">
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Nombre y Apellidos</label>
-                            <input type="text" name="nombre" class="form-control" placeholder="Fernando Quiroga" required>
+                            <input type="text" name="nombre" class="form-control" maxlength="120" placeholder="Fernando Quiroga" required>
                         </div>
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Celular o WhatsApp</label>
-                            <input type="tel" name="telefono" class="form-control" placeholder="79795778" required>
+                            <input type="tel" name="telefono" class="form-control" maxlength="20" placeholder="79795778" required>
                         </div>
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Correo Electrónico</label>
-                            <input type="email" name="email" class="form-control" placeholder="correo@ejemplo.com">
+                            <input type="email" name="email" class="form-control" maxlength="150" placeholder="correo@ejemplo.com">
                         </div>
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Carrera a la que Postulas</label>
                             <select name="carrera" class="form-select" required>
                                 <option value="">Seleccionar carrera...</option>
                                 <?php foreach ($carrerasCatalog as $slug => $c): ?>
-                                    <option value="<?= htmlspecialchars($c['nombre']) ?>"><?= htmlspecialchars($c['nombre']) ?></option>
+                                    <option value="<?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">Consulta o Modalidad (Opcional)</label>
-                            <textarea name="notas" class="form-control" rows="3" placeholder="Consulta sobre Plan Uno a Uno, turno nocturno o convalidación..."></textarea>
+                            <textarea name="notas" class="form-control" rows="3" maxlength="500" placeholder="Consulta sobre Plan Uno a Uno, turno nocturno o convalidación..."></textarea>
+                        </div>
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" name="consentimiento" value="1" id="consent-admision" required>
+                            <label class="form-check-label small text-muted" for="consent-admision" style="font-size: 0.75rem;">
+                                Autorizo a la ULAT el tratamiento de mis datos de contacto para fines de orientación y admisión académica.
+                            </label>
                         </div>
 
                         <button type="submit" class="btn btn-ulat-primary w-100 py-2.5">
@@ -170,28 +178,39 @@ document.getElementById('form-admision-full')?.addEventListener('submit', async 
     const data = new FormData(form);
 
     status.classList.remove('d-none', 'alert-danger', 'alert-success');
-    status.innerHTML = 'Procesando registro...';
+    status.textContent = 'Procesando registro...';
 
     try {
-        const resp = await fetch('api_lead.php', { method: 'POST', body: data });
+        const resp = await fetch('api_lead.php', { method: 'POST', body: data, credentials: 'same-origin' });
         const res = await resp.json();
+        status.textContent = '';
         if (res.ok) {
             status.className = 'small mt-3 alert alert-success p-3 text-start';
-            status.innerHTML = `
-                <div class="fw-medium mb-1">Solicitud registrada con éxito</div>
-                <div class="mb-2">${res.mensaje}</div>
-                <a href="${res.whatsapp_directo}" target="_blank" class="btn btn-ulat-primary btn-sm w-100">
-                    Abrir WhatsApp Admisiones ↗
-                </a>
-            `;
+            const title = document.createElement('div');
+            title.className = 'fw-medium mb-1';
+            title.textContent = 'Solicitud registrada con éxito';
+            const msg = document.createElement('div');
+            msg.className = 'mb-2';
+            msg.textContent = res.mensaje || '';
+            status.appendChild(title);
+            status.appendChild(msg);
+            if (typeof res.whatsapp_directo === 'string' && /^https:\/\/wa\.me\//i.test(res.whatsapp_directo)) {
+                const wa = document.createElement('a');
+                wa.href = res.whatsapp_directo;
+                wa.target = '_blank';
+                wa.rel = 'noopener noreferrer';
+                wa.className = 'btn btn-ulat-primary btn-sm w-100';
+                wa.textContent = 'Abrir WhatsApp Admisiones ↗';
+                status.appendChild(wa);
+            }
             form.reset();
         } else {
             status.className = 'small mt-3 alert alert-danger p-2 text-center';
-            status.innerHTML = res.error || 'Ocurrió un error al enviar.';
+            status.textContent = res.error || 'Ocurrió un error al enviar.';
         }
     } catch(err) {
         status.className = 'small mt-3 alert alert-danger p-2 text-center';
-        status.innerHTML = 'Error de conexión.';
+        status.textContent = 'Error de conexión.';
     }
 });
 </script>

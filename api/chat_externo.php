@@ -23,9 +23,13 @@ require_once __DIR__ . '/../services/chat/RateLimiter.php';
 require_once __DIR__ . '/../services/chat/SessionLock.php';
 
 use Services\Chat\ChatEngine;
+use Services\Chat\ClientIpResolver;
 use Services\Chat\InputSanitizer;
 use Services\Chat\RateLimiter;
 use Services\Chat\SessionLock;
+use Services\Security\SecurityKernel;
+
+SecurityKernel::applySecurityHeaders('api');
 
 // ------------------------------------------------------------
 // 1. Verificación GET (Healthcheck y Validación de Webhook Meta)
@@ -42,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($hubMode === 'subscribe' && $hubChallenge !== null) {
         if ($expectedToken !== '' && hash_equals($expectedToken, $hubToken)) {
             header('Content-Type: text/plain; charset=utf-8');
-            echo $hubChallenge;
+            echo preg_replace('/[^a-zA-Z0-9_.\-]/', '', (string)$hubChallenge);
             exit;
         }
 
@@ -161,12 +165,9 @@ try {
         exit;
     }
 
-    // Límite por IP de origen (protege contra inundaciones de orquestadores o scripts)
-    $clientIp = $_SERVER['HTTP_CF_CONNECTING_IP']
-        ?? (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]) : null)
-        ?? $_SERVER['REMOTE_ADDR']
-        ?? '127.0.0.1';
-    $limitIp = defined('CHAT_RATE_LIMIT_IP_PER_MIN') ? (int)CHAT_RATE_LIMIT_IP_PER_MIN : 600;
+    // Límite por IP real de origen gobernado por TRUSTED_PROXY_CIDRS (inmune a IP spoofing)
+    $clientIp = ClientIpResolver::resolve();
+    $limitIp = defined('CHAT_RATE_LIMIT_IP_PER_MIN') ? (int)CHAT_RATE_LIMIT_IP_PER_MIN : 120;
     $statusIp = $rateLimiter->hit("externo:ip:{$clientIp}", $limitIp, 60);
     if (!$statusIp['allowed']) {
         http_response_code(429);

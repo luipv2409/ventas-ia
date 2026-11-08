@@ -24,7 +24,7 @@ require_once __DIR__ . '/header.php';
                     <a href="admisiones.php" class="btn btn-ulat-ghost-light px-4 py-2.5">
                         Requisitos de Admisión
                     </a>
-                    <button type="button" class="btn btn-ulat-ghost-light px-4 py-2.5" onclick="window.enviarChipChat('Hola, quisiera orientación sobre las carreras y becas disponibles')">
+                    <button type="button" class="btn btn-ulat-ghost-light px-4 py-2.5" data-chip-prompt="Hola, quisiera orientación sobre las carreras y becas disponibles">
                         Orientación en Línea
                     </button>
                 </div>
@@ -54,22 +54,30 @@ require_once __DIR__ . '/header.php';
                         Recibe el plan de estudios, aranceles semestrales y beneficios vigentes en tu WhatsApp.
                     </p>
                     <form id="form-lead-hero" action="api_lead.php" method="POST">
+                        <?= \Services\Security\SecurityKernel::csrfInput() ?>
+                        <input type="text" name="website_url" class="d-none" tabindex="-1" autocomplete="off">
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">01 · Nombre Completo</label>
-                            <input type="text" name="nombre" class="form-control" placeholder=" María Fernanda Rojas" required>
+                            <input type="text" name="nombre" class="form-control" maxlength="120" placeholder="María Fernanda Rojas" required>
                         </div>
                         <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">02 · Teléfono / WhatsApp</label>
-                            <input type="tel" name="telefono" class="form-control" placeholder="79795778" required>
+                            <input type="tel" name="telefono" class="form-control" maxlength="20" placeholder="79795778" required>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="font-mono-code text-muted d-block mb-1">03 · Carrera de Interés</label>
                             <select name="carrera" class="form-select" required>
                                 <option value="">Seleccionar programa académico...</option>
                                 <?php foreach ($carrerasCatalog as $slug => $c): ?>
-                                    <option value="<?= htmlspecialchars($c['nombre']) ?>"><?= htmlspecialchars($c['nombre']) ?></option>
+                                    <option value="<?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="consentimiento" value="1" id="consent-hero" required>
+                            <label class="form-check-label small text-muted" for="consent-hero" style="font-size: 0.75rem;">
+                                Autorizo a la ULAT el uso de mis datos exclusivamente para contacto e información de admisiones.
+                            </label>
                         </div>
                         <button type="submit" class="btn btn-ulat-primary w-100 py-2.5">
                             Solicitar Información Oficial →
@@ -309,22 +317,22 @@ document.getElementById('form-lead-hero')?.addEventListener('submit', async func
     const data = new FormData(form);
 
     status.classList.remove('d-none', 'alert-danger', 'alert-success');
-    status.innerHTML = 'Registrando solicitud...';
+    status.textContent = 'Registrando solicitud...';
 
     try {
-        const resp = await fetch('api_lead.php', { method: 'POST', body: data });
+        const resp = await fetch('api_lead.php', { method: 'POST', body: data, credentials: 'same-origin' });
         const res = await resp.json();
         if (res.ok) {
             status.className = 'small mt-3 alert alert-success p-2 text-center';
-            status.innerHTML = 'Solicitud registrada. Admisiones se comunicará contigo por WhatsApp.';
+            status.textContent = res.mensaje || 'Solicitud registrada. Admisiones se comunicará contigo por WhatsApp.';
             form.reset();
         } else {
             status.className = 'small mt-3 alert alert-danger p-2 text-center';
-            status.innerHTML = res.error || 'Ocurrió un error al enviar.';
+            status.textContent = res.error || 'Ocurrió un error al enviar.';
         }
     } catch(err) {
         status.className = 'small mt-3 alert alert-danger p-2 text-center';
-        status.innerHTML = 'Error de conexión.';
+        status.textContent = 'Error de conexión.';
     }
 });
 </script>

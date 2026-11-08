@@ -2,97 +2,138 @@
 declare(strict_types=1);
 
 /**
- * Endpoint de Chat Frontend (Widget Web).
+ * Endpoint de Chat Frontend — Portal Universitario ULAT.
  *
- * Actúa como adaptador HTTP delgado sobre Services\Chat\ChatEngine,
- * garantizando compatibilidad retrocompatible 100% con assets/js/chat.js
- * y soporte opcional para streaming Server-Sent Events (SSE).
+ * Controles activos:
+ *  - Cabeceras HTTP de seguridad y cookies de sesión HttpOnly/SameSite.
+ *  - Resolución de IP anti-spoofing gobernada por TRUSTED_PROXY_CIDRS.
+ *  - Rate Limiting dual por minuto y por día (anti Denial-of-Wallet).
+ *  - Historial multi-turno canónico en sesión del servidor (impide inyectar turnos assistant falsos).
+ *  - Anonimización de session_id con HMAC-SHA256 antes de registrar telemetría en chat_logs.
  */
-
-header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../services/chat/DeepSeekClient.php';
-require_once __DIR__ . '/../services/chat/ChatEngine.php';
-require_once __DIR__ . '/../services/chat/RateLimiter.php';
 
 use Services\Chat\ChatEngine;
+use Services\Chat\ClientIpResolver;
 use Services\Chat\DeepSeekClient;
+use Services\Chat\InputSanitizer;
 use Services\Chat\RateLimiter;
+use Services\Security\SecurityKernel;
+
+SecurityKernel::applySecurityHeaders('api');
+header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => 'Método no permitido']);
+    echo json_encode(['ok' => false, 'error' => 'Método no permitido']);
     exit;
 }
 
-// 1. Límite de tamaño de payload (32 KB) para prevenir DoS
 $rawBody = file_get_contents('php://input');
 if ($rawBody === false || strlen($rawBody) > 32768) {
     http_response_code(413);
-    echo json_encode(['error' => 'Payload demasiado grande (máximo 32KB)']);
+    echo json_encode(['ok' => false, 'error' => 'Payload demasiado grande (máximo 32KB)']);
     exit;
 }
 
 $body = json_decode($rawBody, true);
 if (!is_array($body)) {
     http_response_code(400);
-    echo json_encode(['error' => 'JSON inválido']);
+    echo json_encode(['ok' => false, 'error' => 'JSON inválido']);
+    exit;
+}
+
+// Reinicio limpio de conversación en sesión del servidor
+if (!empty($body['reset'])) {
+    SecurityKernel::startSession(false);
+    $_SESSION['ulat_chat_history'] = [];
+    session_write_close();
+    echo json_encode(['ok' => true]);
     exit;
 }
 
 $pregunta = trim((string)($body['pregunta'] ?? ''));
 if ($pregunta === '') {
     http_response_code(400);
-    echo json_encode(['error' => 'Pregunta vacía']);
+    echo json_encode(['ok' => false, 'error' => 'Pregunta vacía']);
     exit;
 }
 
-$historial = is_array($body['historial'] ?? null) ? $body['historial'] : [];
 $isStreaming = (bool)($body['stream'] ?? ($_GET['stream'] ?? false));
-$useRag = (bool)($body['use_rag'] ?? false);
+$useRag      = isset($body['use_rag']) ? (bool)$body['use_rag'] : true;
 
 try {
     $pdo = Database::getConnection();
 
-    // 2. Control de tasa de peticiones (Rate Limiter por IP)
-    $clientIp = $_SERVER['HTTP_CF_CONNECTING_IP']
-        ?? (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]) : null)
-        ?? $_SERVER['REMOTE_ADDR']
-        ?? '127.0.0.1';
-
-    $rateLimitPerMin = (int)(defined('CHAT_RATE_LIMIT_FRONTEND_PER_MIN') ? CHAT_RATE_LIMIT_FRONTEND_PER_MIN : (getenv('CHAT_RATE_LIMIT_FRONTEND_PER_MIN') ?: 60));
+    // 1. Resolución segura de IP real + Rate Limiting dual (por minuto y cuota diaria)
+    $clientIp = ClientIpResolver::resolve();
     $rateLimiter = new RateLimiter($pdo);
-    $rateStatus = $rateLimiter->hit("frontend:ip:{$clientIp}", $rateLimitPerMin, 60);
 
-    if (!$rateStatus['allowed']) {
+    $limitMin = defined('CHAT_RATE_LIMIT_FRONTEND_PER_MIN') ? (int)CHAT_RATE_LIMIT_FRONTEND_PER_MIN : 15;
+    $statusMin = $rateLimiter->hit("frontend:min:{$clientIp}", $limitMin, 60);
+    if (!$statusMin['allowed']) {
         http_response_code(429);
-        header('Retry-After: ' . $rateStatus['retry_after']);
+        header('Retry-After: ' . $statusMin['retry_after']);
         echo json_encode([
             'ok'    => false,
-            'error' => 'Demasiadas solicitudes. Por favor espera unos momentos antes de continuar.'
-        ]);
+            'error' => 'Has enviado muchas consultas seguidas. Espera unos segundos antes de continuar.',
+        ], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
-    // 3. Obtener identificador de sesión sin bloquear el archivo de sesión durante la llamada LLM
-    if (session_status() === PHP_SESSION_NONE) {
-        @session_start();
+    $limitDay = defined('CHAT_RATE_LIMIT_FRONTEND_PER_DAY') ? (int)CHAT_RATE_LIMIT_FRONTEND_PER_DAY : 150;
+    $statusDay = $rateLimiter->hit("frontend:day:{$clientIp}", $limitDay, 86400);
+    if (!$statusDay['allowed']) {
+        http_response_code(429);
+        header('Retry-After: ' . $statusDay['retry_after']);
+        echo json_encode([
+            'ok'    => false,
+            'error' => 'Alcanzaste el límite diario de consultas automatizadas. Escríbenos directo al WhatsApp 79795778.',
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
-    $sessionId = session_id() ?: 'web-' . bin2hex(random_bytes(8));
-    @session_write_close();
 
-    // 4. Delegación a ChatEngine (motor unificado y endurecido)
+    // 2. Sesión endurecida + historial canónico del servidor + hash HMAC de session_id
+    SecurityKernel::startSession(false);
+    $rawSessionId = session_id() ?: ('anon-' . bin2hex(random_bytes(8)));
+    $hashedSessionId = 'sid_' . substr(hash_hmac('sha256', $rawSessionId, APP_SECRET_KEY), 0, 32);
+
+    $historialServidor = is_array($_SESSION['ulat_chat_history'] ?? null) ? $_SESSION['ulat_chat_history'] : [];
+
+    // Si la sesión PHP expiró pero el navegador tenía mensajes previos del usuario, solo rescatamos turnos 'user'
+    // jamás turnos 'assistant' enviados desde el cliente (previene falsificación de respuestas del asistente).
+    if (empty($historialServidor) && !empty($body['historial']) && is_array($body['historial'])) {
+        foreach (array_slice($body['historial'], -6) as $turn) {
+            if (is_array($turn) && ($turn['role'] ?? '') === 'user' && !empty($turn['content'])) {
+                $cleanUserTurn = InputSanitizer::cleanText((string)$turn['content'], 600);
+                if ($cleanUserTurn !== '' && $cleanUserTurn !== $pregunta) {
+                    $historialServidor[] = ['role' => 'user', 'content' => $cleanUserTurn];
+                }
+            }
+        }
+    }
+    session_write_close();
+
+    // 3. Ejecución en ChatEngine (sin bloquear el archivo de sesión durante la espera de red)
     $llmClient = new DeepSeekClient();
-    $engine = new ChatEngine($pdo, $llmClient);
+    $engine    = new ChatEngine($pdo, $llmClient);
 
-    $resultado = $engine->procesarPregunta($pregunta, $historial, [
+    $resultado = $engine->procesarPregunta($pregunta, $historialServidor, [
         'canal'     => 'web',
-        'remitente' => $sessionId,
-        'sessionId' => $sessionId,
+        'remitente' => $hashedSessionId,
+        'sessionId' => $hashedSessionId,
         'use_rag'   => $useRag,
     ]);
+
+    // 4. Persistir el turno real validado en la sesión del servidor
+    SecurityKernel::startSession(false);
+    $histActual = is_array($_SESSION['ulat_chat_history'] ?? null) ? $_SESSION['ulat_chat_history'] : [];
+    $histActual[] = ['role' => 'user', 'content' => InputSanitizer::cleanText($pregunta, 800)];
+    $histActual[] = ['role' => 'assistant', 'content' => (string)$resultado['respuesta']];
+    $_SESSION['ulat_chat_history'] = array_slice($histActual, -14);
+    session_write_close();
 
     // 5. Streaming opcional Server-Sent Events (SSE)
     if ($isStreaming) {
@@ -104,7 +145,7 @@ try {
         }
 
         echo "event: meta\n";
-        echo "data: " . json_encode([
+        echo 'data: ' . json_encode([
             'acciones'    => $resultado['acciones'],
             'rag_applied' => (bool)($resultado['rag_applied'] ?? false),
         ], JSON_UNESCAPED_UNICODE) . "\n\n";
@@ -112,8 +153,10 @@ try {
 
         $palabras = preg_split('/(\s+)/u', (string)$resultado['respuesta'], -1, PREG_SPLIT_DELIM_CAPTURE) ?: [];
         foreach ($palabras as $p) {
-            if ($p === '') continue;
-            echo "data: " . json_encode(['delta' => $p], JSON_UNESCAPED_UNICODE) . "\n\n";
+            if ($p === '') {
+                continue;
+            }
+            echo 'data: ' . json_encode(['delta' => $p], JSON_UNESCAPED_UNICODE) . "\n\n";
             flush();
             usleep(10000);
         }
@@ -124,24 +167,21 @@ try {
         exit;
     }
 
-    // 6. Respuesta JSON estándar retrocompatible con assets/js/chat.js
     $resPayload = [
         'ok'        => true,
         'respuesta' => $resultado['respuesta'],
         'acciones'  => $resultado['acciones'],
     ];
-
     if ($useRag) {
         $resPayload['rag_applied'] = (bool)($resultado['rag_applied'] ?? false);
     }
 
     echo json_encode($resPayload, JSON_UNESCAPED_UNICODE);
-
 } catch (\Throwable $e) {
-    error_log('[chat_frontend] Error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+    error_log('[chat_frontend] Error: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'ok'    => false,
-        'error' => 'Error interno procesando la consulta'
+        'error' => 'Error interno procesando la consulta',
     ]);
 }

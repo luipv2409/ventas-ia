@@ -43,7 +43,7 @@ require_once __DIR__ . '/header.php';
                 <div class="font-mono-code text-muted mb-1">03 · Teléfonos y WhatsApp</div>
                 <div class="fw-medium text-dark">Central: (4) 4509488 – (4) 4221004</div>
                 <div class="small text-muted mb-2">WhatsApp Inscripciones: +591 79795778 · Postgrado: 79787897</div>
-                <a href="https://wa.me/59179795778" target="_blank" class="font-mono-code text-dark text-decoration-none">Escribir por WhatsApp ↗</a>
+                <a href="https://wa.me/59179795778" target="_blank" rel="noopener noreferrer" class="font-mono-code text-dark text-decoration-none">Escribir por WhatsApp ↗</a>
             </div>
 
             <div class="swiss-grid-row">
@@ -62,25 +62,27 @@ require_once __DIR__ . '/header.php';
                 </p>
 
                 <form id="form-contacto-page" action="api_lead.php" method="POST">
+                    <?= \Services\Security\SecurityKernel::csrfInput() ?>
+                    <input type="text" name="website_url" class="d-none" tabindex="-1" autocomplete="off">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="font-mono-code text-muted d-block mb-1">Nombre Completo</label>
-                            <input type="text" name="nombre" class="form-control" placeholder="Andrea Rojas" required>
+                            <input type="text" name="nombre" class="form-control" maxlength="120" placeholder="Andrea Rojas" required>
                         </div>
                         <div class="col-md-6">
                             <label class="font-mono-code text-muted d-block mb-1">Teléfono / WhatsApp</label>
-                            <input type="tel" name="telefono" class="form-control" placeholder="79795778" required>
+                            <input type="tel" name="telefono" class="form-control" maxlength="20" placeholder="79795778" required>
                         </div>
                         <div class="col-md-6">
                             <label class="font-mono-code text-muted d-block mb-1">Correo Electrónico</label>
-                            <input type="email" name="email" class="form-control" placeholder="andrea@ejemplo.com">
+                            <input type="email" name="email" class="form-control" maxlength="150" placeholder="andrea@ejemplo.com">
                         </div>
                         <div class="col-md-6">
                             <label class="font-mono-code text-muted d-block mb-1">Carrera o Área</label>
                             <select name="carrera" class="form-select" required>
                                 <option value="">Seleccionar carrera...</option>
                                 <?php foreach ($carrerasCatalog as $slug => $c): ?>
-                                    <option value="<?= htmlspecialchars($c['nombre']) ?>"><?= htmlspecialchars($c['nombre']) ?></option>
+                                    <option value="<?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?></option>
                                 <?php endforeach; ?>
                                 <option value="Diplomados y Postgrado">Diplomados y Postgrado</option>
                                 <option value="Consulta General">Consulta General</option>
@@ -88,7 +90,15 @@ require_once __DIR__ . '/header.php';
                         </div>
                         <div class="col-12">
                             <label class="font-mono-code text-muted d-block mb-1">Consulta</label>
-                            <textarea name="notas" class="form-control" rows="4" placeholder="Escribe tu consulta sobre aranceles, horarios o convalidaciones..." required></textarea>
+                            <textarea name="notas" class="form-control" rows="4" maxlength="500" placeholder="Escribe tu consulta sobre aranceles, horarios o convalidaciones..." required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="consentimiento" value="1" id="consent-contacto" required>
+                                <label class="form-check-label small text-muted" for="consent-contacto" style="font-size: 0.75rem;">
+                                    Autorizo a la ULAT el uso de mis datos de contacto para responder a mi solicitud académica.
+                                </label>
+                            </div>
                         </div>
                         <div class="col-12 pt-2">
                             <button type="submit" class="btn btn-ulat-primary px-4 py-2.5">
@@ -111,22 +121,22 @@ document.getElementById('form-contacto-page')?.addEventListener('submit', async 
     const data = new FormData(form);
 
     status.classList.remove('d-none', 'alert-danger', 'alert-success');
-    status.innerHTML = 'Enviando...';
+    status.textContent = 'Enviando...';
 
     try {
-        const resp = await fetch('api_lead.php', { method: 'POST', body: data });
+        const resp = await fetch('api_lead.php', { method: 'POST', body: data, credentials: 'same-origin' });
         const res = await resp.json();
         if (res.ok) {
             status.className = 'small mt-3 alert alert-success p-3 text-start';
-            status.innerHTML = `${res.mensaje}`;
+            status.textContent = res.mensaje || 'Solicitud enviada con éxito.';
             form.reset();
         } else {
             status.className = 'small mt-3 alert alert-danger p-2 text-center';
-            status.innerHTML = res.error || 'Ocurrió un error al enviar.';
+            status.textContent = res.error || 'Ocurrió un error al enviar.';
         }
     } catch(err) {
         status.className = 'small mt-3 alert alert-danger p-2 text-center';
-        status.innerHTML = 'Error de conexión.';
+        status.textContent = 'Error de conexión.';
     }
 });
 </script>

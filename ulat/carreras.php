@@ -68,7 +68,7 @@ require_once __DIR__ . '/header.php';
                         <a href="carrera.php?id=<?= $slug ?>" class="font-mono-code text-decoration-none" style="color: var(--ulat-ink);">
                             Ver Plan de Estudios →
                         </a>
-                        <button type="button" class="btn btn-link btn-sm p-0 text-muted text-decoration-none font-mono-code" title="Consultar con Guía ULAT" onclick="window.preguntarAlChat('<?= addslashes($c['nombre']) ?>')">
+                        <button type="button" class="btn btn-link btn-sm p-0 text-muted text-decoration-none font-mono-code" title="Consultar con Guía ULAT" data-chat-prompt="<?= htmlspecialchars($c['nombre'], ENT_QUOTES, 'UTF-8') ?>">
                             Consultar ↗
                         </button>
                     </div>

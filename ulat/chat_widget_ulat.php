@@ -1,6 +1,6 @@
 <?php
 // ulat/chat_widget_ulat.php
-// Asistente Virtual Minimalista de Admisiones: Guía ULAT
+// Asistente Virtual Minimalista de Admisiones: Guía ULAT (DOM-Safe & Server-Canonical History)
 ?>
 <div id="chat-widget" class="chat-widget">
     <button id="chat-toggle" class="chat-toggle-btn d-flex align-items-center justify-content-center" title="Consultar con Guía ULAT">
@@ -32,16 +32,16 @@
                 </div>
             </div>
         </div>
-        <!-- Chips de acceso rápido minimalistas -->
+        <!-- Chips de acceso rápido minimalistas (sin atributos onclick inline) -->
         <div class="px-3 py-2 bg-white border-top d-flex gap-1 overflow-auto" style="scrollbar-width: none;">
-            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿Qué ingenierías tienen?')">5 Ingenierías</button>
-            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿En qué consiste el Plan Uno a Uno?')">Plan Uno a Uno</button>
-            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿Cuáles son los requisitos de admisión?')">Requisitos</button>
-            <button type="button" class="chat-chip" onclick="window.enviarChipChat('¿Qué carreras de salud ofrecen?')">Salud</button>
+            <button type="button" class="chat-chip" data-chip-prompt="¿Qué ingenierías tienen?">5 Ingenierías</button>
+            <button type="button" class="chat-chip" data-chip-prompt="¿En qué consiste el Plan Uno a Uno?">Plan Uno a Uno</button>
+            <button type="button" class="chat-chip" data-chip-prompt="¿Cuáles son los requisitos de admisión?">Requisitos</button>
+            <button type="button" class="chat-chip" data-chip-prompt="¿Qué carreras de salud ofrecen?">Salud</button>
         </div>
         <div class="p-2 bg-white border-top">
             <form id="chat-form" class="d-flex gap-2">
-                <input type="text" id="chat-input" class="form-control form-control-sm px-3 border-0 bg-light" style="border-radius: 4px; font-size: 0.84rem;" placeholder="Escribe tu consulta..." autocomplete="off" required>
+                <input type="text" id="chat-input" class="form-control form-control-sm px-3 border-0 bg-light" maxlength="1000" style="border-radius: 4px; font-size: 0.84rem;" placeholder="Escribe tu consulta..." autocomplete="off" required>
                 <button type="submit" class="btn btn-ulat-primary btn-sm px-3 d-flex align-items-center justify-content-center" style="border-radius: 4px;">
                     <i data-lucide="arrow-up" class="lucide-sm"></i>
                 </button>
@@ -62,27 +62,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!chatToggle || !chatWindow || !chatForm || !chatInput || !chatMessages) return;
 
-    const STORAGE_KEY = 'ulat_chat_session_v2';
-    let historialIA = [];
+    const STORAGE_KEY = 'ulat_chat_session_v3';
+    let historialUI = [];
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function esUrlWhatsAppSegura(url) {
+        return typeof url === 'string' && /^https:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(url);
+    }
+
+    function limpiarTextoIA(texto) {
+        return String(texto)
+            .replace(/```(?:json)?[\s\S]*?```/gi, '')
+            .replace(/\{[^{}]*"(?:tipo|accion|slug|nombre|acciones|respuesta)"[^{}]*\}/gi, '')
+            .replace(/\*\*(.*?)\*\*/g, '$1')
+            .trim();
+    }
 
     function guardarEstado() {
         try {
+            // Nunca se almacena ni restaura HTML crudo en localStorage (previene DOM XSS persistente)
             localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                historial: historialIA.slice(-14),
-                html: chatMessages.innerHTML,
+                historial: historialUI.slice(-14),
                 open: !chatWindow.classList.contains('d-none')
             }));
         } catch (e) {}
     }
 
+    function renderizarBurbujaDOM(texto, emisor) {
+        const limpio = emisor === 'bot' ? limpiarTextoIA(texto) : String(texto || '').trim();
+        if (!limpio) return;
+        const div = document.createElement('div');
+        div.className = 'message ' + (emisor === 'user' ? 'user-message' : 'bot-message');
+        const content = document.createElement('div');
+        content.className = 'message-content';
+        content.innerHTML = escapeHtml(limpio).replace(/\n/g, '<br>');
+        div.appendChild(content);
+        chatMessages.appendChild(div);
+    }
+
     function restaurarEstado() {
         try {
+            // Limpiar clave heredada v2 que guardaba innerHTML
+            localStorage.removeItem('ulat_chat_session_v2');
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return;
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed.historial) && parsed.historial.length > 0 && parsed.html) {
-                historialIA = parsed.historial;
-                chatMessages.innerHTML = parsed.html;
+            if (Array.isArray(parsed.historial) && parsed.historial.length > 0) {
+                chatMessages.textContent = '';
+                historialUI = [];
+                parsed.historial.slice(-14).forEach(turn => {
+                    if (turn && (turn.role === 'user' || turn.role === 'assistant') && typeof turn.content === 'string') {
+                        historialUI.push({ role: turn.role, content: turn.content });
+                        renderizarBurbujaDOM(turn.content, turn.role === 'user' ? 'user' : 'bot');
+                    }
+                });
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
             if (parsed.open) {
@@ -107,37 +148,23 @@ document.addEventListener('DOMContentLoaded', () => {
         guardarEstado();
     });
 
-    chatReset.addEventListener('click', () => {
-        historialIA = [];
+    chatReset.addEventListener('click', async () => {
+        historialUI = [];
         localStorage.removeItem(STORAGE_KEY);
-        chatMessages.innerHTML = `
-            <div class="message bot-message">
-                <div class="message-content">
-                    Conversación reiniciada. ¿Sobre qué carrera, malla curricular o beneficio de la ULAT te gustaría consultar?
-                </div>
-            </div>
-        `;
+        chatMessages.textContent = '';
+        renderizarBurbujaDOM('Conversación reiniciada. ¿Sobre qué carrera, malla curricular o beneficio de la ULAT te gustaría consultar?', 'bot');
+        try {
+            await fetch('../api/chat_frontend.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reset: true }),
+                credentials: 'same-origin'
+            });
+        } catch (e) {}
     });
 
-    function escapeHtml(str) {
-        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    function limpiarTextoIA(texto) {
-        return String(texto)
-            .replace(/```(?:json)?[\s\S]*?```/gi, '')
-            .replace(/\{[^{}]*"(?:tipo|accion|slug|nombre|acciones|respuesta)"[^{}]*\}/gi, '')
-            .replace(/\*\*(.*?)\*\*/g, '$1')
-            .trim();
-    }
-
     function agregarMensaje(texto, emisor) {
-        const limpio = emisor === 'bot' ? limpiarTextoIA(texto) : texto;
-        if (!limpio) return;
-        const div = document.createElement('div');
-        div.className = `message ${emisor}-message`;
-        div.innerHTML = `<div class="message-content">${escapeHtml(limpio).replace(/\n/g, '<br>')}</div>`;
-        chatMessages.appendChild(div);
+        renderizarBurbujaDOM(texto, emisor);
         chatMessages.scrollTop = chatMessages.scrollHeight;
         guardarEstado();
     }
@@ -146,20 +173,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = document.createElement('div');
         t.id = 'chat-typing';
         t.className = 'message bot-message text-muted small';
-        t.innerHTML = 'Escribiendo...';
+        t.textContent = 'Escribiendo...';
         chatMessages.appendChild(t);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function ocultarTyping() {
-        const t = document.getElementById('chat-typing');
-        if (t) t.remove();
+        document.getElementById('chat-typing')?.remove();
     }
 
     async function enviarPregunta(pregunta) {
         if (!pregunta) return;
         agregarMensaje(pregunta, 'user');
-        historialIA.push({ role: 'user', content: pregunta });
+        historialUI.push({ role: 'user', content: pregunta });
+        guardarEstado();
         chatInput.value = '';
         mostrarTyping();
 
@@ -169,9 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     pregunta: pregunta,
-                    historial: historialIA.slice(-10),
+                    historial: historialUI.slice(-10),
                     use_rag: true
-                })
+                }),
+                credentials: 'same-origin'
             });
 
             const data = await resp.json();
@@ -179,41 +207,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.ok && data.respuesta) {
                 agregarMensaje(data.respuesta, 'bot');
-                historialIA.push({ role: 'assistant', content: limpiarTextoIA(data.respuesta) });
+                historialUI.push({ role: 'assistant', content: limpiarTextoIA(data.respuesta) });
+                guardarEstado();
 
                 if (data.acciones && Array.isArray(data.acciones)) {
                     data.acciones.forEach(acc => {
-                        if (acc.tipo === 'mostrar_carrera' && acc.slug) {
+                        if (acc.tipo === 'mostrar_carrera' && typeof acc.slug === 'string' && /^[a-z0-9\-]+$/i.test(acc.slug)) {
                             const cardCarr = document.createElement('div');
                             cardCarr.className = 'message bot-message p-2';
-                            cardCarr.innerHTML = `
-                                <div class="d-flex justify-content-between align-items-center gap-3 py-1 px-1">
-                                    <div class="small fw-medium text-dark">${escapeHtml(acc.nombre || 'Ver Carrera')}</div>
-                                    <a href="carrera.php?id=${encodeURIComponent(acc.slug)}" class="btn btn-ulat-primary btn-sm py-1 px-2" style="font-size: 0.73rem;">Malla ↗</a>
-                                </div>
-                            `;
+
+                            const row = document.createElement('div');
+                            row.className = 'd-flex justify-content-between align-items-center gap-3 py-1 px-1';
+
+                            const title = document.createElement('div');
+                            title.className = 'small fw-medium text-dark';
+                            title.textContent = acc.nombre || 'Ver Carrera';
+
+                            const link = document.createElement('a');
+                            link.href = 'carrera.php?id=' + encodeURIComponent(acc.slug);
+                            link.className = 'btn btn-ulat-primary btn-sm py-1 px-2';
+                            link.style.fontSize = '0.73rem';
+                            link.textContent = 'Malla ↗';
+
+                            row.appendChild(title);
+                            row.appendChild(link);
+                            cardCarr.appendChild(row);
                             chatMessages.appendChild(cardCarr);
-                        } else if (acc.tipo === 'derivar_whatsapp' && acc.url) {
+                        } else if (acc.tipo === 'derivar_whatsapp' && esUrlWhatsAppSegura(acc.url)) {
                             const waBtn = document.createElement('div');
                             waBtn.className = 'message bot-message p-2';
-                            waBtn.innerHTML = `
-                                <a href="${escapeHtml(acc.url)}" target="_blank" class="btn btn-sm btn-ulat-outline w-100 d-flex align-items-center justify-content-center gap-2" style="font-size: 0.78rem;">
-                                    <span>Abrir WhatsApp Admisiones ↗</span>
-                                </a>
-                            `;
+
+                            const link = document.createElement('a');
+                            link.href = acc.url;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            link.className = 'btn btn-sm btn-ulat-outline w-100 d-flex align-items-center justify-content-center gap-2';
+                            link.style.fontSize = '0.78rem';
+                            link.textContent = 'Abrir WhatsApp Admisiones ↗';
+
+                            waBtn.appendChild(link);
                             chatMessages.appendChild(waBtn);
                         } else if (acc.tipo === 'registrar_prospecto') {
                             const regInfo = document.createElement('div');
                             regInfo.className = 'message bot-message p-2 small fw-medium text-success';
-                            regInfo.innerHTML = `Datos registrados para Admisiones (${escapeHtml(acc.carrera || 'ULAT')}).`;
+                            regInfo.textContent = 'Datos registrados para Admisiones (' + String(acc.carrera || 'ULAT') + ').';
                             chatMessages.appendChild(regInfo);
                         }
                     });
                     chatMessages.scrollTop = chatMessages.scrollHeight;
-                    guardarEstado();
                 }
             } else {
-                agregarMensaje('Perdón, se cortó un momento la conexión. ¿Me repites tu consulta o nos escribes al WhatsApp 79795778?', 'bot');
+                agregarMensaje(data.error || 'Perdón, se cortó un momento la conexión. ¿Me repites tu consulta o nos escribes al WhatsApp 79795778?', 'bot');
             }
         } catch (err) {
             ocultarTyping();
@@ -230,17 +274,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chatWindow.classList.contains('d-none')) {
             chatWindow.classList.remove('d-none');
         }
-        enviarPregunta(texto);
+        enviarPregunta(String(texto || '').trim());
     };
 
     window.preguntarAlChat = function(consultaTexto) {
         if (chatWindow.classList.contains('d-none')) {
             chatWindow.classList.remove('d-none');
         }
-        const msg = consultaTexto.startsWith('¿') || consultaTexto.startsWith('Cuéntame') || consultaTexto.startsWith('Hola')
-            ? consultaTexto
-            : `Quisiera información sobre ${consultaTexto} y su malla curricular`;
+        const raw = String(consultaTexto || '').trim();
+        const msg = raw.startsWith('¿') || raw.startsWith('Cuéntame') || raw.startsWith('Hola')
+            ? raw
+            : 'Quisiera información sobre ' + raw + ' y su malla curricular';
         enviarPregunta(msg);
     };
+
+    // Delegación segura de eventos para chips y botones académicos (sin onclick inline)
+    document.addEventListener('click', (ev) => {
+        const chipBtn = ev.target.closest('[data-chip-prompt]');
+        if (chipBtn) {
+            ev.preventDefault();
+            window.enviarChipChat(chipBtn.getAttribute('data-chip-prompt') || '');
+            return;
+        }
+        const askBtn = ev.target.closest('[data-chat-prompt]');
+        if (askBtn) {
+            ev.preventDefault();
+            window.preguntarAlChat(askBtn.getAttribute('data-chat-prompt') || '');
+        }
+    });
 });
 </script>
