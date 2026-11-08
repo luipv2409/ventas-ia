@@ -53,4 +53,15 @@ Tras verificar en el árbol real todas las dependencias cruzadas (`require`/`inc
 ---
 
 ## 2. Registro de Cierre y Evidencia Post-Remediación
-*(Esta sección se actualiza conforme se ejecutan y verifican los Pasos 2 y 3).*
+
+### Paso 2 — Archivado de módulos e-commerce en `legacy-ecommerce/` y eliminación de endpoints IA muertos
+- **Acción ejecutada:**
+  - Reubicados con `git mv` todos los controladores `admin/` de tienda (`productos`, `categorias`, `pedidos`, `proveedores`, `historico_ventas`, `alertas`), páginas de tienda/clientes (`carrito`, `checkout`, `comparador`, `login`, `registro`, `recuperar_password`, `restablecer_password`, `mis_pedidos`), endpoints `api/` de tienda (`procesar_pedido`, `auth_cliente`, `historico_ventas`, `guardar_categoria`, `detalle_pedido`, `filtrar_productos`, `productos`, `cambiar_estado_pedido`, `notificar`, `pedidos`), `includes/*`, `assets/js/*` de tienda, migraciones/volcados SQL de tienda y tests exclusivos de tienda hacia `legacy-ecommerce/` (protegido con `.htaccess` `Require all denied` y excluido en `.dockerignore`).
+  - Eliminados con `git rm` los endpoints IA/debug muertos (`api/chat_rag.php`, `api/ia_handler.php`, `diagnostico.php`, `test_ia.php`, `test_raw.php`, `test_conexion.php`, `admin/generar_hash.php`).
+  - Simplificado `index.php` raíz a redirección pura `302 -> ulat/index.php` (respaldando la vista tienda previa en `legacy-ecommerce/index_tienda.php`).
+- **Hallazgos cerrados al 100% en este paso (verificados contra Apache en vivo):**
+  - ✅ **Crítico #5 (`api/auth_cliente.php`):** `GET/POST /api/auth_cliente.php` → `HTTP 404` (`legacy-ecommerce/api/auth_cliente.php` → `HTTP 403`).
+  - ✅ **Crítico #6 (`historico_ventas.php`, `guardar_categoria.php`, `detalle_pedido.php`):** los 3 responden `HTTP 404` (`legacy-ecommerce/api/*` → `HTTP 403`).
+  - ✅ **Crítico #7 (`api/procesar_pedido.php`):** `HTTP 404` (`legacy-ecommerce/api/procesar_pedido.php` → `HTTP 403`).
+  - ☑️ **Avance parcial en `#2`, `#4`, `#8`, `#9`, `#13`, `#26`:** `api/chat_rag.php`, `api/ia_handler.php`, `admin/generar_hash.php` y `database/ventas_ia.sql` ya devuelven `HTTP 404`.
+
