@@ -1,5 +1,7 @@
 <?php
 // admin/nav.php — Navegación institucional ULAT (Admisiones & Chatbot IA)
+require_once __DIR__ . '/auth.php';
+
 use Services\Security\SecurityKernel;
 
 $paginaActual = basename($_SERVER['PHP_SELF'] ?? 'dashboard.php');
