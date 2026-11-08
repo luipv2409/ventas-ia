@@ -32,7 +32,7 @@ final class PromptGuard
         . 'a\s*partir\s*de\s*ahora\s*(?:eres|vas\s*a\s*ser|act[uú]a\s*como|tu\s*nuevo\s*rol)|'
         . '(?:finge|act[uú]a|simula|imagina)\s*(?:que\s*eres|ser)\s*(?:un|una|el|la|mi)\s*(?:profesor|chef|hacker|pirata|abogado|m[eé]dico|asistente\s*de\s*otra|sistema|terminal|consola)|'
         . '(?:mi\s*abuel(?:a|ita)\s*fallecida|antes\s*de\s*dormir\s*me\s*le[ií]a)|'
-        . '(?:\[SYSTEM|\[ADMIN|\[OVERRIDE|<\|im_start\|>|<\|system\|>|###\s*INSTRUCTION|---\s*FIN\s*DEL\s*MENSAJE)'
+        . '(?:\[SYSTEM|\[ADMIN|\[OVERRIDE|\[INST\]|<\/?system>|<\/?contexto_documental>|<\|im_start\|>|<\|system\|>|###\s*INSTRUCTION|---\s*FIN\s*DEL\s*MENSAJE)'
         . ')/ui';
 
     /** Patrones de generación de código, tareas escolares o contenido ajeno a la universidad. */
@@ -62,8 +62,9 @@ final class PromptGuard
     /** Patrones prohibidos en mensajes de rol 'assistant' enviados desde el cliente (anti-history poisoning). */
     private const PATRON_HISTORIAL_ENVENENADO = '/(?:'
         . 'modo\s*(?:dan|desarrollador|dios|sin\s*restricciones)|'
-        . 'system\s*prompt|PROMPT_UNI|REGLAS_UNI|'
+        . 'system\s*prompt|PROMPT_UNI|REGLAS_UNI|<\/?contexto_documental>|'
         . 'a\s*partir\s*de\s*ahora\s*responder[eé]\s*cualquier|'
+        . '(?:aprobada|autorizada|confirmada)\s*(?:tu\s*)?(?:beca\s*del\s*100|inscripci[oó]n\s*gratuita)|'
         . 'beca\s*del\s*100%\s*sin\s*requisitos|'
         . 't[ií]tulo\s*sin\s*estudiar|'
         . 'public\s+static\s+void|<\s*script\b'
@@ -76,6 +77,7 @@ final class PromptGuard
         . 'GESTI[OÓ]N\s+DE\s+ACCIONES\s+Y\s+DERIVACIONES|'
         . 'FORMATO\s+DE\s+SALIDA\s*\(OBLIGATORIO|'
         . '\b(?:PROMPT_UNI|REGLAS_UNI|HumanPersona|ChatEngine|ragContexto|mostrar_carrera|registrar_prospecto|derivar_whatsapp)\b|'
+        . '<\/?contexto_documental\b[^>]*>|'
         . 'public\s+static\s+void\s+main|System\.out\.print|console\.log\s*\(|def\s+[a-zA-Z_]+\s*\([^)]*\)\s*:|SELECT\s+\*\s+FROM|<\?php|#include\s*<stdio'
         . ')/ui';
 

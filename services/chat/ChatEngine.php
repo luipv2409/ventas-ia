@@ -90,22 +90,34 @@ class ChatEngine
      */
     private function cargarConfiguracionYCatalogo(): void
     {
-        // 1. Configuración de la tienda
-        $stmtInfo = $this->pdo->query("SELECT clave, valor FROM configuracion WHERE clave IN ('nombre_tienda', 'contacto_telefono', 'contacto_email', 'nombre_dueño', 'nombre_asesor', 'moneda_simbolo', 'tasa_cambio_usd')");
-        if ($stmtInfo) {
-            while ($row = $stmtInfo->fetch(PDO::FETCH_ASSOC)) {
-                $this->infoNegocio[$row['clave']] = (string)$row['valor'];
+        $esUniversidad = !empty($this->profile->bloquePrompt('identidad_universitaria'));
+
+        // 1. Configuración institucional / negocio
+        try {
+            $stmtInfo = $this->pdo->query("SELECT clave, valor FROM configuracion WHERE clave IN ('nombre_tienda', 'contacto_telefono', 'contacto_email', 'nombre_dueño', 'nombre_asesor', 'whatsapp_admisiones', 'moneda_simbolo', 'tasa_cambio_usd')");
+            if ($stmtInfo) {
+                while ($row = $stmtInfo->fetch(PDO::FETCH_ASSOC)) {
+                    $this->infoNegocio[$row['clave']] = (string)$row['valor'];
+                }
             }
+        } catch (Throwable $e) {
+            error_log('[ChatEngine] Aviso al leer configuracion: ' . $e->getMessage());
         }
-        $this->nombreTienda  = $this->infoNegocio['nombre_tienda'] ?? 'Nuestra Tienda';
-        $this->telefono      = $this->infoNegocio['contacto_telefono'] ?? 'No disponible';
-        $this->email         = $this->infoNegocio['contacto_email'] ?? 'No disponible';
+
+        $this->nombreTienda  = $this->infoNegocio['nombre_tienda'] ?? ($esUniversidad ? 'Universidad Latinoamericana (ULAT)' : 'Nuestra Tienda');
+        $this->telefono      = $this->infoNegocio['contacto_telefono'] ?? ($esUniversidad ? '79795778' : 'No disponible');
+        $this->email         = $this->infoNegocio['contacto_email'] ?? ($esUniversidad ? 'latinoamericana@ulat.edu.bo' : 'No disponible');
         $this->dueno         = $this->infoNegocio['nombre_dueño'] ?? 'No definido';
-        $this->nombreAsesor  = HumanPersona::nombreAsesor($this->infoNegocio);
+        $this->nombreAsesor  = HumanPersona::nombreAsesor($this->infoNegocio, $this->profile);
         $this->simboloMoneda = $this->infoNegocio['moneda_simbolo'] ?? 'Bs';
         $this->tasaCambio    = (float)($this->infoNegocio['tasa_cambio_usd'] ?? 1.0);
         if ($this->tasaCambio <= 0) {
             $this->tasaCambio = 1.0;
+        }
+
+        // En modo Universidad (ULAT) omitir por completo las consultas a tablas heredadas de tienda (#26)
+        if ($esUniversidad) {
+            return;
         }
 
         // 2. Categorías dinámicas
@@ -317,9 +329,9 @@ class ChatEngine
         }
         $mensajes[] = ['role' => 'user', 'content' => $preguntaTratada];
 
-        // 7. Llamada al LLM
+        // 7. Llamada al LLM con salida estructurada JSON habilitada (#21)
         $aiResult = $this->client->chat($mensajes, [
-            'json_mode'   => false,
+            'json_mode'   => true,
             'temperature' => $guardAnalysis['is_adversarial'] ? 0.35 : 0.60,
             'max_tokens'  => 650,
         ]);
@@ -813,7 +825,7 @@ PROMPT;
         if (!is_array($jsonRespuesta) || !isset($jsonRespuesta['respuesta'])) {
             $textoRespaldo = ($rawRespuesta !== null && trim($rawRespuesta) !== '')
                 ? trim($rawRespuesta)
-                : HumanPersona::mensajeFallo($this->telefono);
+                : HumanPersona::mensajeFallo($this->telefono, $this->profile);
             return ['respuesta' => $textoRespaldo, 'acciones' => []];
         }
         return $jsonRespuesta;
