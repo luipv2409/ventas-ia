@@ -65,8 +65,22 @@ class ChatEngine
      */
     public function __construct(PDO $pdo, ?DeepSeekClient $client = null, array $config = [])
     {
-        $this->pdo    = $pdo;
-        $this->client = $client ?? new DeepSeekClient();
+        $this->pdo = $pdo;
+        if ($client !== null) {
+            $this->client = $client;
+        } else {
+            $dbApiKey = class_exists(\Services\Admin\SystemConfigService::class)
+                ? \Services\Admin\SystemConfigService::get($pdo, 'deepseek_api_key')
+                : '';
+            $dbModel = class_exists(\Services\Admin\SystemConfigService::class)
+                ? \Services\Admin\SystemConfigService::get($pdo, 'deepseek_model')
+                : '';
+            $this->client = new DeepSeekClient(
+                $dbApiKey !== '' ? $dbApiKey : null,
+                null,
+                $dbModel !== '' ? $dbModel : null
+            );
+        }
         $this->profile = $config['profile'] ?? DomainProfile::default();
         $this->catalogMaxItems = max(1, (int)($config['catalog_max_items']
             ?? (defined('CHAT_CATALOG_MAX_ITEMS') ? CHAT_CATALOG_MAX_ITEMS : 60)));
@@ -1127,6 +1141,15 @@ PROMPT;
                                 VALUES (?, ?, ?, 'chatbot', 'Captado en conversación con Guía ULAT')
                             ");
                             $stmtL->execute([$leadNombre, $soloDigitos, $leadCarr]);
+                            if (class_exists(\Services\Admin\SystemConfigService::class)) {
+                                \Services\Admin\SystemConfigService::notifyNewLead($this->pdo, [
+                                    'nombre'   => $leadNombre,
+                                    'telefono' => $soloDigitos,
+                                    'carrera'  => $leadCarr,
+                                    'origen'   => 'chatbot',
+                                    'notas'    => 'Captado en conversación con Guía ULAT',
+                                ]);
+                            }
                         } catch (\Throwable $e) {
                             error_log('[ChatEngine] Error guardando prospecto: ' . $e->getMessage());
                         }
@@ -1142,9 +1165,13 @@ PROMPT;
 
                 case 'derivar_whatsapp':
                     $msgWa = urlencode((string)($acc['mensaje'] ?? 'Hola ULAT, solicito información sobre las carreras'));
+                    $waConfig = preg_replace('/\D+/', '', (string)($this->infoNegocio['whatsapp_admisiones'] ?? '59179795778')) ?: '59179795778';
+                    if (strlen($waConfig) === 8) {
+                        $waConfig = '591' . $waConfig;
+                    }
                     $normalizadas[] = [
                         'tipo'       => 'derivar_whatsapp',
-                        'url'        => "https://wa.me/59179795778?text={$msgWa}",
+                        'url'        => "https://wa.me/{$waConfig}?text={$msgWa}",
                         'texto_link' => 'Contactar por WhatsApp a Admisiones ULAT',
                     ];
                     break;

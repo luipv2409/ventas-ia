@@ -210,4 +210,64 @@ final class SecurityKernel
         }
         return $str;
     }
+
+    /**
+     * Cifra un secreto en reposo con AES-256-GCM autenticado para almacenamiento seguro en BD.
+     */
+    public static function encryptSecret(string $plaintext): string
+    {
+        $plaintext = trim($plaintext);
+        if ($plaintext === '') {
+            return '';
+        }
+        $secretKey = defined('APP_SECRET_KEY') ? (string)APP_SECRET_KEY : 'ulat-default-kdf';
+        $key = hash('sha256', $secretKey . '|aes-gcm-v1', true);
+        $iv  = random_bytes(12);
+        $tag = '';
+        $ciphertext = openssl_encrypt($plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag, '', 16);
+        if ($ciphertext === false || strlen($tag) !== 16) {
+            return '';
+        }
+        return 'enc:v1:' . base64_encode($iv . $tag . $ciphertext);
+    }
+
+    /**
+     * Descifra un secreto almacenado con encryptSecret() verificando la etiqueta de autenticidad GCM.
+     */
+    public static function decryptSecret(string $stored): string
+    {
+        $stored = trim($stored);
+        if ($stored === '') {
+            return '';
+        }
+        if (!str_starts_with($stored, 'enc:v1:')) {
+            return $stored;
+        }
+        $raw = base64_decode(substr($stored, 7), true);
+        if (!is_string($raw) || strlen($raw) <= 28) {
+            return '';
+        }
+        $iv         = substr($raw, 0, 12);
+        $tag        = substr($raw, 12, 16);
+        $ciphertext = substr($raw, 28);
+        $secretKey  = defined('APP_SECRET_KEY') ? (string)APP_SECRET_KEY : 'ulat-default-kdf';
+        $key        = hash('sha256', $secretKey . '|aes-gcm-v1', true);
+        $plain      = openssl_decrypt($ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+        return is_string($plain) ? $plain : '';
+    }
+
+    /**
+     * Enmascara una clave secreta para mostrarla en la interfaz sin exponer su valor completo.
+     */
+    public static function maskSecret(string $secret): string
+    {
+        $secret = trim($secret);
+        if ($secret === '') {
+            return '';
+        }
+        if (strlen($secret) <= 10) {
+            return '••••••••';
+        }
+        return substr($secret, 0, 5) . '••••••••' . substr($secret, -4);
+    }
 }

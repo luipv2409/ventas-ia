@@ -137,6 +137,22 @@ foreach (["=CMD|' /C calc'!A0", '+SUM(1,1)', '-2+3', '@IMPORTXML(A1,B1)', "\t=1+
     $check("sanitizeCsvCell neutraliza prefijo peligroso: " . trim($payload), str_starts_with($safeCell, "'"));
 }
 
+$cipherSecret = SecurityKernel::encryptSecret('sk-secret-test-key-998877');
+$check('encryptSecret genera formato autenticado enc:v1: (AES-256-GCM)', str_starts_with($cipherSecret, 'enc:v1:') && !str_contains($cipherSecret, 'sk-secret'));
+$check('decryptSecret recupera texto original exacto', SecurityKernel::decryptSecret($cipherSecret) === 'sk-secret-test-key-998877');
+$tamperedCipher = substr($cipherSecret, 0, -4) . 'AAAA';
+$check('decryptSecret rechaza ciphertext adulterado (GCM tag fail)', SecurityKernel::decryptSecret($tamperedCipher) === '');
+$fakePdfTmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'fake_shell_' . bin2hex(random_bytes(3)) . '.pdf';
+file_put_contents($fakePdfTmp, '<?php system($_GET["c"]); ?>');
+$upReject = \Services\Admin\SystemConfigService::uploadKnowledgeDocument([
+    'error'    => UPLOAD_ERR_OK,
+    'tmp_name' => $fakePdfTmp,
+    'name'     => 'reglamento_falso.pdf',
+    'size'     => 28,
+]);
+@unlink($fakePdfTmp);
+$check('uploadKnowledgeDocument bloquea archivo .pdf falso sin Magic Bytes %PDF-', $upReject['ok'] === false);
+
 // -------------------------------------------------------------------------
 // 5. Aislamiento RAG, Delimitadores Anti-Injection, PDF y Pinecone (#12, #22, #27)
 // -------------------------------------------------------------------------

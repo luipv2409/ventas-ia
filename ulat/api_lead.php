@@ -96,18 +96,33 @@ try {
         INSERT INTO admisiones_prospectos (nombre, telefono, email, carrera_interes, origen, notas)
         VALUES (:n, :t, :e, :c, 'formulario_web', :notas)
     ");
+    $notasFinal = $notas !== '' ? $notas : 'Preinscripción desde el portal web ULAT';
     $stmt->execute([
         ':n'     => $nombre,
         ':t'     => $telefono,
         ':e'     => $email !== '' ? $email : null,
         ':c'     => $carrera,
-        ':notas' => $notas !== '' ? $notas : 'Preinscripción desde el portal web ULAT',
+        ':notas' => $notasFinal,
     ]);
+
+    $waNum = '59179795778';
+    if (class_exists(\Services\Admin\SystemConfigService::class)) {
+        $cfgWa = preg_replace('/\D+/', '', \Services\Admin\SystemConfigService::get($pdo, 'whatsapp_admisiones', '59179795778')) ?: '59179795778';
+        $waNum = strlen($cfgWa) === 8 ? ('591' . $cfgWa) : $cfgWa;
+        \Services\Admin\SystemConfigService::notifyNewLead($pdo, [
+            'nombre'   => $nombre,
+            'telefono' => $telefono,
+            'email'    => $email,
+            'carrera'  => $carrera,
+            'origen'   => 'formulario_web',
+            'notas'    => $notasFinal,
+        ]);
+    }
 
     echo json_encode([
         'ok'               => true,
         'mensaje'          => 'Solicitud registrada correctamente. Un asesor de admisiones de la ULAT se comunicará contigo.',
-        'whatsapp_directo' => 'https://wa.me/59179795778?text=' . rawurlencode("Hola ULAT, me llamo {$nombre} y solicito información sobre {$carrera}"),
+        'whatsapp_directo' => "https://wa.me/{$waNum}?text=" . rawurlencode("Hola ULAT, me llamo {$nombre} y solicito información sobre {$carrera}"),
     ], JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $e) {
     error_log('[api_lead] Error: ' . $e->getMessage());

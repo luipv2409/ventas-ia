@@ -22,6 +22,7 @@ require_once __DIR__ . '/../services/chat/ChatEngine.php';
 require_once __DIR__ . '/../services/chat/RateLimiter.php';
 require_once __DIR__ . '/../services/chat/SessionLock.php';
 
+use Services\Admin\SystemConfigService;
 use Services\Chat\ChatEngine;
 use Services\Chat\ClientIpResolver;
 use Services\Chat\InputSanitizer;
@@ -31,6 +32,10 @@ use Services\Security\SecurityKernel;
 
 SecurityKernel::applySecurityHeaders('api');
 
+$pdo = Database::getConnection();
+$cfgExternalKey  = SystemConfigService::get($pdo, 'chat_external_api_key', defined('CHAT_EXTERNAL_API_KEY') ? (string)CHAT_EXTERNAL_API_KEY : '');
+$cfgVerifyToken  = SystemConfigService::get($pdo, 'whatsapp_verify_token', defined('WHATSAPP_VERIFY_TOKEN') ? (string)WHATSAPP_VERIFY_TOKEN : '');
+
 // ------------------------------------------------------------
 // 1. Verificación GET (Healthcheck y Validación de Webhook Meta)
 // ------------------------------------------------------------
@@ -39,9 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $hubChallenge = $_GET['hub_challenge'] ?? $_GET['hub.challenge'] ?? null;
     $hubToken     = (string)($_GET['hub_verify_token'] ?? $_GET['hub.verify_token'] ?? '');
 
-    $expectedToken = defined('WHATSAPP_VERIFY_TOKEN') && WHATSAPP_VERIFY_TOKEN !== ''
-        ? WHATSAPP_VERIFY_TOKEN
-        : (defined('CHAT_EXTERNAL_API_KEY') ? CHAT_EXTERNAL_API_KEY : '');
+    $expectedToken = $cfgVerifyToken !== '' ? $cfgVerifyToken : $cfgExternalKey;
 
     if ($hubMode === 'subscribe' && $hubChallenge !== null) {
         if ($expectedToken !== '' && hash_equals($expectedToken, $hubToken)) {
@@ -73,12 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // ------------------------------------------------------------
 // 2. Validación de Seguridad y Autenticación Fail-Closed (API Key)
 // ------------------------------------------------------------
-$apiKeyEsperada = defined('CHAT_EXTERNAL_API_KEY') ? (string)CHAT_EXTERNAL_API_KEY : '';
+$apiKeyEsperada = $cfgExternalKey;
 if ($apiKeyEsperada === '') {
     http_response_code(503);
     echo json_encode([
         'ok'    => false,
-        'error' => 'Servicio multicanal no configurado: defina CHAT_EXTERNAL_API_KEY en el entorno (.env)'
+        'error' => 'Servicio multicanal no configurado: defina la Clave API Externa en el Dashboard de Configuración o en .env'
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -119,10 +122,25 @@ if (!is_array($body)) {
     exit;
 }
 
-// Admite campos flexibles para compatibilidad con n8n, Meta y otros orquestadores
-$rawMensaje   = (string)($body['mensaje'] ?? $body['message'] ?? $body['pregunta'] ?? $body['text'] ?? '');
-$rawRemitente = (string)($body['remitente'] ?? $body['sender'] ?? $body['user_id'] ?? $body['from'] ?? 'anonimo');
-$rawCanal     = (string)($body['canal'] ?? $body['channel'] ?? 'whatsapp');
+// Admite campos flexibles para compatibilidad con n8n, Meta WhatsApp Cloud API nativa y otros orquestadores
+$esPayloadMetaNativo = false;
+if (($body['object'] ?? '') === 'whatsapp_business_account' && isset($body['entry'][0]['changes'][0]['value'])) {
+    $esPayloadMetaNativo = true;
+    $metaVal = $body['entry'][0]['changes'][0]['value'];
+    // Si es un acuse de recibo de estado (delivered/read) de Meta sin mensaje de usuario, responder 200 OK
+    if (empty($metaVal['messages'][0])) {
+        echo json_encode(['ok' => true, 'status' => 'meta_status_ignored']);
+        exit;
+    }
+    $metaMsg      = $metaVal['messages'][0];
+    $rawMensaje   = (string)($metaMsg['text']['body'] ?? $metaMsg['button']['text'] ?? $metaMsg['interactive']['button_reply']['title'] ?? '');
+    $rawRemitente = (string)($metaMsg['from'] ?? 'anonimo');
+    $rawCanal     = 'whatsapp';
+} else {
+    $rawMensaje   = (string)($body['mensaje'] ?? $body['message'] ?? $body['pregunta'] ?? $body['text'] ?? '');
+    $rawRemitente = (string)($body['remitente'] ?? $body['sender'] ?? $body['user_id'] ?? $body['from'] ?? 'anonimo');
+    $rawCanal     = (string)($body['canal'] ?? $body['channel'] ?? 'whatsapp');
+}
 $useRag       = isset($body['use_rag']) ? (bool)$body['use_rag'] : true;
 
 $canal = InputSanitizer::normalizeChannel($rawCanal);
@@ -212,6 +230,27 @@ try {
                 'acciones' => $resultado['acciones'] ?? [],
                 'rag'      => $resultado['rag_applied'] ?? false
             ]);
+        }
+
+        // 9. Si proviene directo de Meta WhatsApp Cloud API (o se solicitó auto_reply_whatsapp) y está activo en Dashboard,
+        //    despachar el mensaje de respuesta directo a Meta Graph API sin necesidad de n8n.
+        $autoReplyWa = $esPayloadMetaNativo || !empty($body['auto_reply_whatsapp']);
+        if ($autoReplyWa && $canal === 'whatsapp' && SystemConfigService::get($pdo, 'whatsapp_cloud_enabled', '0') === '1') {
+            $waPhoneId = SystemConfigService::get($pdo, 'whatsapp_phone_id');
+            $waToken   = SystemConfigService::get($pdo, 'whatsapp_access_token');
+            if ($waPhoneId !== '' && $waToken !== '') {
+                $waErr = null;
+                $resultado['whatsapp_cloud_sent'] = SystemConfigService::sendWhatsAppCloudMessage(
+                    $waPhoneId,
+                    $waToken,
+                    $remitente,
+                    (string)($resultado['whatsapp_texto'] ?? $resultado['respuesta']),
+                    $waErr
+                );
+                if ($waErr !== null) {
+                    $resultado['whatsapp_cloud_error'] = $waErr;
+                }
+            }
         }
 
         echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
