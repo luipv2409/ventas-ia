@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `rag_query_cache` (
     `rag_chunks` JSON DEFAULT NULL,
     `score_max` DECIMAL(5,4) DEFAULT NULL,
     `creado_en` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    `expira_en` TIMESTAMP NOT NULL,
+    `expira_en` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`query_hash`),
     KEY `idx_expira` (`expira_en`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
